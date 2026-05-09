@@ -75,7 +75,6 @@
     cursor: pointer;
   }
   .pill .num { font-family: 'Fraunces', serif; font-size: 13px; font-weight: 800; color: var(--teal-2); }
-  .pill .label { color: var(--muted); font-weight: 600; }
 
   .datebar {
     width: 100%; max-width: 540px;
@@ -85,16 +84,34 @@
   }
   .datebar .archive-tag { color: var(--purple-2); font-weight: 700; }
 
-  .mom-banner {
+  .hello-banner {
     width: 100%; max-width: 540px;
-    background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
-    border: 1.5px solid var(--pink);
-    border-radius: 16px; padding: 12px 14px;
-    font-size: 13px; line-height: 1.4; color: #831843;
-    display: flex; gap: 10px; align-items: flex-start;
+    background: linear-gradient(135deg, #ecfeff 0%, #f0fdfa 100%);
+    border: 1.5px solid var(--line);
+    border-radius: 16px; padding: 14px 16px;
+    font-size: 14px; line-height: 1.4; color: var(--deep);
+    display: flex; gap: 12px; align-items: center;
   }
-  .mom-banner .tulip { font-size: 22px; flex-shrink: 0; }
-  .mom-banner b { font-family: 'Fraunces', serif; font-weight: 700; }
+  .hello-banner .avatar {
+    font-size: 32px; flex-shrink: 0;
+    width: 56px; height: 56px;
+    display: flex; align-items: center; justify-content: center;
+    background: white; border-radius: 50%;
+    border: 1.5px solid var(--line);
+    overflow: hidden;
+  }
+  .hello-banner .avatar img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .hello-banner .greet {
+    font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px;
+    line-height: 1.25;
+  }
+  .hello-banner .sub {
+    font-size: 12px; color: var(--muted); margin-top: 2px;
+  }
 
   .card {
     width: 100%; max-width: 540px;
@@ -117,7 +134,7 @@
   .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .mode-tile {
     border: 1.5px solid var(--line);
-    border-radius: 16px; padding: 16px 12px;
+    border-radius: 16px; padding: 18px 12px;
     background: white;
     display: flex; flex-direction: column; align-items: center; gap: 6px;
     cursor: pointer; transition: transform 0.12s, box-shadow 0.2s, border-color 0.2s;
@@ -125,17 +142,13 @@
   }
   .mode-tile:active { transform: scale(0.97); }
   .mode-tile:hover { border-color: var(--teal); box-shadow: 0 6px 18px rgba(13,148,136,0.12); }
-  .mode-tile.mom-active {
-    border-color: var(--pink);
-    background: linear-gradient(135deg, #fff 0%, #fdf2f8 100%);
-  }
   .mode-tile.complete {
     background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
     border-color: var(--green-2);
   }
-  .mode-emoji { font-size: 36px; line-height: 1; }
-  .mode-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 17px; color: var(--deep); }
-  .mode-desc { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.3; }
+  .mode-emoji { font-size: 40px; line-height: 1; }
+  .mode-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 18px; color: var(--deep); }
+  .mode-desc { font-size: 12px; color: var(--muted); text-align: center; line-height: 1.3; }
   .mode-played {
     position: absolute; top: 8px; right: 8px;
     font-size: 10px; padding: 2px 7px; border-radius: 999px;
@@ -146,11 +159,6 @@
     background: linear-gradient(135deg, var(--green) 0%, var(--green-2) 100%);
     color: white; border-color: var(--green-2);
   }
-  .mode-played.mom {
-    background: linear-gradient(135deg, var(--pink) 0%, var(--pink-2) 100%);
-    color: white; border-color: var(--pink-2);
-  }
-  .mom-tulip { position: absolute; top: 8px; left: 8px; font-size: 14px; }
 
   .archive-tile {
     border: 1.5px dashed var(--purple);
@@ -186,11 +194,6 @@
   .cell.skip { background: var(--skip); border-color: var(--skip); color: white; }
   .cell.wrong { background: linear-gradient(135deg, var(--warn) 0%, var(--warn-2) 100%); border-color: var(--warn-2); color: white; }
   .cell.correct { background: linear-gradient(135deg, var(--green) 0%, var(--green-2) 100%); border-color: var(--green-2); color: white; }
-  .cell.correct.bonus::after {
-    content: '★'; position: absolute; top: 2px; right: 4px;
-    font-size: 10px; color: var(--gold);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-  }
   .cell.flip { animation: flip 0.5s ease-out; }
   @keyframes flip { 0%{transform:rotateX(0);} 50%{transform:rotateX(90deg);} 100%{transform:rotateX(0);} }
 
@@ -302,6 +305,7 @@
     box-shadow: 0 24px 60px rgba(10,42,51,0.3);
     animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     max-height: 90vh; overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   @keyframes slideUp { from{transform:translateY(40px); opacity:0;} to{transform:translateY(0); opacity:1;} }
   .modal-headline {
@@ -316,7 +320,7 @@
     padding: 14px; border-radius: 16px;
     background: linear-gradient(135deg, var(--paper) 0%, var(--paper-2) 100%);
     border: 1px solid var(--line);
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
   .reveal img {
     width: 76px; height: 76px; border-radius: 12px; object-fit: cover;
@@ -331,6 +335,27 @@
   }
   .reveal-artist { font-size: 14px; color: var(--muted); margin-bottom: 4px; }
   .reveal-meta { font-size: 11px; color: var(--teal-2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .funfact {
+    background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
+    border: 1px solid #fde68a;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #78350f;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .funfact .icon { font-size: 18px; flex-shrink: 0; }
+  .funfact b { font-family: 'Fraunces', serif; font-weight: 700; }
+  .funfact-loading {
+    color: var(--muted);
+    font-style: italic;
+  }
+
   .scorecard-title {
     font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em;
     font-weight: 700; color: var(--deep); margin-bottom: 6px;
@@ -350,20 +375,6 @@
   .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .modal-actions .btn { flex: 1 1 calc(50% - 4px); min-width: 130px; }
 
-  .mom-progress {
-    display: flex; gap: 6px; align-items: center; justify-content: center;
-    margin-bottom: 4px;
-  }
-  .mom-dot {
-    width: 22px; height: 22px; border-radius: 50%;
-    background: var(--paper-2); border: 1.5px solid var(--line);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700; color: var(--muted);
-  }
-  .mom-dot.win { background: linear-gradient(135deg, var(--green) 0%, var(--green-2) 100%); border-color: var(--green-2); color: white; }
-  .mom-dot.lose { background: linear-gradient(135deg, var(--warn) 0%, var(--warn-2) 100%); border-color: var(--warn-2); color: white; }
-  .mom-dot.current { border-color: var(--pink-2); box-shadow: 0 0 0 3px rgba(236,72,153,0.18); color: var(--pink-2); }
-
   .toast {
     position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
     background: var(--deep); color: white;
@@ -379,6 +390,7 @@
   .archive-list {
     display: flex; flex-direction: column; gap: 6px;
     max-height: 360px; overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     border-radius: 12px; padding: 4px;
   }
   .archive-row {
@@ -410,21 +422,6 @@
     font-size: 12px; cursor: pointer; color: var(--deep);
   }
 
-  .leaderboard {
-    background: var(--paper); border: 1px solid var(--line);
-    border-radius: 14px; padding: 12px;
-    margin-bottom: 12px;
-  }
-  .lb-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 6px 4px; border-bottom: 1px solid var(--paper-2);
-    font-size: 13px;
-  }
-  .lb-row:last-child { border-bottom: none; }
-  .lb-row .lb-name { font-weight: 600; color: var(--deep); }
-  .lb-row .lb-meta { color: var(--muted); font-size: 11px; }
-  .lb-row .lb-score { font-family: 'Fraunces', serif; font-weight: 700; color: var(--teal-2); }
-
   .name-prompt {
     display: flex; flex-direction: column; gap: 12px;
   }
@@ -451,8 +448,8 @@
     .cell { font-size: 20px; }
     .modal-headline { font-size: 26px; }
     .play-btn { width: 56px; height: 56px; }
-    .mode-emoji { font-size: 30px; }
-    .mode-name { font-size: 15px; }
+    .mode-emoji { font-size: 36px; }
+    .mode-name { font-size: 16px; }
   }
 </style>
 </head>
@@ -464,7 +461,6 @@
     Heardle: The Gamer's Edition
   </div>
   <div class="stats">
-    <div class="pill" id="namePill" style="display:none;">👤 <span class="num" id="nameDisplay">—</span></div>
     <div class="pill" id="streakPill">🔥 <span class="num" id="streakNum">0</span></div>
     <div class="pill" id="scorePill">⭐ <span class="num" id="scoreNum">0</span></div>
   </div>
@@ -472,22 +468,24 @@
 
 <div class="datebar" id="dateBar"></div>
 
-<div class="mom-banner" id="momBanner" style="display:none;">
-  <span class="tulip">🌷</span>
-  <div><b>Mother's Day Mode!</b> (Only available today · 5 songs per mode; here on out will be 1× per mode per day)</div>
+<div class="hello-banner" id="helloBanner" style="display:none;">
+  <div class="avatar" id="helloAvatar"></div>
+  <div>
+    <div class="greet" id="helloGreet"></div>
+    <div class="sub" id="helloSub"></div>
+  </div>
 </div>
 
 <!-- MODE PICKER -->
 <div class="card view show" id="pickerView">
-  <div class="picker-title">Pick today's player</div>
-  <div class="picker-sub" id="pickerSub">A new song each day per mode. Everyone playing this mode today gets the same song.</div>
+  <div class="picker-title">Pick today's era</div>
+  <div class="picker-sub">A new song each day per category. Same song for everyone playing today.</div>
   <div class="modes" id="modesGrid"></div>
 </div>
 
 <!-- GAME -->
 <div class="card view" id="gameView">
-  <button class="btn-back" id="backBtn">← back to modes</button>
-  <div class="mom-progress" id="momProgress" style="display:none;"></div>
+  <button class="btn-back" id="backBtn">← back to categories</button>
   <div class="grid" id="grid"></div>
   <div class="progress-wrap">
     <div class="progress-track">
@@ -513,23 +511,22 @@
     <div class="suggestions" id="suggestions"></div>
   </div>
   <div class="actions">
-    <button class="btn btn-skip" id="skipBtn">⏭ Skip</button>
+    <button class="btn btn-skip" id="skipBtn">🤔 Not sure</button>
     <button class="btn btn-primary" id="submitBtn" disabled>Submit Guess</button>
   </div>
 </div>
 
 <!-- ARCHIVE -->
 <div class="card view" id="archiveView">
-  <button class="btn-back" id="archiveBackBtn">← back to modes</button>
+  <button class="btn-back" id="archiveBackBtn">← back to categories</button>
   <div class="picker-title" style="font-size:18px;">📚 Archive</div>
-  <div class="picker-sub">Replay past days. The date and mode are shown before play.</div>
+  <div class="picker-sub">Replay past days. The date and category are shown before play.</div>
   <div class="archive-list" id="archiveList"></div>
   <div class="archive-controls">
     <button id="devShowAnswer">👁 Show today's answer</button>
     <button id="devResetStats">🗑 Reset stats</button>
     <button id="devResetPlayed">🔄 Reset played history</button>
     <button id="devChangeName">✏️ Change name</button>
-    <button id="devLeaderboard">🏆 Local leaderboard</button>
   </div>
 </div>
 
@@ -537,7 +534,7 @@
 <div class="modal-bg" id="nameModalBg">
   <div class="modal">
     <div class="modal-headline">👋 What's your name?</div>
-    <div class="modal-sub">First name only. We'll add it to your share scorecards so friends know who's winning.</div>
+    <div class="modal-sub">First name only. We'll use it to greet you and track your stats.</div>
     <div class="name-prompt">
       <input id="nameInput" type="text" placeholder="e.g., Grace" maxlength="20" autocapitalize="words" />
       <button class="btn btn-primary" id="nameSaveBtn">Save</button>
@@ -545,22 +542,10 @@
   </div>
 </div>
 
-<!-- LEADERBOARD MODAL -->
-<div class="modal-bg" id="lbModalBg">
-  <div class="modal">
-    <div class="modal-headline">🏆 Local Leaderboard</div>
-    <div class="modal-sub">Best results saved on this device only. (Real shared leaderboard coming in v1.1!)</div>
-    <div class="leaderboard" id="lbBody"></div>
-    <div class="modal-actions">
-      <button class="btn btn-primary" id="lbCloseBtn">Close</button>
-    </div>
-  </div>
-</div>
-
 <div class="footer-note">
   Made with love by Kyra Hu · V2 launching by Christmas 2026 (or sooner)!<br>
   <a href="#" id="bugBtn">🐛 Report a bug</a>
-  <div class="footer-version">v1.0.1 · If you don't see updates, fully close and reopen the page.</div>
+  <div class="footer-version">v1.1.1 · If you don't see updates, fully close and reopen the page.</div>
 </div>
 
 <!-- RESULT MODAL -->
@@ -576,539 +561,663 @@
         <div class="reveal-meta" id="revealMeta"></div>
       </div>
     </div>
-    <div class="scorecard-title" id="scorecardTitle">Your Scorecard</div>
+    <div class="funfact" id="funfact" style="display:none;">
+      <span class="icon">💡</span>
+      <div id="funfactText"></div>
+    </div>
+    <div class="scorecard-title">Your Scorecard</div>
     <div class="scorecard">
       <div class="scorecard-line" id="scorecardLine"></div>
       <div class="scorecard-meta" id="scorecardMeta"></div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-skip" id="shareBtn">📋 Share Result</button>
-      <button class="btn btn-primary" id="nextBtn">Back to Modes →</button>
+      <button class="btn btn-primary" id="nextBtn">Back to Categories →</button>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
-<audio id="audio" preload="auto" crossorigin="anonymous"></audio>
+<audio id="audio" preload="auto" crossorigin="anonymous" playsinline webkit-playsinline></audio>
 
 <script>
 /* ================================================================
-   SONG POOLS — same as before. Edit at the top of the file.
+   SONG POOLS — organized by era for v1.1
+   80s90s = 1980-1999, 2000s = 2000-present
+   Pulled and combined from v1.0 pools, deduped.
    ================================================================ */
 const POOLS = {
-  jeff: [
+  "80s90s": [
+    // 80s pop/rock anchors
     {t:"Billie Jean", a:"Michael Jackson"},{t:"Beat It", a:"Michael Jackson"},{t:"Thriller", a:"Michael Jackson"},
-    {t:"Rock with You", a:"Michael Jackson"},{t:"Don't Stop 'Til You Get Enough", a:"Michael Jackson"},
-    {t:"Smooth Criminal", a:"Michael Jackson"},{t:"Man in the Mirror", a:"Michael Jackson"},
-    {t:"The Way You Make Me Feel", a:"Michael Jackson"},{t:"Bad", a:"Michael Jackson"},{t:"Black or White", a:"Michael Jackson"},
+    {t:"Rock with You", a:"Michael Jackson"},{t:"Smooth Criminal", a:"Michael Jackson"},
+    {t:"Man in the Mirror", a:"Michael Jackson"},{t:"The Way You Make Me Feel", a:"Michael Jackson"},
+    {t:"Bad", a:"Michael Jackson"},{t:"Black or White", a:"Michael Jackson"},
     {t:"Like a Virgin", a:"Madonna"},{t:"Like a Prayer", a:"Madonna"},{t:"Material Girl", a:"Madonna"},
-    {t:"Vogue", a:"Madonna"},{t:"Holiday", a:"Madonna"},{t:"Borderline", a:"Madonna"},{t:"Papa Don't Preach", a:"Madonna"},
-    {t:"La Isla Bonita", a:"Madonna"},{t:"Express Yourself", a:"Madonna"},{t:"Into the Groove", a:"Madonna"},
-    {t:"Don't Stop Believin'", a:"Journey"},{t:"Any Way You Want It", a:"Journey"},{t:"Faithfully", a:"Journey"},
-    {t:"Open Arms", a:"Journey"},{t:"Take On Me", a:"a-ha"},{t:"Sweet Dreams (Are Made of This)", a:"Eurythmics"},
-    {t:"Here Comes the Rain Again", a:"Eurythmics"},{t:"Girls Just Want to Have Fun", a:"Cyndi Lauper"},
-    {t:"Time After Time", a:"Cyndi Lauper"},{t:"True Colors", a:"Cyndi Lauper"},
-    {t:"Every Breath You Take", a:"The Police"},{t:"Roxanne", a:"The Police"},{t:"Message in a Bottle", a:"The Police"},
-    {t:"Don't Stand So Close to Me", a:"The Police"},{t:"Livin' on a Prayer", a:"Bon Jovi"},
-    {t:"You Give Love a Bad Name", a:"Bon Jovi"},{t:"Wanted Dead or Alive", a:"Bon Jovi"},{t:"It's My Life", a:"Bon Jovi"},
+    {t:"Vogue", a:"Madonna"},{t:"Holiday", a:"Madonna"},{t:"Borderline", a:"Madonna"},
+    {t:"Papa Don't Preach", a:"Madonna"},{t:"La Isla Bonita", a:"Madonna"},
+    {t:"Express Yourself", a:"Madonna"},{t:"Into the Groove", a:"Madonna"},
+    {t:"Don't Stop Believin'", a:"Journey"},{t:"Any Way You Want It", a:"Journey"},
+    {t:"Faithfully", a:"Journey"},{t:"Open Arms", a:"Journey"},
+    {t:"Take On Me", a:"a-ha"},{t:"Sweet Dreams (Are Made of This)", a:"Eurythmics"},
+    {t:"Here Comes the Rain Again", a:"Eurythmics"},
+    {t:"Girls Just Want to Have Fun", a:"Cyndi Lauper"},{t:"Time After Time", a:"Cyndi Lauper"},
+    {t:"True Colors", a:"Cyndi Lauper"},
+    {t:"Every Breath You Take", a:"The Police"},{t:"Roxanne", a:"The Police"},
+    {t:"Message in a Bottle", a:"The Police"},{t:"Don't Stand So Close to Me", a:"The Police"},
+    {t:"Livin' on a Prayer", a:"Bon Jovi"},{t:"You Give Love a Bad Name", a:"Bon Jovi"},
+    {t:"Wanted Dead or Alive", a:"Bon Jovi"},
     {t:"Wake Me Up Before You Go-Go", a:"Wham!"},{t:"Last Christmas", a:"Wham!"},
-    {t:"Careless Whisper", a:"George Michael"},{t:"Faith", a:"George Michael"},{t:"Father Figure", a:"George Michael"},
-    {t:"I Wanna Dance with Somebody", a:"Whitney Houston"},{t:"How Will I Know", a:"Whitney Houston"},
-    {t:"Greatest Love of All", a:"Whitney Houston"},{t:"Saving All My Love for You", a:"Whitney Houston"},
-    {t:"I Will Always Love You", a:"Whitney Houston"},{t:"Africa", a:"Toto"},{t:"Hold the Line", a:"Toto"},
-    {t:"Rosanna", a:"Toto"},{t:"Total Eclipse of the Heart", a:"Bonnie Tyler"},
+    {t:"Careless Whisper", a:"George Michael"},{t:"Faith", a:"George Michael"},
+    {t:"Father Figure", a:"George Michael"},
+    {t:"I Wanna Dance with Somebody", a:"Whitney Houston"},
+    {t:"How Will I Know", a:"Whitney Houston"},{t:"Greatest Love of All", a:"Whitney Houston"},
+    {t:"Saving All My Love for You", a:"Whitney Houston"},
+    {t:"I Will Always Love You", a:"Whitney Houston"},
+    {t:"Africa", a:"Toto"},{t:"Hold the Line", a:"Toto"},{t:"Rosanna", a:"Toto"},
+    {t:"Total Eclipse of the Heart", a:"Bonnie Tyler"},
     {t:"What's Love Got to Do with It", a:"Tina Turner"},{t:"Private Dancer", a:"Tina Turner"},
-    {t:"Simply the Best", a:"Tina Turner"},{t:"Jump", a:"Van Halen"},{t:"Why Can't This Be Love", a:"Van Halen"},
-    {t:"Eye of the Tiger", a:"Survivor"},{t:"Karma Chameleon", a:"Culture Club"},
-    {t:"Do You Really Want to Hurt Me", a:"Culture Club"},{t:"Footloose", a:"Kenny Loggins"},
-    {t:"Danger Zone", a:"Kenny Loggins"},{t:"Walking on Sunshine", a:"Katrina and the Waves"},
-    {t:"Tainted Love", a:"Soft Cell"},{t:"With or Without You", a:"U2"},
-    {t:"I Still Haven't Found What I'm Looking For", a:"U2"},{t:"Where the Streets Have No Name", a:"U2"},
-    {t:"One", a:"U2"},{t:"Born in the U.S.A.", a:"Bruce Springsteen"},
-    {t:"Dancing in the Dark", a:"Bruce Springsteen"},{t:"Glory Days", a:"Bruce Springsteen"},
-    {t:"Born to Run", a:"Bruce Springsteen"},{t:"Purple Rain", a:"Prince"},{t:"When Doves Cry", a:"Prince"},
-    {t:"Kiss", a:"Prince"},{t:"Little Red Corvette", a:"Prince"},{t:"1999", a:"Prince"},{t:"Raspberry Beret", a:"Prince"},
-    {t:"Hungry Like the Wolf", a:"Duran Duran"},{t:"Rio", a:"Duran Duran"},{t:"Notorious", a:"Duran Duran"},
+    {t:"Simply the Best", a:"Tina Turner"},
+    {t:"Jump", a:"Van Halen"},{t:"Why Can't This Be Love", a:"Van Halen"},
+    {t:"Eye of the Tiger", a:"Survivor"},
+    {t:"Karma Chameleon", a:"Culture Club"},{t:"Do You Really Want to Hurt Me", a:"Culture Club"},
+    {t:"Footloose", a:"Kenny Loggins"},{t:"Danger Zone", a:"Kenny Loggins"},
+    {t:"Walking on Sunshine", a:"Katrina and the Waves"},
+    {t:"Tainted Love", a:"Soft Cell"},
+    {t:"With or Without You", a:"U2"},{t:"I Still Haven't Found What I'm Looking For", a:"U2"},
+    {t:"Where the Streets Have No Name", a:"U2"},{t:"One", a:"U2"},
+    {t:"Born in the U.S.A.", a:"Bruce Springsteen"},{t:"Dancing in the Dark", a:"Bruce Springsteen"},
+    {t:"Glory Days", a:"Bruce Springsteen"},
+    {t:"Purple Rain", a:"Prince"},{t:"When Doves Cry", a:"Prince"},{t:"Kiss", a:"Prince"},
+    {t:"Little Red Corvette", a:"Prince"},{t:"1999", a:"Prince"},{t:"Raspberry Beret", a:"Prince"},
+    {t:"Hungry Like the Wolf", a:"Duran Duran"},{t:"Rio", a:"Duran Duran"},
+    {t:"Notorious", a:"Duran Duran"},
     {t:"Don't You (Forget About Me)", a:"Simple Minds"},{t:"Owner of a Lonely Heart", a:"Yes"},
     {t:"Centerfold", a:"J. Geils Band"},{t:"Tom Sawyer", a:"Rush"},{t:"99 Luftballons", a:"Nena"},
-    {t:"Maneater", a:"Hall & Oates"},{t:"Rich Girl", a:"Hall & Oates"},{t:"You Make My Dreams", a:"Hall & Oates"},
-    {t:"I Can't Go for That", a:"Hall & Oates"},{t:"Private Eyes", a:"Hall & Oates"},
+    {t:"Maneater", a:"Hall & Oates"},{t:"Rich Girl", a:"Hall & Oates"},
+    {t:"You Make My Dreams", a:"Hall & Oates"},{t:"I Can't Go for That", a:"Hall & Oates"},
+    {t:"Private Eyes", a:"Hall & Oates"},
     {t:"Sweet Child o' Mine", a:"Guns N' Roses"},{t:"November Rain", a:"Guns N' Roses"},
     {t:"Welcome to the Jungle", a:"Guns N' Roses"},{t:"Paradise City", a:"Guns N' Roses"},
     {t:"Pour Some Sugar on Me", a:"Def Leppard"},{t:"Photograph", a:"Def Leppard"},
-    {t:"Every Rose Has Its Thorn", a:"Poison"},{t:"Don't Stop Me Now", a:"Queen"},
-    {t:"Bohemian Rhapsody", a:"Queen"},{t:"Somebody to Love", a:"Queen"},{t:"We Will Rock You", a:"Queen"},
-    {t:"We Are the Champions", a:"Queen"},{t:"Another One Bites the Dust", a:"Queen"},
-    {t:"Under Pressure", a:"Queen"},{t:"Radio Ga Ga", a:"Queen"},{t:"I Want to Break Free", a:"Queen"},
-    {t:"Crazy Little Thing Called Love", a:"Queen"},{t:"You're the Inspiration", a:"Chicago"},
-    {t:"Hard to Say I'm Sorry", a:"Chicago"},{t:"Saturday in the Park", a:"Chicago"},
-    {t:"You're the One That I Want", a:"John Travolta"},{t:"Summer Nights", a:"John Travolta"},
-    {t:"Hopelessly Devoted to You", a:"Olivia Newton-John"},{t:"Physical", a:"Olivia Newton-John"},
-    {t:"Xanadu", a:"Olivia Newton-John"},{t:"Bette Davis Eyes", a:"Kim Carnes"},
-    {t:"Endless Love", a:"Lionel Richie"},{t:"All Night Long", a:"Lionel Richie"},{t:"Hello", a:"Lionel Richie"},
-    {t:"Say You, Say Me", a:"Lionel Richie"},{t:"Dancing on the Ceiling", a:"Lionel Richie"},
-    {t:"Easy", a:"Commodores"},{t:"Three Times a Lady", a:"Commodores"},{t:"Brick House", a:"Commodores"},
-    {t:"Wannabe", a:"Spice Girls"},{t:"...Baby One More Time", a:"Britney Spears"},{t:"Toxic", a:"Britney Spears"},
-    {t:"Oops!... I Did It Again", a:"Britney Spears"},{t:"I Want It That Way", a:"Backstreet Boys"},
-    {t:"Bye Bye Bye", a:"NSYNC"},{t:"My Heart Will Go On", a:"Celine Dion"},{t:"Vision of Love", a:"Mariah Carey"},
-    {t:"Hero", a:"Mariah Carey"},{t:"Fantasy", a:"Mariah Carey"},{t:"All I Want for Christmas Is You", a:"Mariah Carey"},
-    {t:"Always Be My Baby", a:"Mariah Carey"},{t:"Crazy in Love", a:"Beyoncé"},
-    {t:"Single Ladies (Put a Ring on It)", a:"Beyoncé"},{t:"Halo", a:"Beyoncé"},{t:"Irreplaceable", a:"Beyoncé"},
-    {t:"Umbrella", a:"Rihanna"},{t:"Bad Romance", a:"Lady Gaga"},{t:"Poker Face", a:"Lady Gaga"},
-    {t:"Just Dance", a:"Lady Gaga"},{t:"Rolling in the Deep", a:"Adele"},{t:"Someone Like You", a:"Adele"},
-    {t:"Hello", a:"Adele"},{t:"Firework", a:"Katy Perry"},{t:"Roar", a:"Katy Perry"},
-    {t:"Teenage Dream", a:"Katy Perry"},{t:"Shake It Off", a:"Taylor Swift"},{t:"Blank Space", a:"Taylor Swift"},
-    {t:"Love Story", a:"Taylor Swift"},{t:"Happy", a:"Pharrell Williams"},{t:"Uptown Funk", a:"Mark Ronson"},
-    {t:"Just the Way You Are", a:"Bruno Mars"},{t:"Grenade", a:"Bruno Mars"},
-    {t:"Locked Out of Heaven", a:"Bruno Mars"},{t:"24K Magic", a:"Bruno Mars"},
-    {t:"Call Me Maybe", a:"Carly Rae Jepsen"},{t:"Royals", a:"Lorde"},{t:"Stay With Me", a:"Sam Smith"},
-    {t:"Thinking Out Loud", a:"Ed Sheeran"},{t:"Shape of You", a:"Ed Sheeran"},{t:"Perfect", a:"Ed Sheeran"},
-    {t:"Despacito", a:"Luis Fonsi"},{t:"Sorry", a:"Justin Bieber"},{t:"Dance Monkey", a:"Tones and I"},
-    {t:"Old Town Road", a:"Lil Nas X"},{t:"Bad Guy", a:"Billie Eilish"},{t:"Sunflower", a:"Post Malone"},
-    {t:"Closer", a:"The Chainsmokers"},{t:"Cheap Thrills", a:"Sia"},{t:"Chandelier", a:"Sia"},
-    {t:"Titanium", a:"David Guetta"},{t:"Wake Me Up", a:"Avicii"},{t:"Levitating", a:"Dua Lipa"},
-    {t:"Don't Start Now", a:"Dua Lipa"},{t:"7 Rings", a:"Ariana Grande"},{t:"thank u, next", a:"Ariana Grande"},
-    {t:"Blinding Lights", a:"The Weeknd"},{t:"Watermelon Sugar", a:"Harry Styles"},{t:"As It Was", a:"Harry Styles"},
-    {t:"Memories", a:"Maroon 5"},{t:"Sugar", a:"Maroon 5"},{t:"Moves Like Jagger", a:"Maroon 5"},
-    {t:"Anti-Hero", a:"Taylor Swift"},{t:"Cruel Summer", a:"Taylor Swift"},{t:"Drivers License", a:"Olivia Rodrigo"},
-    {t:"Good 4 U", a:"Olivia Rodrigo"},{t:"Flowers", a:"Miley Cyrus"},{t:"Stay", a:"The Kid LAROI"},
-    {t:"Heat Waves", a:"Glass Animals"},{t:"Hey Jude", a:"The Beatles"},{t:"Let It Be", a:"The Beatles"},
-    {t:"Yesterday", a:"The Beatles"},{t:"Here Comes the Sun", a:"The Beatles"},{t:"Come Together", a:"The Beatles"},
-    {t:"Imagine", a:"John Lennon"},{t:"(Sittin' On) The Dock of the Bay", a:"Otis Redding"},
-    {t:"My Girl", a:"The Temptations"},{t:"I Heard It Through the Grapevine", a:"Marvin Gaye"},
-    {t:"What's Going On", a:"Marvin Gaye"},{t:"Let's Get It On", a:"Marvin Gaye"},
-    {t:"Sexual Healing", a:"Marvin Gaye"},{t:"Stand by Me", a:"Ben E. King"},
-    {t:"You've Lost That Lovin' Feelin'", a:"The Righteous Brothers"},
-    {t:"Unchained Melody", a:"The Righteous Brothers"},{t:"California Dreamin'", a:"The Mamas & The Papas"},
-    {t:"Good Vibrations", a:"The Beach Boys"},{t:"Wouldn't It Be Nice", a:"The Beach Boys"},
-    {t:"Surfin' U.S.A.", a:"The Beach Boys"},{t:"Hotel California", a:"Eagles"},{t:"Take It Easy", a:"Eagles"},
-    {t:"Desperado", a:"Eagles"},{t:"Lyin' Eyes", a:"Eagles"},{t:"Stairway to Heaven", a:"Led Zeppelin"},
-    {t:"Whole Lotta Love", a:"Led Zeppelin"},{t:"Rocket Man", a:"Elton John"},{t:"Tiny Dancer", a:"Elton John"},
-    {t:"Crocodile Rock", a:"Elton John"},{t:"Your Song", a:"Elton John"},
-    {t:"Don't Let the Sun Go Down on Me", a:"Elton John"},{t:"Bennie and the Jets", a:"Elton John"},
-    {t:"I'm Still Standing", a:"Elton John"},{t:"Sacrifice", a:"Elton John"},{t:"Dancing Queen", a:"ABBA"},
-    {t:"Mamma Mia", a:"ABBA"},{t:"Take a Chance on Me", a:"ABBA"},{t:"Waterloo", a:"ABBA"},
-    {t:"The Winner Takes It All", a:"ABBA"},{t:"Knowing Me, Knowing You", a:"ABBA"},
-    {t:"Super Trouper", a:"ABBA"},{t:"Stayin' Alive", a:"Bee Gees"},{t:"Night Fever", a:"Bee Gees"},
-    {t:"How Deep Is Your Love", a:"Bee Gees"},{t:"More Than a Woman", a:"Bee Gees"},
-    {t:"You Should Be Dancing", a:"Bee Gees"},{t:"I Will Survive", a:"Gloria Gaynor"},
-    {t:"Don't Stop", a:"Fleetwood Mac"},{t:"Go Your Own Way", a:"Fleetwood Mac"},
-    {t:"Dreams", a:"Fleetwood Mac"},{t:"Landslide", a:"Fleetwood Mac"},{t:"The Chain", a:"Fleetwood Mac"},
-    {t:"Don't Worry, Be Happy", a:"Bobby McFerrin"},{t:"Time of My Life", a:"Bill Medley"},
-    {t:"She Drives Me Crazy", a:"Fine Young Cannibals"},{t:"Free Fallin'", a:"Tom Petty"},
-    {t:"American Pie", a:"Don McLean"},{t:"Vincent", a:"Don McLean"},{t:"Piano Man", a:"Billy Joel"},
-    {t:"Uptown Girl", a:"Billy Joel"},{t:"We Didn't Start the Fire", a:"Billy Joel"},
-    {t:"Just the Way You Are", a:"Billy Joel"},{t:"It's Still Rock and Roll to Me", a:"Billy Joel"},
-    {t:"Tell Her About It", a:"Billy Joel"},{t:"Sweet Caroline", a:"Neil Diamond"},
-    {t:"Cracklin' Rosie", a:"Neil Diamond"},{t:"Brown Eyed Girl", a:"Van Morrison"},
-    {t:"Moondance", a:"Van Morrison"},{t:"Layla", a:"Eric Clapton"},{t:"Tears in Heaven", a:"Eric Clapton"},
-    {t:"Wonderful Tonight", a:"Eric Clapton"},{t:"Cocaine", a:"Eric Clapton"},
-    {t:"Heaven Is a Place on Earth", a:"Belinda Carlisle"},{t:"Manic Monday", a:"The Bangles"},
-    {t:"Walk Like an Egyptian", a:"The Bangles"},{t:"Eternal Flame", a:"The Bangles"},
-    {t:"I'll Be There for You", a:"The Rembrandts"},{t:"Tubthumping", a:"Chumbawamba"},
-    {t:"What's Up?", a:"4 Non Blondes"},
-  ],
-  amy: [
-    {t:"Toxic", a:"Britney Spears"},{t:"Oops!... I Did It Again", a:"Britney Spears"},
-    {t:"I'm a Slave 4 U", a:"Britney Spears"},{t:"Gimme More", a:"Britney Spears"},
-    {t:"Womanizer", a:"Britney Spears"},{t:"Stronger", a:"Britney Spears"},{t:"Lucky", a:"Britney Spears"},
-    {t:"Crazy in Love", a:"Beyoncé"},{t:"Single Ladies (Put a Ring on It)", a:"Beyoncé"},{t:"Halo", a:"Beyoncé"},
-    {t:"Irreplaceable", a:"Beyoncé"},{t:"Drunk in Love", a:"Beyoncé"},{t:"Formation", a:"Beyoncé"},
-    {t:"Run the World (Girls)", a:"Beyoncé"},{t:"Love On Top", a:"Beyoncé"},{t:"7/11", a:"Beyoncé"},
-    {t:"Hollaback Girl", a:"Gwen Stefani"},{t:"Cool", a:"Gwen Stefani"},{t:"The Sweet Escape", a:"Gwen Stefani"},
-    {t:"Hey Ya!", a:"OutKast"},{t:"Ms. Jackson", a:"OutKast"},{t:"Since U Been Gone", a:"Kelly Clarkson"},
-    {t:"Stronger (What Doesn't Kill You)", a:"Kelly Clarkson"},{t:"Behind These Hazel Eyes", a:"Kelly Clarkson"},
-    {t:"Because of You", a:"Kelly Clarkson"},{t:"Umbrella", a:"Rihanna"},{t:"Don't Stop the Music", a:"Rihanna"},
-    {t:"Disturbia", a:"Rihanna"},{t:"Take a Bow", a:"Rihanna"},{t:"Only Girl (In the World)", a:"Rihanna"},
-    {t:"We Found Love", a:"Rihanna"},{t:"Diamonds", a:"Rihanna"},{t:"Rude Boy", a:"Rihanna"},
-    {t:"S&M", a:"Rihanna"},{t:"What's My Name?", a:"Rihanna"},{t:"Stay", a:"Rihanna"},{t:"Work", a:"Rihanna"},
-    {t:"Bad Romance", a:"Lady Gaga"},{t:"Poker Face", a:"Lady Gaga"},{t:"Just Dance", a:"Lady Gaga"},
-    {t:"Paparazzi", a:"Lady Gaga"},{t:"Born This Way", a:"Lady Gaga"},{t:"Telephone", a:"Lady Gaga"},
-    {t:"Edge of Glory", a:"Lady Gaga"},{t:"Applause", a:"Lady Gaga"},{t:"Shallow", a:"Lady Gaga"},
-    {t:"Rain on Me", a:"Lady Gaga"},{t:"I Gotta Feeling", a:"The Black Eyed Peas"},
-    {t:"Boom Boom Pow", a:"The Black Eyed Peas"},{t:"Where Is the Love?", a:"The Black Eyed Peas"},
-    {t:"Pump It", a:"The Black Eyed Peas"},{t:"My Humps", a:"The Black Eyed Peas"},
-    {t:"Don't Phunk with My Heart", a:"The Black Eyed Peas"},{t:"Sk8er Boi", a:"Avril Lavigne"},
-    {t:"Complicated", a:"Avril Lavigne"},{t:"Girlfriend", a:"Avril Lavigne"},{t:"My Happy Ending", a:"Avril Lavigne"},
-    {t:"In da Club", a:"50 Cent"},{t:"Lose Yourself", a:"Eminem"},{t:"Without Me", a:"Eminem"},
-    {t:"The Real Slim Shady", a:"Eminem"},{t:"Stan", a:"Eminem"},{t:"Not Afraid", a:"Eminem"},
-    {t:"Love the Way You Lie", a:"Eminem"},{t:"Mr. Brightside", a:"The Killers"},
-    {t:"Somebody Told Me", a:"The Killers"},{t:"When You Were Young", a:"The Killers"},
-    {t:"Beautiful", a:"Christina Aguilera"},{t:"Ain't No Other Man", a:"Christina Aguilera"},
-    {t:"Genie in a Bottle", a:"Christina Aguilera"},{t:"Dirrty", a:"Christina Aguilera"},
-    {t:"Fighter", a:"Christina Aguilera"},{t:"Hips Don't Lie", a:"Shakira"},
-    {t:"Whenever, Wherever", a:"Shakira"},{t:"Underneath Your Clothes", a:"Shakira"},
-    {t:"Waka Waka (This Time for Africa)", a:"Shakira"},{t:"Yeah!", a:"Usher"},{t:"Burn", a:"Usher"},
-    {t:"Confessions Part II", a:"Usher"},{t:"DJ Got Us Fallin' in Love", a:"Usher"},{t:"OMG", a:"Usher"},
-    {t:"Hot in Herre", a:"Nelly"},{t:"Dilemma", a:"Nelly"},{t:"Drops of Jupiter", a:"Train"},
-    {t:"Hey, Soul Sister", a:"Train"},{t:"Drive By", a:"Train"},{t:"Hey There Delilah", a:"Plain White T's"},
-    {t:"Apologize", a:"OneRepublic"},{t:"Counting Stars", a:"OneRepublic"},{t:"Good Life", a:"OneRepublic"},
-    {t:"Bleeding Love", a:"Leona Lewis"},{t:"Big Girls Don't Cry", a:"Fergie"},{t:"London Bridge", a:"Fergie"},
-    {t:"Glamorous", a:"Fergie"},{t:"SexyBack", a:"Justin Timberlake"},
-    {t:"Cry Me a River", a:"Justin Timberlake"},{t:"Mirrors", a:"Justin Timberlake"},
-    {t:"Suit & Tie", a:"Justin Timberlake"},{t:"Can't Stop the Feeling!", a:"Justin Timberlake"},
-    {t:"Rock Your Body", a:"Justin Timberlake"},{t:"American Idiot", a:"Green Day"},
-    {t:"Boulevard of Broken Dreams", a:"Green Day"},{t:"Wake Me Up When September Ends", a:"Green Day"},
-    {t:"21 Guns", a:"Green Day"},{t:"Clocks", a:"Coldplay"},{t:"Viva la Vida", a:"Coldplay"},
-    {t:"Yellow", a:"Coldplay"},{t:"Fix You", a:"Coldplay"},{t:"The Scientist", a:"Coldplay"},
-    {t:"Paradise", a:"Coldplay"},{t:"A Sky Full of Stars", a:"Coldplay"},{t:"Chasing Cars", a:"Snow Patrol"},
-    {t:"Beautiful Day", a:"U2"},{t:"Vertigo", a:"U2"},{t:"Rolling in the Deep", a:"Adele"},
-    {t:"Someone Like You", a:"Adele"},{t:"Hello", a:"Adele"},{t:"Set Fire to the Rain", a:"Adele"},
-    {t:"Skyfall", a:"Adele"},{t:"Easy On Me", a:"Adele"},{t:"Chasing Pavements", a:"Adele"},
-    {t:"When We Were Young", a:"Adele"},{t:"Firework", a:"Katy Perry"},{t:"Roar", a:"Katy Perry"},
-    {t:"Teenage Dream", a:"Katy Perry"},{t:"California Gurls", a:"Katy Perry"},{t:"Dark Horse", a:"Katy Perry"},
-    {t:"I Kissed a Girl", a:"Katy Perry"},{t:"Hot N Cold", a:"Katy Perry"},
-    {t:"Last Friday Night", a:"Katy Perry"},{t:"E.T.", a:"Katy Perry"},{t:"Wide Awake", a:"Katy Perry"},
-    {t:"Shake It Off", a:"Taylor Swift"},{t:"Blank Space", a:"Taylor Swift"},{t:"Bad Blood", a:"Taylor Swift"},
-    {t:"You Belong with Me", a:"Taylor Swift"},{t:"Love Story", a:"Taylor Swift"},{t:"22", a:"Taylor Swift"},
-    {t:"Wildest Dreams", a:"Taylor Swift"},{t:"Style", a:"Taylor Swift"},
-    {t:"Look What You Made Me Do", a:"Taylor Swift"},{t:"Delicate", a:"Taylor Swift"},
-    {t:"Lover", a:"Taylor Swift"},{t:"ME!", a:"Taylor Swift"},{t:"Anti-Hero", a:"Taylor Swift"},
-    {t:"Cruel Summer", a:"Taylor Swift"},{t:"Lavender Haze", a:"Taylor Swift"},{t:"Cardigan", a:"Taylor Swift"},
-    {t:"Willow", a:"Taylor Swift"},{t:"Happy", a:"Pharrell Williams"},{t:"Get Lucky", a:"Daft Punk"},
-    {t:"Uptown Funk", a:"Mark Ronson"},{t:"Just the Way You Are", a:"Bruno Mars"},
-    {t:"Grenade", a:"Bruno Mars"},{t:"Locked Out of Heaven", a:"Bruno Mars"},{t:"24K Magic", a:"Bruno Mars"},
-    {t:"That's What I Like", a:"Bruno Mars"},{t:"Treasure", a:"Bruno Mars"},
-    {t:"When I Was Your Man", a:"Bruno Mars"},{t:"Marry You", a:"Bruno Mars"},
-    {t:"The Lazy Song", a:"Bruno Mars"},{t:"Call Me Maybe", a:"Carly Rae Jepsen"},
-    {t:"I Really Like You", a:"Carly Rae Jepsen"},{t:"Royals", a:"Lorde"},{t:"Team", a:"Lorde"},
-    {t:"Stay With Me", a:"Sam Smith"},{t:"Too Good at Goodbyes", a:"Sam Smith"},
-    {t:"Thinking Out Loud", a:"Ed Sheeran"},{t:"Shape of You", a:"Ed Sheeran"},
-    {t:"Perfect", a:"Ed Sheeran"},{t:"Photograph", a:"Ed Sheeran"},{t:"Castle on the Hill", a:"Ed Sheeran"},
-    {t:"Bad Habits", a:"Ed Sheeran"},{t:"Shivers", a:"Ed Sheeran"},{t:"Despacito", a:"Luis Fonsi"},
-    {t:"Sorry", a:"Justin Bieber"},{t:"Love Yourself", a:"Justin Bieber"},
-    {t:"What Do You Mean?", a:"Justin Bieber"},{t:"Baby", a:"Justin Bieber"},{t:"Peaches", a:"Justin Bieber"},
-    {t:"Stay", a:"The Kid LAROI"},{t:"Dance Monkey", a:"Tones and I"},{t:"Old Town Road", a:"Lil Nas X"},
-    {t:"Industry Baby", a:"Lil Nas X"},{t:"Montero (Call Me By Your Name)", a:"Lil Nas X"},
-    {t:"Bad Guy", a:"Billie Eilish"},{t:"Lovely", a:"Billie Eilish"},
-    {t:"When the Party's Over", a:"Billie Eilish"},{t:"Happier Than Ever", a:"Billie Eilish"},
-    {t:"What Was I Made For?", a:"Billie Eilish"},{t:"Sunflower", a:"Post Malone"},
-    {t:"Circles", a:"Post Malone"},{t:"Better Now", a:"Post Malone"},{t:"Rockstar", a:"Post Malone"},
-    {t:"Closer", a:"The Chainsmokers"},{t:"Something Just Like This", a:"The Chainsmokers"},
-    {t:"Don't Let Me Down", a:"The Chainsmokers"},{t:"Rather Be", a:"Clean Bandit"},
-    {t:"Cheap Thrills", a:"Sia"},{t:"Chandelier", a:"Sia"},{t:"Elastic Heart", a:"Sia"},
-    {t:"Titanium", a:"David Guetta"},{t:"Wake Me Up", a:"Avicii"},{t:"Levels", a:"Avicii"},
-    {t:"Hey Brother", a:"Avicii"},{t:"Pumped Up Kicks", a:"Foster the People"},
-    {t:"Some Nights", a:"fun."},{t:"We Are Young", a:"fun."},{t:"Ho Hey", a:"The Lumineers"},
-    {t:"Riptide", a:"Vance Joy"},{t:"Lights", a:"Ellie Goulding"},{t:"Burn", a:"Ellie Goulding"},
-    {t:"Love Me Like You Do", a:"Ellie Goulding"},{t:"Levitating", a:"Dua Lipa"},
-    {t:"Don't Start Now", a:"Dua Lipa"},{t:"New Rules", a:"Dua Lipa"},{t:"IDGAF", a:"Dua Lipa"},
-    {t:"Physical", a:"Dua Lipa"},{t:"Houdini", a:"Dua Lipa"},{t:"7 Rings", a:"Ariana Grande"},
-    {t:"thank u, next", a:"Ariana Grande"},{t:"Side to Side", a:"Ariana Grande"},
-    {t:"Problem", a:"Ariana Grande"},{t:"No Tears Left to Cry", a:"Ariana Grande"},
-    {t:"Break Free", a:"Ariana Grande"},{t:"Bang Bang", a:"Jessie J"},
-    {t:"Blinding Lights", a:"The Weeknd"},{t:"Can't Feel My Face", a:"The Weeknd"},
-    {t:"Starboy", a:"The Weeknd"},{t:"The Hills", a:"The Weeknd"},{t:"Save Your Tears", a:"The Weeknd"},
-    {t:"Watermelon Sugar", a:"Harry Styles"},{t:"Adore You", a:"Harry Styles"},
-    {t:"Sign of the Times", a:"Harry Styles"},{t:"As It Was", a:"Harry Styles"},
-    {t:"Memories", a:"Maroon 5"},{t:"Sugar", a:"Maroon 5"},{t:"Moves Like Jagger", a:"Maroon 5"},
-    {t:"Girls Like You", a:"Maroon 5"},{t:"Payphone", a:"Maroon 5"},{t:"This Love", a:"Maroon 5"},
-    {t:"She Will Be Loved", a:"Maroon 5"},{t:"Drivers License", a:"Olivia Rodrigo"},
-    {t:"Good 4 U", a:"Olivia Rodrigo"},{t:"Vampire", a:"Olivia Rodrigo"},
-    {t:"Deja Vu", a:"Olivia Rodrigo"},{t:"Flowers", a:"Miley Cyrus"},{t:"Wrecking Ball", a:"Miley Cyrus"},
-    {t:"Party in the U.S.A.", a:"Miley Cyrus"},{t:"Espresso", a:"Sabrina Carpenter"},
-    {t:"Please Please Please", a:"Sabrina Carpenter"},{t:"Heat Waves", a:"Glass Animals"},
-    {t:"Kill Bill", a:"SZA"},{t:"Snooze", a:"SZA"},{t:"Unholy", a:"Sam Smith"},
-    {t:"About Damn Time", a:"Lizzo"},{t:"Good as Hell", a:"Lizzo"},{t:"Truth Hurts", a:"Lizzo"},
-    {t:"Calm Down", a:"Rema"},{t:"I'm Good (Blue)", a:"David Guetta"},{t:"Greedy", a:"Tate McRae"},
-    {t:"Paint The Town Red", a:"Doja Cat"},{t:"Say So", a:"Doja Cat"},{t:"Woman", a:"Doja Cat"},
-    {t:"Texas Hold 'Em", a:"Beyoncé"},{t:"Murder On The Dancefloor", a:"Sophie Ellis-Bextor"},
-    {t:"Crazy", a:"Gnarls Barkley"},{t:"Empire State of Mind", a:"Jay-Z"},
-    {t:"Gold Digger", a:"Kanye West"},{t:"Stronger", a:"Kanye West"},{t:"Heartless", a:"Kanye West"},
-    {t:"Praying", a:"Kesha"},{t:"Tik Tok", a:"Kesha"},{t:"Die Young", a:"Kesha"},
-    {t:"Demons", a:"Imagine Dragons"},{t:"Radioactive", a:"Imagine Dragons"},
-    {t:"Believer", a:"Imagine Dragons"},{t:"Thunder", a:"Imagine Dragons"},
-    {t:"Whatever It Takes", a:"Imagine Dragons"},{t:"It's Time", a:"Imagine Dragons"},
-  ],
-  david: [
-    {t:"Hey Jude", a:"The Beatles"},{t:"Let It Be", a:"The Beatles"},{t:"Yesterday", a:"The Beatles"},
-    {t:"Here Comes the Sun", a:"The Beatles"},{t:"Come Together", a:"The Beatles"},{t:"Help!", a:"The Beatles"},
-    {t:"I Want to Hold Your Hand", a:"The Beatles"},{t:"A Hard Day's Night", a:"The Beatles"},
-    {t:"Something", a:"The Beatles"},{t:"Twist and Shout", a:"The Beatles"},
-    {t:"Strawberry Fields Forever", a:"The Beatles"},{t:"Penny Lane", a:"The Beatles"},
-    {t:"Imagine", a:"John Lennon"},{t:"My Girl", a:"The Temptations"},
-    {t:"Papa Was a Rollin' Stone", a:"The Temptations"},{t:"Ain't Too Proud to Beg", a:"The Temptations"},
-    {t:"I Heard It Through the Grapevine", a:"Marvin Gaye"},{t:"What's Going On", a:"Marvin Gaye"},
-    {t:"Let's Get It On", a:"Marvin Gaye"},{t:"Sexual Healing", a:"Marvin Gaye"},
-    {t:"How Sweet It Is (To Be Loved by You)", a:"Marvin Gaye"},{t:"Stand by Me", a:"Ben E. King"},
-    {t:"You've Lost That Lovin' Feelin'", a:"The Righteous Brothers"},
-    {t:"Unchained Melody", a:"The Righteous Brothers"},{t:"California Dreamin'", a:"The Mamas & The Papas"},
-    {t:"Good Vibrations", a:"The Beach Boys"},{t:"Wouldn't It Be Nice", a:"The Beach Boys"},
-    {t:"Surfin' U.S.A.", a:"The Beach Boys"},{t:"Help Me, Rhonda", a:"The Beach Boys"},
-    {t:"I Get Around", a:"The Beach Boys"},{t:"Kokomo", a:"The Beach Boys"},
-    {t:"Hotel California", a:"Eagles"},{t:"Take It Easy", a:"Eagles"},{t:"Desperado", a:"Eagles"},
-    {t:"Lyin' Eyes", a:"Eagles"},{t:"One of These Nights", a:"Eagles"},
-    {t:"Take It to the Limit", a:"Eagles"},{t:"New Kid in Town", a:"Eagles"},
-    {t:"Stairway to Heaven", a:"Led Zeppelin"},{t:"Whole Lotta Love", a:"Led Zeppelin"},
-    {t:"Black Dog", a:"Led Zeppelin"},{t:"Kashmir", a:"Led Zeppelin"},
-    {t:"Rocket Man", a:"Elton John"},{t:"Tiny Dancer", a:"Elton John"},
-    {t:"Crocodile Rock", a:"Elton John"},{t:"Your Song", a:"Elton John"},
-    {t:"Goodbye Yellow Brick Road", a:"Elton John"},{t:"Don't Let the Sun Go Down on Me", a:"Elton John"},
-    {t:"Bennie and the Jets", a:"Elton John"},{t:"I'm Still Standing", a:"Elton John"},
-    {t:"Sacrifice", a:"Elton John"},{t:"Candle in the Wind", a:"Elton John"},
-    {t:"Saturday Night's Alright for Fighting", a:"Elton John"},{t:"Dancing Queen", a:"ABBA"},
-    {t:"Mamma Mia", a:"ABBA"},{t:"Take a Chance on Me", a:"ABBA"},{t:"Waterloo", a:"ABBA"},
-    {t:"The Winner Takes It All", a:"ABBA"},{t:"Knowing Me, Knowing You", a:"ABBA"},
-    {t:"Super Trouper", a:"ABBA"},{t:"Fernando", a:"ABBA"},{t:"Money, Money, Money", a:"ABBA"},
-    {t:"Stayin' Alive", a:"Bee Gees"},{t:"Night Fever", a:"Bee Gees"},
-    {t:"How Deep Is Your Love", a:"Bee Gees"},{t:"More Than a Woman", a:"Bee Gees"},
-    {t:"You Should Be Dancing", a:"Bee Gees"},{t:"Tragedy", a:"Bee Gees"},
-    {t:"I Will Survive", a:"Gloria Gaynor"},{t:"Don't Stop", a:"Fleetwood Mac"},
-    {t:"Go Your Own Way", a:"Fleetwood Mac"},{t:"Dreams", a:"Fleetwood Mac"},
-    {t:"Landslide", a:"Fleetwood Mac"},{t:"The Chain", a:"Fleetwood Mac"},
-    {t:"Rhiannon", a:"Fleetwood Mac"},{t:"Free Fallin'", a:"Tom Petty"},
-    {t:"American Girl", a:"Tom Petty"},{t:"I Won't Back Down", a:"Tom Petty"},
-    {t:"Refugee", a:"Tom Petty"},{t:"Learning to Fly", a:"Tom Petty"},
-    {t:"American Pie", a:"Don McLean"},{t:"Vincent", a:"Don McLean"},
-    {t:"Piano Man", a:"Billy Joel"},{t:"Uptown Girl", a:"Billy Joel"},
-    {t:"We Didn't Start the Fire", a:"Billy Joel"},{t:"Just the Way You Are", a:"Billy Joel"},
-    {t:"It's Still Rock and Roll to Me", a:"Billy Joel"},{t:"Tell Her About It", a:"Billy Joel"},
-    {t:"Only the Good Die Young", a:"Billy Joel"},{t:"Sweet Caroline", a:"Neil Diamond"},
-    {t:"Cracklin' Rosie", a:"Neil Diamond"},{t:"Song Sung Blue", a:"Neil Diamond"},
-    {t:"Brown Eyed Girl", a:"Van Morrison"},{t:"Moondance", a:"Van Morrison"},
-    {t:"Layla", a:"Eric Clapton"},{t:"Tears in Heaven", a:"Eric Clapton"},
-    {t:"Wonderful Tonight", a:"Eric Clapton"},{t:"Cocaine", a:"Eric Clapton"},
-    {t:"Change the World", a:"Eric Clapton"},{t:"(I Can't Get No) Satisfaction", a:"The Rolling Stones"},
-    {t:"Paint It Black", a:"The Rolling Stones"},{t:"Gimme Shelter", a:"The Rolling Stones"},
-    {t:"Sympathy for the Devil", a:"The Rolling Stones"},{t:"Brown Sugar", a:"The Rolling Stones"},
-    {t:"Start Me Up", a:"The Rolling Stones"},{t:"Angie", a:"The Rolling Stones"},
-    {t:"Wild Horses", a:"The Rolling Stones"},
-    {t:"You Can't Always Get What You Want", a:"The Rolling Stones"},
-    {t:"Honky Tonk Women", a:"The Rolling Stones"},{t:"Blowin' in the Wind", a:"Bob Dylan"},
-    {t:"The Times They Are a-Changin'", a:"Bob Dylan"},{t:"Like a Rolling Stone", a:"Bob Dylan"},
-    {t:"Knockin' on Heaven's Door", a:"Bob Dylan"},{t:"Mr. Tambourine Man", a:"Bob Dylan"},
-    {t:"The Sound of Silence", a:"Simon & Garfunkel"},{t:"Bridge Over Troubled Water", a:"Simon & Garfunkel"},
-    {t:"Mrs. Robinson", a:"Simon & Garfunkel"},{t:"Cecilia", a:"Simon & Garfunkel"},
-    {t:"Scarborough Fair", a:"Simon & Garfunkel"},{t:"You Can Call Me Al", a:"Paul Simon"},
-    {t:"Graceland", a:"Paul Simon"},{t:"50 Ways to Leave Your Lover", a:"Paul Simon"},
-    {t:"Light My Fire", a:"The Doors"},{t:"Riders on the Storm", a:"The Doors"},
-    {t:"Break On Through (To the Other Side)", a:"The Doors"},{t:"Hello, I Love You", a:"The Doors"},
-    {t:"L.A. Woman", a:"The Doors"},{t:"Hey Joe", a:"Jimi Hendrix"},
-    {t:"Purple Haze", a:"Jimi Hendrix"},{t:"All Along the Watchtower", a:"Jimi Hendrix"},
-    {t:"Voodoo Child", a:"Jimi Hendrix"},{t:"I Got You Babe", a:"Sonny & Cher"},
-    {t:"Respect", a:"Aretha Franklin"},
-    {t:"(You Make Me Feel Like) A Natural Woman", a:"Aretha Franklin"},{t:"Think", a:"Aretha Franklin"},
-    {t:"Chain of Fools", a:"Aretha Franklin"},{t:"I Say a Little Prayer", a:"Aretha Franklin"},
-    {t:"What a Wonderful World", a:"Louis Armstrong"},{t:"Crazy", a:"Patsy Cline"},
-    {t:"I Walk the Line", a:"Johnny Cash"},{t:"Ring of Fire", a:"Johnny Cash"},
-    {t:"Folsom Prison Blues", a:"Johnny Cash"},{t:"Suspicious Minds", a:"Elvis Presley"},
-    {t:"Jailhouse Rock", a:"Elvis Presley"},{t:"Hound Dog", a:"Elvis Presley"},
-    {t:"Heartbreak Hotel", a:"Elvis Presley"},{t:"Can't Help Falling in Love", a:"Elvis Presley"},
-    {t:"Love Me Tender", a:"Elvis Presley"},{t:"In the Ghetto", a:"Elvis Presley"},
-    {t:"Always on My Mind", a:"Elvis Presley"},{t:"Burning Love", a:"Elvis Presley"},
-    {t:"Don't Be Cruel", a:"Elvis Presley"},{t:"Pretty Woman", a:"Roy Orbison"},
-    {t:"Crying", a:"Roy Orbison"},{t:"Only the Lonely", a:"Roy Orbison"},
-    {t:"Hit the Road Jack", a:"Ray Charles"},{t:"Georgia on My Mind", a:"Ray Charles"},
-    {t:"I Can't Stop Loving You", a:"Ray Charles"},{t:"What'd I Say", a:"Ray Charles"},
-    {t:"Billie Jean", a:"Michael Jackson"},{t:"Beat It", a:"Michael Jackson"},
-    {t:"Thriller", a:"Michael Jackson"},{t:"Smooth Criminal", a:"Michael Jackson"},
-    {t:"Man in the Mirror", a:"Michael Jackson"},{t:"Bad", a:"Michael Jackson"},
-    {t:"Black or White", a:"Michael Jackson"},{t:"Like a Virgin", a:"Madonna"},
-    {t:"Like a Prayer", a:"Madonna"},{t:"Material Girl", a:"Madonna"},
-    {t:"Vogue", a:"Madonna"},{t:"Holiday", a:"Madonna"},{t:"Take On Me", a:"a-ha"},
-    {t:"Don't Stop Believin'", a:"Journey"},{t:"Open Arms", a:"Journey"},
-    {t:"Faithfully", a:"Journey"},{t:"Sweet Dreams (Are Made of This)", a:"Eurythmics"},
-    {t:"Girls Just Want to Have Fun", a:"Cyndi Lauper"},{t:"Time After Time", a:"Cyndi Lauper"},
-    {t:"Every Breath You Take", a:"The Police"},{t:"Roxanne", a:"The Police"},
-    {t:"Livin' on a Prayer", a:"Bon Jovi"},{t:"Wanted Dead or Alive", a:"Bon Jovi"},
-    {t:"Careless Whisper", a:"George Michael"},{t:"Faith", a:"George Michael"},
-    {t:"I Wanna Dance with Somebody", a:"Whitney Houston"},{t:"How Will I Know", a:"Whitney Houston"},
-    {t:"I Will Always Love You", a:"Whitney Houston"},{t:"Greatest Love of All", a:"Whitney Houston"},
-    {t:"Africa", a:"Toto"},{t:"Total Eclipse of the Heart", a:"Bonnie Tyler"},
-    {t:"What's Love Got to Do with It", a:"Tina Turner"},{t:"Eye of the Tiger", a:"Survivor"},
-    {t:"Karma Chameleon", a:"Culture Club"},{t:"Footloose", a:"Kenny Loggins"},
-    {t:"Walking on Sunshine", a:"Katrina and the Waves"},{t:"With or Without You", a:"U2"},
-    {t:"One", a:"U2"},{t:"Born in the U.S.A.", a:"Bruce Springsteen"},
-    {t:"Dancing in the Dark", a:"Bruce Springsteen"},{t:"Born to Run", a:"Bruce Springsteen"},
-    {t:"Glory Days", a:"Bruce Springsteen"},{t:"Purple Rain", a:"Prince"},
-    {t:"When Doves Cry", a:"Prince"},{t:"Kiss", a:"Prince"},{t:"1999", a:"Prince"},
-    {t:"Hungry Like the Wolf", a:"Duran Duran"},{t:"Don't You (Forget About Me)", a:"Simple Minds"},
-    {t:"Sweet Child o' Mine", a:"Guns N' Roses"},{t:"November Rain", a:"Guns N' Roses"},
-    {t:"Welcome to the Jungle", a:"Guns N' Roses"},{t:"Bohemian Rhapsody", a:"Queen"},
-    {t:"We Will Rock You", a:"Queen"},{t:"We Are the Champions", a:"Queen"},
+    {t:"Every Rose Has Its Thorn", a:"Poison"},
     {t:"Don't Stop Me Now", a:"Queen"},{t:"Another One Bites the Dust", a:"Queen"},
-    {t:"Under Pressure", a:"Queen"},{t:"Crazy Little Thing Called Love", a:"Queen"},
+    {t:"Under Pressure", a:"Queen"},{t:"Radio Ga Ga", a:"Queen"},
+    {t:"I Want to Break Free", a:"Queen"},{t:"Crazy Little Thing Called Love", a:"Queen"},
+    {t:"You're the Inspiration", a:"Chicago"},{t:"Hard to Say I'm Sorry", a:"Chicago"},
+    {t:"Hopelessly Devoted to You", a:"Olivia Newton-John"},{t:"Physical", a:"Olivia Newton-John"},
+    {t:"Bette Davis Eyes", a:"Kim Carnes"},
+    {t:"Endless Love", a:"Lionel Richie"},{t:"All Night Long", a:"Lionel Richie"},
+    {t:"Hello", a:"Lionel Richie"},{t:"Say You, Say Me", a:"Lionel Richie"},
+    {t:"Dancing on the Ceiling", a:"Lionel Richie"},
+    // 90s
+    {t:"Wannabe", a:"Spice Girls"},{t:"Say You'll Be There", a:"Spice Girls"},
     {t:"Smells Like Teen Spirit", a:"Nirvana"},{t:"Come As You Are", a:"Nirvana"},
     {t:"Heart-Shaped Box", a:"Nirvana"},{t:"In Bloom", a:"Nirvana"},
     {t:"Black", a:"Pearl Jam"},{t:"Alive", a:"Pearl Jam"},{t:"Jeremy", a:"Pearl Jam"},
-    {t:"Even Flow", a:"Pearl Jam"},{t:"Losing My Religion", a:"R.E.M."},
-    {t:"Everybody Hurts", a:"R.E.M."},{t:"Man on the Moon", a:"R.E.M."},
-    {t:"It's the End of the World as We Know It", a:"R.E.M."},
+    {t:"Even Flow", a:"Pearl Jam"},
+    {t:"Losing My Religion", a:"R.E.M."},{t:"Everybody Hurts", a:"R.E.M."},
+    {t:"Man on the Moon", a:"R.E.M."},
     {t:"Wonderwall", a:"Oasis"},{t:"Don't Look Back in Anger", a:"Oasis"},
     {t:"Champagne Supernova", a:"Oasis"},{t:"Live Forever", a:"Oasis"},
     {t:"Ironic", a:"Alanis Morissette"},{t:"You Oughta Know", a:"Alanis Morissette"},
-    {t:"Hand in My Pocket", a:"Alanis Morissette"},{t:"Zombie", a:"The Cranberries"},
-    {t:"Linger", a:"The Cranberries"},{t:"Dreams", a:"The Cranberries"},
+    {t:"Hand in My Pocket", a:"Alanis Morissette"},
+    {t:"Zombie", a:"The Cranberries"},{t:"Linger", a:"The Cranberries"},
+    {t:"Dreams", a:"The Cranberries"},
     {t:"Don't Speak", a:"No Doubt"},{t:"Just a Girl", a:"No Doubt"},
     {t:"My Heart Will Go On", a:"Celine Dion"},{t:"Because You Loved Me", a:"Celine Dion"},
     {t:"It's All Coming Back to Me Now", a:"Celine Dion"},{t:"The Power of Love", a:"Celine Dion"},
-    {t:"All by Myself", a:"Celine Dion"},{t:"Vision of Love", a:"Mariah Carey"},
-    {t:"Hero", a:"Mariah Carey"},{t:"Fantasy", a:"Mariah Carey"},
-    {t:"Always Be My Baby", a:"Mariah Carey"},{t:"All I Want for Christmas Is You", a:"Mariah Carey"},
-    {t:"One Sweet Day", a:"Mariah Carey"},{t:"Wannabe", a:"Spice Girls"},
-    {t:"Say You'll Be There", a:"Spice Girls"},{t:"Spice Up Your Life", a:"Spice Girls"},
+    {t:"Vision of Love", a:"Mariah Carey"},{t:"Hero", a:"Mariah Carey"},
+    {t:"Fantasy", a:"Mariah Carey"},{t:"Always Be My Baby", a:"Mariah Carey"},
+    {t:"All I Want for Christmas Is You", a:"Mariah Carey"},{t:"One Sweet Day", a:"Mariah Carey"},
+    {t:"...Baby One More Time", a:"Britney Spears"},{t:"Sometimes", a:"Britney Spears"},
+    {t:"I Want It That Way", a:"Backstreet Boys"},{t:"Everybody (Backstreet's Back)", a:"Backstreet Boys"},
+    {t:"Quit Playing Games (with My Heart)", a:"Backstreet Boys"},
+    {t:"As Long as You Love Me", a:"Backstreet Boys"},{t:"Larger Than Life", a:"Backstreet Boys"},
+    {t:"Tearin' Up My Heart", a:"NSYNC"},
     {t:"Smooth", a:"Santana"},{t:"Maria Maria", a:"Santana"},
-    {t:"Livin' La Vida Loca", a:"Ricky Martin"},{t:"She Bangs", a:"Ricky Martin"},
-    {t:"MMMBop", a:"Hanson"},{t:"Believe", a:"Cher"},{t:"Strong Enough", a:"Cher"},
-    {t:"If I Could Turn Back Time", a:"Cher"},{t:"Torn", a:"Natalie Imbruglia"},
-    {t:"No Scrubs", a:"TLC"},{t:"Waterfalls", a:"TLC"},{t:"Lovefool", a:"The Cardigans"},
+    {t:"Livin' La Vida Loca", a:"Ricky Martin"},
+    {t:"MMMBop", a:"Hanson"},{t:"Believe", a:"Cher"},{t:"If I Could Turn Back Time", a:"Cher"},
+    {t:"Torn", a:"Natalie Imbruglia"},
+    {t:"No Scrubs", a:"TLC"},{t:"Waterfalls", a:"TLC"},
+    {t:"Lovefool", a:"The Cardigans"},
+    {t:"Tubthumping", a:"Chumbawamba"},{t:"What's Up?", a:"4 Non Blondes"},
+    {t:"All Star", a:"Smash Mouth"},
+    {t:"Iris", a:"Goo Goo Dolls"},{t:"Name", a:"Goo Goo Dolls"},{t:"Slide", a:"Goo Goo Dolls"},
+    {t:"3 AM", a:"Matchbox 20"},{t:"Push", a:"Matchbox 20"},{t:"Real World", a:"Matchbox 20"},
+    {t:"How's It Going to Be", a:"Third Eye Blind"},{t:"Semi-Charmed Life", a:"Third Eye Blind"},
+    {t:"Jumper", a:"Third Eye Blind"},
+    {t:"You Were Meant for Me", a:"Jewel"},{t:"Foolish Games", a:"Jewel"},
+    {t:"Building a Mystery", a:"Sarah McLachlan"},{t:"Angel", a:"Sarah McLachlan"},
+    {t:"This Kiss", a:"Faith Hill"},{t:"Breathe", a:"Faith Hill"},
+    {t:"You're Still the One", a:"Shania Twain"},{t:"From This Moment On", a:"Shania Twain"},
+    {t:"Man! I Feel Like a Woman!", a:"Shania Twain"},
+    {t:"That Don't Impress Me Much", a:"Shania Twain"},
+    {t:"Truly Madly Deeply", a:"Savage Garden"},{t:"I Knew I Loved You", a:"Savage Garden"},
+    {t:"Un-Break My Heart", a:"Toni Braxton"},
+    {t:"Don't Let Go (Love)", a:"En Vogue"},
+    {t:"Killing Me Softly", a:"Fugees"},{t:"Ready or Not", a:"Fugees"},
+    {t:"Doo Wop (That Thing)", a:"Lauryn Hill"},
     {t:"Black Velvet", a:"Alannah Myles"},{t:"Nothing Compares 2 U", a:"Sinéad O'Connor"},
-    {t:"Mambo No. 5", a:"Lou Bega"},{t:"Macarena", a:"Los del Río"},
-    {t:"Barbie Girl", a:"Aqua"},{t:"Tubthumping", a:"Chumbawamba"},
-    {t:"What's Up?", a:"4 Non Blondes"},{t:"All Star", a:"Smash Mouth"},{t:"I'm Yours", a:"Jason Mraz"},
-  ],
-  grace: [
-    {t:"Anak", a:"Freddie Aguilar"},{t:"Pare Ko", a:"Eraserheads"},{t:"Ang Huling El Bimbo", a:"Eraserheads"},
+    {t:"Mambo No. 5", a:"Lou Bega"},{t:"Macarena", a:"Los del Río"},{t:"Barbie Girl", a:"Aqua"},
+    {t:"Heaven Is a Place on Earth", a:"Belinda Carlisle"},
+    {t:"Manic Monday", a:"The Bangles"},{t:"Walk Like an Egyptian", a:"The Bangles"},
+    {t:"Eternal Flame", a:"The Bangles"},
+    {t:"I'll Be There for You", a:"The Rembrandts"},
+    {t:"Pinoy 80s/90s anchors:", a:"placeholder"}, // will be filtered
+    {t:"Pare Ko", a:"Eraserheads"},{t:"Ang Huling El Bimbo", a:"Eraserheads"},
     {t:"With a Smile", a:"Eraserheads"},{t:"Alapaap", a:"Eraserheads"},{t:"Magasin", a:"Eraserheads"},
     {t:"Spoliarium", a:"Eraserheads"},{t:"Toyang", a:"Eraserheads"},{t:"Ligaya", a:"Eraserheads"},
-    {t:"Overdrive", a:"Eraserheads"},{t:"Tindahan ni Aling Nena", a:"Eraserheads"},
-    {t:"Huwag Mo Nang Itanong", a:"Eraserheads"},{t:"Kaleidoscope World", a:"Francis Magalona"},
-    {t:"Mga Kababayan", a:"Francis Magalona"},{t:"Ako Ay Pilipino", a:"Francis Magalona"},
     {t:"Awit ng Kabataan", a:"Rivermaya"},{t:"Hinahanap-Hanap Kita", a:"Rivermaya"},
     {t:"Ulan", a:"Rivermaya"},{t:"Kisapmata", a:"Rivermaya"},{t:"Elesi", a:"Rivermaya"},
-    {t:"214", a:"Rivermaya"},{t:"Noypi", a:"Bamboo"},{t:"Hallelujah", a:"Bamboo"},
-    {t:"Masaya", a:"Bamboo"},{t:"Tatsulok", a:"Bamboo"},{t:"Much Has Been Said", a:"Bamboo"},
-    {t:"Probinsyana", a:"Bamboo"},{t:"Pinoy Ako", a:"Orange and Lemons"},
-    {t:"Hanggang Kailan", a:"Orange and Lemons"},{t:"Heaven Knows (This Angel Has Flown)", a:"Orange and Lemons"},
-    {t:"Pagsamo", a:"Arthur Nery"},{t:"Binibini", a:"Zack Tabudlo"},{t:"Habang Buhay", a:"Zack Tabudlo"},
-    {t:"Pano", a:"Zack Tabudlo"},{t:"Mundo", a:"IV of Spades"},{t:"Hey Barbara", a:"IV of Spades"},
-    {t:"Take That Man", a:"IV of Spades"},{t:"Bawat Kaluluwa", a:"Cup of Joe"},
-    {t:"Tingin", a:"Cup of Joe"},{t:"Multo", a:"Cup of Joe"},
+    {t:"214", a:"Rivermaya"},
+    {t:"Anak", a:"Freddie Aguilar"},
+    {t:"Kaleidoscope World", a:"Francis Magalona"},
+    {t:"Mga Kababayan", a:"Francis Magalona"},
+    {t:"On the Wings of Love", a:"Regine Velasquez"},
+    {t:"Sana Maulit Muli", a:"Regine Velasquez"},
+    {t:"Forevermore", a:"Side A"},{t:"Tell Me", a:"Side A"},
+    {t:"Forever's Not Enough", a:"Sarah Geronimo"},
+    {t:"Kahit Kailan", a:"South Border"},{t:"Rainbow", a:"South Border"},
+  ],
+  "2000s": [
+    // 2000s+
+    {t:"Toxic", a:"Britney Spears"},{t:"Oops!... I Did It Again", a:"Britney Spears"},
+    {t:"I'm a Slave 4 U", a:"Britney Spears"},{t:"Gimme More", a:"Britney Spears"},
+    {t:"Womanizer", a:"Britney Spears"},{t:"Stronger", a:"Britney Spears"},
+    {t:"Crazy in Love", a:"Beyoncé"},{t:"Single Ladies (Put a Ring on It)", a:"Beyoncé"},
+    {t:"Halo", a:"Beyoncé"},{t:"Irreplaceable", a:"Beyoncé"},{t:"Drunk in Love", a:"Beyoncé"},
+    {t:"Formation", a:"Beyoncé"},{t:"Run the World (Girls)", a:"Beyoncé"},{t:"Love On Top", a:"Beyoncé"},
+    {t:"Hollaback Girl", a:"Gwen Stefani"},{t:"Cool", a:"Gwen Stefani"},
+    {t:"Hey Ya!", a:"OutKast"},{t:"Ms. Jackson", a:"OutKast"},
+    {t:"Since U Been Gone", a:"Kelly Clarkson"},{t:"Stronger (What Doesn't Kill You)", a:"Kelly Clarkson"},
+    {t:"Because of You", a:"Kelly Clarkson"},
+    {t:"Umbrella", a:"Rihanna"},{t:"Don't Stop the Music", a:"Rihanna"},
+    {t:"Disturbia", a:"Rihanna"},{t:"Take a Bow", a:"Rihanna"},
+    {t:"Only Girl (In the World)", a:"Rihanna"},{t:"We Found Love", a:"Rihanna"},
+    {t:"Diamonds", a:"Rihanna"},{t:"Rude Boy", a:"Rihanna"},{t:"S&M", a:"Rihanna"},
+    {t:"Stay", a:"Rihanna"},{t:"Work", a:"Rihanna"},
+    {t:"Bad Romance", a:"Lady Gaga"},{t:"Poker Face", a:"Lady Gaga"},{t:"Just Dance", a:"Lady Gaga"},
+    {t:"Paparazzi", a:"Lady Gaga"},{t:"Born This Way", a:"Lady Gaga"},{t:"Telephone", a:"Lady Gaga"},
+    {t:"Edge of Glory", a:"Lady Gaga"},{t:"Applause", a:"Lady Gaga"},{t:"Shallow", a:"Lady Gaga"},
+    {t:"Rain on Me", a:"Lady Gaga"},
+    {t:"I Gotta Feeling", a:"The Black Eyed Peas"},{t:"Boom Boom Pow", a:"The Black Eyed Peas"},
+    {t:"Where Is the Love?", a:"The Black Eyed Peas"},
+    {t:"Sk8er Boi", a:"Avril Lavigne"},{t:"Complicated", a:"Avril Lavigne"},
+    {t:"Girlfriend", a:"Avril Lavigne"},
+    {t:"In da Club", a:"50 Cent"},
+    {t:"Lose Yourself", a:"Eminem"},{t:"Without Me", a:"Eminem"},{t:"The Real Slim Shady", a:"Eminem"},
+    {t:"Stan", a:"Eminem"},{t:"Not Afraid", a:"Eminem"},{t:"Love the Way You Lie", a:"Eminem"},
+    {t:"Mr. Brightside", a:"The Killers"},{t:"Somebody Told Me", a:"The Killers"},
+    {t:"When You Were Young", a:"The Killers"},
+    {t:"Beautiful", a:"Christina Aguilera"},{t:"Ain't No Other Man", a:"Christina Aguilera"},
+    {t:"Dirrty", a:"Christina Aguilera"},{t:"Fighter", a:"Christina Aguilera"},
+    {t:"Hips Don't Lie", a:"Shakira"},{t:"Whenever, Wherever", a:"Shakira"},
+    {t:"Underneath Your Clothes", a:"Shakira"},
+    {t:"Waka Waka (This Time for Africa)", a:"Shakira"},
+    {t:"Yeah!", a:"Usher"},{t:"Burn", a:"Usher"},{t:"Confessions Part II", a:"Usher"},
+    {t:"DJ Got Us Fallin' in Love", a:"Usher"},{t:"OMG", a:"Usher"},
+    {t:"Hot in Herre", a:"Nelly"},{t:"Dilemma", a:"Nelly"},
+    {t:"Drops of Jupiter", a:"Train"},{t:"Hey, Soul Sister", a:"Train"},{t:"Drive By", a:"Train"},
+    {t:"Hey There Delilah", a:"Plain White T's"},
+    {t:"Apologize", a:"OneRepublic"},{t:"Counting Stars", a:"OneRepublic"},
+    {t:"Bleeding Love", a:"Leona Lewis"},
+    {t:"SexyBack", a:"Justin Timberlake"},{t:"Cry Me a River", a:"Justin Timberlake"},
+    {t:"Mirrors", a:"Justin Timberlake"},{t:"Suit & Tie", a:"Justin Timberlake"},
+    {t:"Can't Stop the Feeling!", a:"Justin Timberlake"},
+    {t:"American Idiot", a:"Green Day"},{t:"Boulevard of Broken Dreams", a:"Green Day"},
+    {t:"Wake Me Up When September Ends", a:"Green Day"},{t:"21 Guns", a:"Green Day"},
+    {t:"Clocks", a:"Coldplay"},{t:"Viva la Vida", a:"Coldplay"},{t:"Yellow", a:"Coldplay"},
+    {t:"Fix You", a:"Coldplay"},{t:"The Scientist", a:"Coldplay"},{t:"Paradise", a:"Coldplay"},
+    {t:"A Sky Full of Stars", a:"Coldplay"},
+    {t:"Chasing Cars", a:"Snow Patrol"},
+    {t:"Rolling in the Deep", a:"Adele"},{t:"Someone Like You", a:"Adele"},{t:"Hello", a:"Adele"},
+    {t:"Set Fire to the Rain", a:"Adele"},{t:"Skyfall", a:"Adele"},{t:"Easy On Me", a:"Adele"},
+    {t:"Chasing Pavements", a:"Adele"},{t:"When We Were Young", a:"Adele"},
+    {t:"Firework", a:"Katy Perry"},{t:"Roar", a:"Katy Perry"},{t:"Teenage Dream", a:"Katy Perry"},
+    {t:"California Gurls", a:"Katy Perry"},{t:"Dark Horse", a:"Katy Perry"},
+    {t:"I Kissed a Girl", a:"Katy Perry"},{t:"Hot N Cold", a:"Katy Perry"},
+    {t:"Last Friday Night", a:"Katy Perry"},{t:"E.T.", a:"Katy Perry"},
+    {t:"Shake It Off", a:"Taylor Swift"},{t:"Blank Space", a:"Taylor Swift"},
+    {t:"Bad Blood", a:"Taylor Swift"},{t:"You Belong with Me", a:"Taylor Swift"},
+    {t:"Love Story", a:"Taylor Swift"},{t:"22", a:"Taylor Swift"},
+    {t:"Wildest Dreams", a:"Taylor Swift"},{t:"Style", a:"Taylor Swift"},
+    {t:"Look What You Made Me Do", a:"Taylor Swift"},{t:"Delicate", a:"Taylor Swift"},
+    {t:"Lover", a:"Taylor Swift"},{t:"Anti-Hero", a:"Taylor Swift"},
+    {t:"Cruel Summer", a:"Taylor Swift"},{t:"Lavender Haze", a:"Taylor Swift"},
+    {t:"Cardigan", a:"Taylor Swift"},{t:"Willow", a:"Taylor Swift"},
+    {t:"Happy", a:"Pharrell Williams"},{t:"Get Lucky", a:"Daft Punk"},
+    {t:"Uptown Funk", a:"Mark Ronson"},
+    {t:"Just the Way You Are", a:"Bruno Mars"},{t:"Grenade", a:"Bruno Mars"},
+    {t:"Locked Out of Heaven", a:"Bruno Mars"},{t:"24K Magic", a:"Bruno Mars"},
+    {t:"That's What I Like", a:"Bruno Mars"},{t:"Treasure", a:"Bruno Mars"},
+    {t:"When I Was Your Man", a:"Bruno Mars"},{t:"Marry You", a:"Bruno Mars"},
+    {t:"The Lazy Song", a:"Bruno Mars"},
+    {t:"Call Me Maybe", a:"Carly Rae Jepsen"},
+    {t:"Royals", a:"Lorde"},{t:"Team", a:"Lorde"},
+    {t:"Stay With Me", a:"Sam Smith"},{t:"Too Good at Goodbyes", a:"Sam Smith"},
+    {t:"Thinking Out Loud", a:"Ed Sheeran"},{t:"Shape of You", a:"Ed Sheeran"},
+    {t:"Perfect", a:"Ed Sheeran"},{t:"Photograph", a:"Ed Sheeran"},
+    {t:"Castle on the Hill", a:"Ed Sheeran"},{t:"Bad Habits", a:"Ed Sheeran"},
+    {t:"Despacito", a:"Luis Fonsi"},
+    {t:"Sorry", a:"Justin Bieber"},{t:"Love Yourself", a:"Justin Bieber"},
+    {t:"What Do You Mean?", a:"Justin Bieber"},{t:"Baby", a:"Justin Bieber"},
+    {t:"Peaches", a:"Justin Bieber"},
+    {t:"Stay", a:"The Kid LAROI"},{t:"Dance Monkey", a:"Tones and I"},
+    {t:"Old Town Road", a:"Lil Nas X"},{t:"Industry Baby", a:"Lil Nas X"},
+    {t:"Bad Guy", a:"Billie Eilish"},{t:"Lovely", a:"Billie Eilish"},
+    {t:"Happier Than Ever", a:"Billie Eilish"},{t:"What Was I Made For?", a:"Billie Eilish"},
+    {t:"Sunflower", a:"Post Malone"},{t:"Circles", a:"Post Malone"},
+    {t:"Better Now", a:"Post Malone"},{t:"Rockstar", a:"Post Malone"},
+    {t:"Closer", a:"The Chainsmokers"},{t:"Something Just Like This", a:"The Chainsmokers"},
+    {t:"Don't Let Me Down", a:"The Chainsmokers"},
+    {t:"Cheap Thrills", a:"Sia"},{t:"Chandelier", a:"Sia"},
+    {t:"Titanium", a:"David Guetta"},{t:"Wake Me Up", a:"Avicii"},{t:"Levels", a:"Avicii"},
+    {t:"Pumped Up Kicks", a:"Foster the People"},
+    {t:"Some Nights", a:"fun."},{t:"We Are Young", a:"fun."},
+    {t:"Ho Hey", a:"The Lumineers"},{t:"Riptide", a:"Vance Joy"},
+    {t:"Lights", a:"Ellie Goulding"},{t:"Love Me Like You Do", a:"Ellie Goulding"},
+    {t:"Levitating", a:"Dua Lipa"},{t:"Don't Start Now", a:"Dua Lipa"},
+    {t:"New Rules", a:"Dua Lipa"},{t:"IDGAF", a:"Dua Lipa"},
+    {t:"Physical", a:"Dua Lipa"},{t:"Houdini", a:"Dua Lipa"},
+    {t:"7 Rings", a:"Ariana Grande"},{t:"thank u, next", a:"Ariana Grande"},
+    {t:"Side to Side", a:"Ariana Grande"},{t:"Problem", a:"Ariana Grande"},
+    {t:"No Tears Left to Cry", a:"Ariana Grande"},{t:"Break Free", a:"Ariana Grande"},
+    {t:"Blinding Lights", a:"The Weeknd"},{t:"Can't Feel My Face", a:"The Weeknd"},
+    {t:"Starboy", a:"The Weeknd"},{t:"The Hills", a:"The Weeknd"},
+    {t:"Save Your Tears", a:"The Weeknd"},
+    {t:"Watermelon Sugar", a:"Harry Styles"},{t:"Adore You", a:"Harry Styles"},
+    {t:"Sign of the Times", a:"Harry Styles"},{t:"As It Was", a:"Harry Styles"},
+    {t:"Memories", a:"Maroon 5"},{t:"Sugar", a:"Maroon 5"},
+    {t:"Moves Like Jagger", a:"Maroon 5"},{t:"Girls Like You", a:"Maroon 5"},
+    {t:"Payphone", a:"Maroon 5"},{t:"This Love", a:"Maroon 5"},
+    {t:"She Will Be Loved", a:"Maroon 5"},
+    {t:"Drivers License", a:"Olivia Rodrigo"},{t:"Good 4 U", a:"Olivia Rodrigo"},
+    {t:"Vampire", a:"Olivia Rodrigo"},{t:"Deja Vu", a:"Olivia Rodrigo"},
+    {t:"Flowers", a:"Miley Cyrus"},{t:"Wrecking Ball", a:"Miley Cyrus"},
+    {t:"Party in the U.S.A.", a:"Miley Cyrus"},
+    {t:"Espresso", a:"Sabrina Carpenter"},{t:"Please Please Please", a:"Sabrina Carpenter"},
+    {t:"Heat Waves", a:"Glass Animals"},
+    {t:"Kill Bill", a:"SZA"},{t:"Snooze", a:"SZA"},
+    {t:"Unholy", a:"Sam Smith"},
+    {t:"About Damn Time", a:"Lizzo"},{t:"Truth Hurts", a:"Lizzo"},
+    {t:"Calm Down", a:"Rema"},{t:"I'm Good (Blue)", a:"David Guetta"},
+    {t:"Greedy", a:"Tate McRae"},
+    {t:"Paint The Town Red", a:"Doja Cat"},{t:"Say So", a:"Doja Cat"},{t:"Woman", a:"Doja Cat"},
+    {t:"Texas Hold 'Em", a:"Beyoncé"},
+    {t:"Murder On The Dancefloor", a:"Sophie Ellis-Bextor"},
+    {t:"Crazy", a:"Gnarls Barkley"},{t:"Empire State of Mind", a:"Jay-Z"},
+    {t:"Gold Digger", a:"Kanye West"},{t:"Stronger", a:"Kanye West"},{t:"Heartless", a:"Kanye West"},
+    {t:"Tik Tok", a:"Kesha"},
+    {t:"Demons", a:"Imagine Dragons"},{t:"Radioactive", a:"Imagine Dragons"},
+    {t:"Believer", a:"Imagine Dragons"},{t:"Thunder", a:"Imagine Dragons"},
+    {t:"Whatever It Takes", a:"Imagine Dragons"},
+    // Pinoy 2000s+
+    {t:"Noypi", a:"Bamboo"},{t:"Hallelujah", a:"Bamboo"},{t:"Masaya", a:"Bamboo"},
+    {t:"Tatsulok", a:"Bamboo"},{t:"Probinsyana", a:"Bamboo"},
+    {t:"Pinoy Ako", a:"Orange and Lemons"},{t:"Hanggang Kailan", a:"Orange and Lemons"},
+    {t:"Heaven Knows (This Angel Has Flown)", a:"Orange and Lemons"},
+    {t:"Pagsamo", a:"Arthur Nery"},
+    {t:"Binibini", a:"Zack Tabudlo"},{t:"Habang Buhay", a:"Zack Tabudlo"},{t:"Pano", a:"Zack Tabudlo"},
+    {t:"Mundo", a:"IV of Spades"},{t:"Hey Barbara", a:"IV of Spades"},{t:"Take That Man", a:"IV of Spades"},
+    {t:"Bawat Kaluluwa", a:"Cup of Joe"},{t:"Tingin", a:"Cup of Joe"},{t:"Multo", a:"Cup of Joe"},
     {t:"Maybe the Night", a:"Ben&Ben"},{t:"Kathang Isip", a:"Ben&Ben"},{t:"Leaves", a:"Ben&Ben"},
     {t:"Pagtingin", a:"Ben&Ben"},{t:"Lifetime", a:"Ben&Ben"},{t:"Limasawa Street", a:"Ben&Ben"},
     {t:"Araw-Araw", a:"Ben&Ben"},{t:"Upuan", a:"Ben&Ben"},
-    {t:"Mahika", a:"TJ Monterde"},{t:"Dating Tayo", a:"TJ Monterde"},{t:"Tulad Mo", a:"TJ Monterde"},
+    {t:"Mahika", a:"TJ Monterde"},{t:"Dating Tayo", a:"TJ Monterde"},
     {t:"Ikaw at Ako", a:"Moira Dela Torre"},{t:"Tagpuan", a:"Moira Dela Torre"},
     {t:"Malaya", a:"Moira Dela Torre"},{t:"Paubaya", a:"Moira Dela Torre"},
     {t:"Patawad", a:"Moira Dela Torre"},{t:"Titibo-Tibo", a:"Moira Dela Torre"},
-    {t:"Bakit Ba Ikaw", a:"Moira Dela Torre"},{t:"Gento", a:"SB19"},{t:"MAPA", a:"SB19"},
-    {t:"Bazinga", a:"SB19"},{t:"What?", a:"SB19"},{t:"Go Up", a:"SB19"},
-    {t:"Ikaw Lamang", a:"Silent Sanctuary"},{t:"Sa'yo", a:"Silent Sanctuary"},
-    {t:"Hay Naku", a:"True Faith"},{t:"Perfect", a:"True Faith"},
-    {t:"Forevermore", a:"Side A"},{t:"Tell Me", a:"Side A"},{t:"Eva Marie", a:"Side A"},
-    {t:"Forever's Not Enough", a:"Sarah Geronimo"},{t:"Sa Iyo", a:"Sarah Geronimo"},
-    {t:"Tala", a:"Sarah Geronimo"},{t:"Kilometro", a:"Sarah Geronimo"},
-    {t:"How Could You Say You Love Me", a:"Sarah Geronimo"},
-    {t:"Ikaw", a:"Sharon Cuneta"},{t:"High School Life", a:"Sharon Cuneta"},
-    {t:"Bituing Walang Ningning", a:"Sharon Cuneta"},
-    {t:"On the Wings of Love", a:"Regine Velasquez"},{t:"Pangako", a:"Regine Velasquez"},
-    {t:"Reach Out", a:"Regine Velasquez"},{t:"Sana Maulit Muli", a:"Regine Velasquez"},
-    {t:"Narito Ako", a:"Regine Velasquez"},
-    {t:"Kahit Kailan", a:"South Border"},{t:"Rainbow", a:"South Border"},
-    {t:"Habang May Buhay", a:"South Border"},{t:"Hanggang", a:"Wency Cornejo"},
-    {t:"Tuyong Damo", a:"Asin"},{t:"Masdan Mo Ang Kapaligiran", a:"Asin"},
-    {t:"Kahit Konting Pagtingin", a:"APO Hiking Society"},{t:"Pumapatak ang Ulan", a:"APO Hiking Society"},
-    {t:"When I Met You", a:"APO Hiking Society"},{t:"Doo Bidoo", a:"APO Hiking Society"},
-    {t:"Mahirap Magmahal Ng Syota Ng Iba", a:"APO Hiking Society"},
-    {t:"Yakap sa Dilim", a:"Rico J. Puno"},{t:"The Way We Were", a:"Rico J. Puno"},
-    {t:"Buko", a:"Jireh Lim"},{t:"Magkabilang Mundo", a:"Jireh Lim"},
+    {t:"Gento", a:"SB19"},{t:"MAPA", a:"SB19"},{t:"Bazinga", a:"SB19"},
     {t:"Salamat", a:"Yeng Constantino"},{t:"Hawak Kamay", a:"Yeng Constantino"},
     {t:"Jeepney Love Story", a:"Yeng Constantino"},
     {t:"Pero Atik Ra", a:"Hev Abi"},{t:"Pasilyo", a:"SunKissed Lola"},
     {t:"Imahe", a:"Magnus Haven"},{t:"Migraine", a:"Moonstar88"},
     {t:"Torete", a:"Moonstar88"},{t:"Sundo", a:"Moonstar88"},
-    // Top hits grab-bag (deduped)
-    {t:"Everybody (Backstreet's Back)", a:"Backstreet Boys"},
-    {t:"Quit Playing Games (with My Heart)", a:"Backstreet Boys"},
-    {t:"As Long as You Love Me", a:"Backstreet Boys"},
-    {t:"Show Me the Meaning of Being Lonely", a:"Backstreet Boys"},
-    {t:"Larger Than Life", a:"Backstreet Boys"},
-    {t:"Tearin' Up My Heart", a:"NSYNC"},{t:"It's Gonna Be Me", a:"NSYNC"},
-    {t:"This I Promise You", a:"NSYNC"},{t:"Pop", a:"NSYNC"},
-    {t:"What a Girl Wants", a:"Christina Aguilera"},
-    {t:"Come On Over Baby", a:"Christina Aguilera"},
-    {t:"Sometimes", a:"Britney Spears"},
-    {t:"Saving All My Love for You", a:"Whitney Houston"},
-    {t:"Where Do Broken Hearts Go", a:"Whitney Houston"},
-    {t:"Run to You", a:"Whitney Houston"},
-    {t:"Without You", a:"Mariah Carey"},{t:"My All", a:"Mariah Carey"},
-    {t:"Honey", a:"Mariah Carey"},{t:"Emotions", a:"Mariah Carey"},
-    {t:"Dreamlover", a:"Mariah Carey"},
-    {t:"Beauty and the Beast", a:"Celine Dion"},
-    {t:"To Love You More", a:"Celine Dion"},{t:"Have You Ever Been in Love", a:"Celine Dion"},
-    {t:"That's the Way It Is", a:"Celine Dion"},{t:"A New Day Has Come", a:"Celine Dion"},
-    {t:"Truly Madly Deeply", a:"Savage Garden"},{t:"I Knew I Loved You", a:"Savage Garden"},
-    {t:"To the Moon and Back", a:"Savage Garden"},
-    {t:"How Do I Live", a:"LeAnn Rimes"},
-    {t:"Un-Break My Heart", a:"Toni Braxton"},{t:"You're Makin' Me High", a:"Toni Braxton"},
-    {t:"Breathe Again", a:"Toni Braxton"},{t:"Another Sad Love Song", a:"Toni Braxton"},
-    {t:"He Wasn't Man Enough", a:"Toni Braxton"},
-    {t:"Don't Let Go (Love)", a:"En Vogue"},{t:"Hold On", a:"En Vogue"},{t:"Free Your Mind", a:"En Vogue"},
-    {t:"Killing Me Softly", a:"Fugees"},{t:"Ready or Not", a:"Fugees"},
-    {t:"Doo Wop (That Thing)", a:"Lauryn Hill"},
-    {t:"Survivor", a:"Destiny's Child"},{t:"Independent Women, Pt. I", a:"Destiny's Child"},
-    {t:"Bootylicious", a:"Destiny's Child"},{t:"Lose My Breath", a:"Destiny's Child"},
-    {t:"Jumpin' Jumpin'", a:"Destiny's Child"},{t:"Bills, Bills, Bills", a:"Destiny's Child"},
-    {t:"Say My Name", a:"Destiny's Child"},
-    {t:"More Than Words", a:"Extreme"},{t:"To Be With You", a:"Mr. Big"},
-    {t:"Kiss from a Rose", a:"Seal"},
-    {t:"All for You", a:"Janet Jackson"},{t:"Together Again", a:"Janet Jackson"},
-    {t:"That's the Way Love Goes", a:"Janet Jackson"},{t:"Rhythm Nation", a:"Janet Jackson"},
-    {t:"Escapade", a:"Janet Jackson"},
-    {t:"Don't Wanna Lose You", a:"Gloria Estefan"},{t:"Coming Out of the Dark", a:"Gloria Estefan"},
-    {t:"Conga", a:"Gloria Estefan"},{t:"Rhythm Is Gonna Get You", a:"Gloria Estefan"},
-    {t:"Crazy for You", a:"Madonna"},{t:"Lucky Star", a:"Madonna"},
-    {t:"Open Your Heart", a:"Madonna"},{t:"Music", a:"Madonna"},
-    {t:"4 Minutes", a:"Madonna"},{t:"Hung Up", a:"Madonna"},
-    {t:"I Don't Want to Miss a Thing", a:"Aerosmith"},{t:"Crazy", a:"Aerosmith"},
-    {t:"Cryin'", a:"Aerosmith"},{t:"Dream On", a:"Aerosmith"},{t:"Walk This Way", a:"Aerosmith"},
-    {t:"Iris", a:"Goo Goo Dolls"},{t:"Name", a:"Goo Goo Dolls"},{t:"Slide", a:"Goo Goo Dolls"},
-    {t:"3 AM", a:"Matchbox 20"},{t:"Push", a:"Matchbox 20"},{t:"Real World", a:"Matchbox 20"},
-    {t:"Bent", a:"Matchbox 20"},{t:"If You're Gone", a:"Matchbox 20"},{t:"Unwell", a:"Matchbox 20"},
-    {t:"How's It Going to Be", a:"Third Eye Blind"},{t:"Semi-Charmed Life", a:"Third Eye Blind"},
-    {t:"Jumper", a:"Third Eye Blind"},
-    {t:"You Were Meant for Me", a:"Jewel"},{t:"Foolish Games", a:"Jewel"},
-    {t:"Who Will Save Your Soul", a:"Jewel"},{t:"Hands", a:"Jewel"},
-    {t:"Building a Mystery", a:"Sarah McLachlan"},{t:"Angel", a:"Sarah McLachlan"},
-    {t:"Adia", a:"Sarah McLachlan"},{t:"I Will Remember You", a:"Sarah McLachlan"},
-    {t:"This Kiss", a:"Faith Hill"},{t:"Breathe", a:"Faith Hill"},
-    {t:"There You'll Be", a:"Faith Hill"},{t:"The Way You Love Me", a:"Faith Hill"},
-    {t:"You're Still the One", a:"Shania Twain"},{t:"From This Moment On", a:"Shania Twain"},
-    {t:"Man! I Feel Like a Woman!", a:"Shania Twain"},{t:"That Don't Impress Me Much", a:"Shania Twain"},
-    {t:"Come On Over", a:"Shania Twain"},{t:"Any Man of Mine", a:"Shania Twain"},
-    {t:"Meet Virginia", a:"Train"},{t:"Calling All Angels", a:"Train"},
-    {t:"Have You Ever?", a:"Brandy"},{t:"The Boy Is Mine", a:"Brandy"},
-    {t:"Sittin' Up in My Room", a:"Brandy"},
-    {t:"Tell Me It's Real", a:"K-Ci & JoJo"},{t:"All My Life", a:"K-Ci & JoJo"},
+    {t:"Tala", a:"Sarah Geronimo"},{t:"Kilometro", a:"Sarah Geronimo"},
+    {t:"Bakit Ba Ikaw", a:"Moira Dela Torre"},
   ],
 };
 
-(function dedupGrace(){
+// Strip the placeholder marker from 80s90s
+POOLS["80s90s"] = POOLS["80s90s"].filter(s => s.a !== "placeholder");
+
+// Dedup each pool
+function dedupPool(p) {
   const seen = new Set();
   const stamp = s => (s.t.toLowerCase().trim() + "::" + s.a.toLowerCase().trim());
-  for (const m of ["jeff","amy","david"]) for (const s of POOLS[m]) seen.add(stamp(s));
-  POOLS.grace = POOLS.grace.filter(s => {
-    const k = stamp(s);
-    if (seen.has(k)) return false;
-    seen.add(k);
-    return true;
-  });
-})();
+  return p.filter(s => { const k = stamp(s); if (seen.has(k)) return false; seen.add(k); return true; });
+}
+POOLS["80s90s"] = dedupPool(POOLS["80s90s"]);
+POOLS["2000s"] = dedupPool(POOLS["2000s"]);
+
+/* ================================================================
+   FILLER POOL — large list of song titles for autocomplete only.
+   Never picked as the answer. Mixed eras and genres so the
+   dropdown doesn't spoil future answers.
+   ================================================================ */
+const FILLER_POOL = [
+  // Big hits across eras that aren't necessarily in answer pools
+  {t:"Hey Jude", a:"The Beatles"},{t:"Let It Be", a:"The Beatles"},{t:"Yesterday", a:"The Beatles"},
+  {t:"Here Comes the Sun", a:"The Beatles"},{t:"Come Together", a:"The Beatles"},
+  {t:"Something", a:"The Beatles"},{t:"Twist and Shout", a:"The Beatles"},
+  {t:"Strawberry Fields Forever", a:"The Beatles"},{t:"Penny Lane", a:"The Beatles"},
+  {t:"Help!", a:"The Beatles"},{t:"A Hard Day's Night", a:"The Beatles"},
+  {t:"Imagine", a:"John Lennon"},
+  {t:"My Girl", a:"The Temptations"},{t:"Papa Was a Rollin' Stone", a:"The Temptations"},
+  {t:"I Heard It Through the Grapevine", a:"Marvin Gaye"},{t:"What's Going On", a:"Marvin Gaye"},
+  {t:"Let's Get It On", a:"Marvin Gaye"},{t:"Sexual Healing", a:"Marvin Gaye"},
+  {t:"Stand by Me", a:"Ben E. King"},
+  {t:"Unchained Melody", a:"The Righteous Brothers"},
+  {t:"California Dreamin'", a:"The Mamas & The Papas"},
+  {t:"Good Vibrations", a:"The Beach Boys"},{t:"Wouldn't It Be Nice", a:"The Beach Boys"},
+  {t:"Surfin' U.S.A.", a:"The Beach Boys"},{t:"Kokomo", a:"The Beach Boys"},
+  {t:"Hotel California", a:"Eagles"},{t:"Take It Easy", a:"Eagles"},{t:"Desperado", a:"Eagles"},
+  {t:"Lyin' Eyes", a:"Eagles"},{t:"New Kid in Town", a:"Eagles"},
+  {t:"Stairway to Heaven", a:"Led Zeppelin"},{t:"Whole Lotta Love", a:"Led Zeppelin"},
+  {t:"Black Dog", a:"Led Zeppelin"},{t:"Kashmir", a:"Led Zeppelin"},
+  {t:"Rocket Man", a:"Elton John"},{t:"Tiny Dancer", a:"Elton John"},
+  {t:"Crocodile Rock", a:"Elton John"},{t:"Your Song", a:"Elton John"},
+  {t:"Goodbye Yellow Brick Road", a:"Elton John"},
+  {t:"Bennie and the Jets", a:"Elton John"},{t:"I'm Still Standing", a:"Elton John"},
+  {t:"Sacrifice", a:"Elton John"},{t:"Candle in the Wind", a:"Elton John"},
+  {t:"Dancing Queen", a:"ABBA"},{t:"Mamma Mia", a:"ABBA"},{t:"Take a Chance on Me", a:"ABBA"},
+  {t:"Waterloo", a:"ABBA"},{t:"The Winner Takes It All", a:"ABBA"},
+  {t:"Knowing Me, Knowing You", a:"ABBA"},{t:"Super Trouper", a:"ABBA"},
+  {t:"Fernando", a:"ABBA"},{t:"Money, Money, Money", a:"ABBA"},
+  {t:"Stayin' Alive", a:"Bee Gees"},{t:"Night Fever", a:"Bee Gees"},
+  {t:"How Deep Is Your Love", a:"Bee Gees"},{t:"More Than a Woman", a:"Bee Gees"},
+  {t:"You Should Be Dancing", a:"Bee Gees"},{t:"Tragedy", a:"Bee Gees"},
+  {t:"I Will Survive", a:"Gloria Gaynor"},
+  {t:"Don't Stop", a:"Fleetwood Mac"},{t:"Go Your Own Way", a:"Fleetwood Mac"},
+  {t:"Dreams", a:"Fleetwood Mac"},{t:"Landslide", a:"Fleetwood Mac"},
+  {t:"The Chain", a:"Fleetwood Mac"},{t:"Rhiannon", a:"Fleetwood Mac"},
+  {t:"Free Fallin'", a:"Tom Petty"},{t:"American Girl", a:"Tom Petty"},
+  {t:"I Won't Back Down", a:"Tom Petty"},{t:"Refugee", a:"Tom Petty"},
+  {t:"Learning to Fly", a:"Tom Petty"},
+  {t:"American Pie", a:"Don McLean"},{t:"Vincent", a:"Don McLean"},
+  {t:"Piano Man", a:"Billy Joel"},{t:"Uptown Girl", a:"Billy Joel"},
+  {t:"We Didn't Start the Fire", a:"Billy Joel"},{t:"Just the Way You Are", a:"Billy Joel"},
+  {t:"It's Still Rock and Roll to Me", a:"Billy Joel"},{t:"Tell Her About It", a:"Billy Joel"},
+  {t:"Only the Good Die Young", a:"Billy Joel"},
+  {t:"Sweet Caroline", a:"Neil Diamond"},{t:"Cracklin' Rosie", a:"Neil Diamond"},
+  {t:"Brown Eyed Girl", a:"Van Morrison"},{t:"Moondance", a:"Van Morrison"},
+  {t:"Layla", a:"Eric Clapton"},{t:"Tears in Heaven", a:"Eric Clapton"},
+  {t:"Wonderful Tonight", a:"Eric Clapton"},{t:"Cocaine", a:"Eric Clapton"},
+  {t:"(I Can't Get No) Satisfaction", a:"The Rolling Stones"},
+  {t:"Paint It Black", a:"The Rolling Stones"},{t:"Gimme Shelter", a:"The Rolling Stones"},
+  {t:"Sympathy for the Devil", a:"The Rolling Stones"},{t:"Brown Sugar", a:"The Rolling Stones"},
+  {t:"Start Me Up", a:"The Rolling Stones"},{t:"Angie", a:"The Rolling Stones"},
+  {t:"Wild Horses", a:"The Rolling Stones"},
+  {t:"You Can't Always Get What You Want", a:"The Rolling Stones"},
+  {t:"Honky Tonk Women", a:"The Rolling Stones"},
+  {t:"Blowin' in the Wind", a:"Bob Dylan"},
+  {t:"The Times They Are a-Changin'", a:"Bob Dylan"},{t:"Like a Rolling Stone", a:"Bob Dylan"},
+  {t:"Knockin' on Heaven's Door", a:"Bob Dylan"},{t:"Mr. Tambourine Man", a:"Bob Dylan"},
+  {t:"The Sound of Silence", a:"Simon & Garfunkel"},
+  {t:"Bridge Over Troubled Water", a:"Simon & Garfunkel"},
+  {t:"Mrs. Robinson", a:"Simon & Garfunkel"},{t:"Cecilia", a:"Simon & Garfunkel"},
+  {t:"Scarborough Fair", a:"Simon & Garfunkel"},
+  {t:"You Can Call Me Al", a:"Paul Simon"},{t:"Graceland", a:"Paul Simon"},
+  {t:"Light My Fire", a:"The Doors"},{t:"Riders on the Storm", a:"The Doors"},
+  {t:"Break On Through (To the Other Side)", a:"The Doors"},
+  {t:"Hello, I Love You", a:"The Doors"},{t:"L.A. Woman", a:"The Doors"},
+  {t:"Hey Joe", a:"Jimi Hendrix"},{t:"Purple Haze", a:"Jimi Hendrix"},
+  {t:"All Along the Watchtower", a:"Jimi Hendrix"},{t:"Voodoo Child", a:"Jimi Hendrix"},
+  {t:"Respect", a:"Aretha Franklin"},
+  {t:"(You Make Me Feel Like) A Natural Woman", a:"Aretha Franklin"},
+  {t:"Think", a:"Aretha Franklin"},{t:"Chain of Fools", a:"Aretha Franklin"},
+  {t:"What a Wonderful World", a:"Louis Armstrong"},{t:"Crazy", a:"Patsy Cline"},
+  {t:"I Walk the Line", a:"Johnny Cash"},{t:"Ring of Fire", a:"Johnny Cash"},
+  {t:"Folsom Prison Blues", a:"Johnny Cash"},
+  {t:"Suspicious Minds", a:"Elvis Presley"},{t:"Jailhouse Rock", a:"Elvis Presley"},
+  {t:"Hound Dog", a:"Elvis Presley"},{t:"Heartbreak Hotel", a:"Elvis Presley"},
+  {t:"Can't Help Falling in Love", a:"Elvis Presley"},{t:"Love Me Tender", a:"Elvis Presley"},
+  {t:"In the Ghetto", a:"Elvis Presley"},{t:"Always on My Mind", a:"Elvis Presley"},
+  {t:"Burning Love", a:"Elvis Presley"},{t:"Don't Be Cruel", a:"Elvis Presley"},
+  {t:"Pretty Woman", a:"Roy Orbison"},{t:"Crying", a:"Roy Orbison"},
+  {t:"Only the Lonely", a:"Roy Orbison"},
+  {t:"Hit the Road Jack", a:"Ray Charles"},{t:"Georgia on My Mind", a:"Ray Charles"},
+  {t:"What'd I Say", a:"Ray Charles"},
+  {t:"Don't Stop 'Til You Get Enough", a:"Michael Jackson"},
+  {t:"Crazy for You", a:"Madonna"},{t:"Lucky Star", a:"Madonna"},
+  {t:"Open Your Heart", a:"Madonna"},{t:"Music", a:"Madonna"},
+  {t:"4 Minutes", a:"Madonna"},{t:"Hung Up", a:"Madonna"},
+  {t:"I Don't Want to Miss a Thing", a:"Aerosmith"},{t:"Crazy", a:"Aerosmith"},
+  {t:"Cryin'", a:"Aerosmith"},{t:"Dream On", a:"Aerosmith"},{t:"Walk This Way", a:"Aerosmith"},
+  {t:"Bohemian Rhapsody", a:"Queen"},{t:"Somebody to Love", a:"Queen"},
+  {t:"We Will Rock You", a:"Queen"},{t:"We Are the Champions", a:"Queen"},
+  {t:"Killer Queen", a:"Queen"},{t:"Fat Bottomed Girls", a:"Queen"},
+  {t:"You're My Best Friend", a:"Queen"},
+  {t:"Born to Run", a:"Bruce Springsteen"},{t:"The River", a:"Bruce Springsteen"},
+  {t:"Thunder Road", a:"Bruce Springsteen"},{t:"Streets of Philadelphia", a:"Bruce Springsteen"},
+  {t:"Beautiful Day", a:"U2"},{t:"Vertigo", a:"U2"},{t:"Sunday Bloody Sunday", a:"U2"},
+  {t:"Pride (In the Name of Love)", a:"U2"},{t:"Sweetest Thing", a:"U2"},
+  {t:"Saturday Night's Alright for Fighting", a:"Elton John"},
+  {t:"Don't Let the Sun Go Down on Me", a:"Elton John"},
+  {t:"Easy", a:"Commodores"},{t:"Three Times a Lady", a:"Commodores"},
+  {t:"Brick House", a:"Commodores"},
+  {t:"My Heart Will Go On", a:"Celine Dion"},{t:"All by Myself", a:"Celine Dion"},
+  {t:"Beauty and the Beast", a:"Celine Dion"},{t:"To Love You More", a:"Celine Dion"},
+  {t:"That's the Way It Is", a:"Celine Dion"},{t:"A New Day Has Come", a:"Celine Dion"},
+  {t:"Without You", a:"Mariah Carey"},{t:"My All", a:"Mariah Carey"},
+  {t:"Honey", a:"Mariah Carey"},{t:"Emotions", a:"Mariah Carey"},{t:"Dreamlover", a:"Mariah Carey"},
+  {t:"Whatta Man", a:"Salt-N-Pepa"},{t:"Push It", a:"Salt-N-Pepa"},
+  {t:"Shoop", a:"Salt-N-Pepa"},
+  {t:"How Do I Live", a:"LeAnn Rimes"},{t:"You're Makin' Me High", a:"Toni Braxton"},
+  {t:"Breathe Again", a:"Toni Braxton"},{t:"Another Sad Love Song", a:"Toni Braxton"},
+  {t:"He Wasn't Man Enough", a:"Toni Braxton"},
+  {t:"Hold On", a:"En Vogue"},{t:"Free Your Mind", a:"En Vogue"},
+  {t:"Survivor", a:"Destiny's Child"},{t:"Independent Women, Pt. I", a:"Destiny's Child"},
+  {t:"Bootylicious", a:"Destiny's Child"},{t:"Lose My Breath", a:"Destiny's Child"},
+  {t:"Jumpin' Jumpin'", a:"Destiny's Child"},{t:"Bills, Bills, Bills", a:"Destiny's Child"},
+  {t:"Say My Name", a:"Destiny's Child"},
+  {t:"More Than Words", a:"Extreme"},{t:"To Be With You", a:"Mr. Big"},
+  {t:"Kiss from a Rose", a:"Seal"},
+  {t:"All for You", a:"Janet Jackson"},{t:"Together Again", a:"Janet Jackson"},
+  {t:"That's the Way Love Goes", a:"Janet Jackson"},{t:"Rhythm Nation", a:"Janet Jackson"},
+  {t:"Escapade", a:"Janet Jackson"},
+  {t:"Don't Wanna Lose You", a:"Gloria Estefan"},{t:"Coming Out of the Dark", a:"Gloria Estefan"},
+  {t:"Conga", a:"Gloria Estefan"},{t:"Rhythm Is Gonna Get You", a:"Gloria Estefan"},
+  {t:"It's Gonna Be Me", a:"NSYNC"},{t:"This I Promise You", a:"NSYNC"},
+  {t:"Pop", a:"NSYNC"},{t:"Bye Bye Bye", a:"NSYNC"},
+  {t:"What a Girl Wants", a:"Christina Aguilera"},
+  {t:"Genie in a Bottle", a:"Christina Aguilera"},{t:"Come On Over Baby", a:"Christina Aguilera"},
+  {t:"Wannabe", a:"Spice Girls"},{t:"Spice Up Your Life", a:"Spice Girls"},
+  {t:"She Bangs", a:"Ricky Martin"},
+  {t:"Truly Madly Deeply", a:"Savage Garden"},{t:"To the Moon and Back", a:"Savage Garden"},
+  {t:"Have You Ever?", a:"Brandy"},{t:"The Boy Is Mine", a:"Brandy"},
+  {t:"Sittin' Up in My Room", a:"Brandy"},
+  {t:"Tell Me It's Real", a:"K-Ci & JoJo"},{t:"All My Life", a:"K-Ci & JoJo"},
+  {t:"Strong Enough", a:"Cher"},
+  {t:"Bang Bang", a:"Jessie J"},
+  {t:"Hey Brother", a:"Avicii"},{t:"Rather Be", a:"Clean Bandit"},
+  {t:"Burn", a:"Ellie Goulding"},
+  {t:"Side", a:"Travis Scott"},{t:"Sicko Mode", a:"Travis Scott"},{t:"Highest in the Room", a:"Travis Scott"},
+  {t:"Lucid Dreams", a:"Juice WRLD"},{t:"All Girls Are the Same", a:"Juice WRLD"},
+  {t:"God's Plan", a:"Drake"},{t:"In My Feelings", a:"Drake"},{t:"Hotline Bling", a:"Drake"},
+  {t:"Nice for What", a:"Drake"},{t:"One Dance", a:"Drake"},{t:"Started from the Bottom", a:"Drake"},
+  {t:"Best I Ever Had", a:"Drake"},{t:"Take Care", a:"Drake"},
+  {t:"HUMBLE.", a:"Kendrick Lamar"},{t:"DNA.", a:"Kendrick Lamar"},
+  {t:"Alright", a:"Kendrick Lamar"},{t:"King Kunta", a:"Kendrick Lamar"},{t:"Not Like Us", a:"Kendrick Lamar"},
+  {t:"Stronger", a:"Kanye West"},{t:"Heartless", a:"Kanye West"},{t:"Flashing Lights", a:"Kanye West"},
+  {t:"All of the Lights", a:"Kanye West"},{t:"Runaway", a:"Kanye West"},
+  {t:"Praying", a:"Kesha"},{t:"Die Young", a:"Kesha"},
+  {t:"It's Time", a:"Imagine Dragons"},
+  {t:"Pillowtalk", a:"ZAYN"},{t:"Dusk Till Dawn", a:"ZAYN"},
+  {t:"Sign of the Times", a:"Harry Styles"},{t:"Lights Up", a:"Harry Styles"},
+  {t:"Treat You Better", a:"Shawn Mendes"},{t:"Stitches", a:"Shawn Mendes"},
+  {t:"There's Nothing Holdin' Me Back", a:"Shawn Mendes"},
+  {t:"Senorita", a:"Shawn Mendes"},
+  {t:"Havana", a:"Camila Cabello"},{t:"Never Be the Same", a:"Camila Cabello"},
+  {t:"Worth It", a:"Fifth Harmony"},{t:"Work from Home", a:"Fifth Harmony"},
+  {t:"Bad and Boujee", a:"Migos"},{t:"Walk It Talk It", a:"Migos"},
+  {t:"Mood", a:"24kGoldn"},{t:"Watermelon Sugar", a:"Harry Styles"},
+  {t:"Drinkee", a:"Sofi Tukker"},
+  {t:"Faded", a:"Alan Walker"},{t:"On My Way", a:"Alan Walker"},
+  {t:"Bad Liar", a:"Imagine Dragons"},
+  {t:"Symphony", a:"Clean Bandit"},
+  {t:"Body", a:"Loud Luxury"},{t:"This Is What You Came For", a:"Calvin Harris"},
+  {t:"Summer", a:"Calvin Harris"},{t:"How Deep Is Your Love", a:"Calvin Harris"},
+  {t:"Outside", a:"Calvin Harris"},{t:"My Way", a:"Calvin Harris"},
+  {t:"Lean On", a:"Major Lazer"},{t:"Cold Water", a:"Major Lazer"},
+  {t:"Where Are Ü Now", a:"Skrillex"},{t:"Bangarang", a:"Skrillex"},
+  {t:"Animals", a:"Martin Garrix"},{t:"Forever", a:"Martin Garrix"},
+  {t:"Tsunami", a:"DVBBS"},
+  {t:"Hold On, We're Going Home", a:"Drake"},
+  {t:"Stay With Me", a:"Sam Smith"},{t:"I'm Not the Only One", a:"Sam Smith"},
+  {t:"Dancing With a Stranger", a:"Sam Smith"},
+  {t:"Beggin'", a:"Måneskin"},{t:"I Wanna Be Your Slave", a:"Måneskin"},
+  {t:"Save Your Tears", a:"The Weeknd"},{t:"In Your Eyes", a:"The Weeknd"},
+  {t:"Earned It", a:"The Weeknd"},{t:"I Feel It Coming", a:"The Weeknd"},
+  {t:"Out of Time", a:"The Weeknd"},{t:"Sacrifice", a:"The Weeknd"},
+  {t:"Take My Breath", a:"The Weeknd"},
+  {t:"Bury a Friend", a:"Billie Eilish"},{t:"Ocean Eyes", a:"Billie Eilish"},
+  {t:"You Should See Me in a Crown", a:"Billie Eilish"},
+  {t:"When the Party's Over", a:"Billie Eilish"},
+  {t:"Therefore I Am", a:"Billie Eilish"},
+  {t:"My Future", a:"Billie Eilish"},
+  {t:"Cheap Thrills", a:"Sia"},{t:"Elastic Heart", a:"Sia"},
+  {t:"Snowman", a:"Sia"},{t:"Unstoppable", a:"Sia"},
+  {t:"Feel Special", a:"TWICE"},{t:"Fancy", a:"TWICE"},{t:"Likey", a:"TWICE"},
+  {t:"Dynamite", a:"BTS"},{t:"Butter", a:"BTS"},{t:"Boy with Luv", a:"BTS"},
+  {t:"Permission to Dance", a:"BTS"},{t:"My Universe", a:"Coldplay"},
+  {t:"How You Like That", a:"BLACKPINK"},{t:"Kill This Love", a:"BLACKPINK"},
+  {t:"Lovesick Girls", a:"BLACKPINK"},{t:"Pink Venom", a:"BLACKPINK"},
+  {t:"Bubble Pop", a:"HyunA"},{t:"Gee", a:"Girls' Generation"},
+  {t:"Gangnam Style", a:"PSY"},{t:"Gentleman", a:"PSY"},
+  {t:"vampire", a:"Olivia Rodrigo"},{t:"obsessed", a:"Olivia Rodrigo"},
+  {t:"bad idea right?", a:"Olivia Rodrigo"},
+  {t:"all-american bitch", a:"Olivia Rodrigo"},
+  {t:"Vegas", a:"Doja Cat"},{t:"Kiss Me More", a:"Doja Cat"},{t:"Need to Know", a:"Doja Cat"},
+  {t:"Streets", a:"Doja Cat"},{t:"Boss Bitch", a:"Doja Cat"},
+  {t:"As", a:"Stevie Wonder"},{t:"Superstition", a:"Stevie Wonder"},
+  {t:"Sir Duke", a:"Stevie Wonder"},{t:"Isn't She Lovely", a:"Stevie Wonder"},
+  {t:"Higher Ground", a:"Stevie Wonder"},{t:"Living for the City", a:"Stevie Wonder"},
+  {t:"I Just Called to Say I Love You", a:"Stevie Wonder"},
+  {t:"Signed, Sealed, Delivered I'm Yours", a:"Stevie Wonder"},
+  {t:"Good Riddance (Time of Your Life)", a:"Green Day"},
+  {t:"Basket Case", a:"Green Day"},{t:"Holiday", a:"Green Day"},
+  {t:"When I Come Around", a:"Green Day"},{t:"Longview", a:"Green Day"},
+  {t:"Welcome to Paradise", a:"Green Day"},
+  {t:"Numb", a:"Linkin Park"},{t:"In the End", a:"Linkin Park"},
+  {t:"Crawling", a:"Linkin Park"},{t:"Faint", a:"Linkin Park"},
+  {t:"What I've Done", a:"Linkin Park"},{t:"Bleed It Out", a:"Linkin Park"},
+  {t:"Fix You", a:"Coldplay"},{t:"Speed of Sound", a:"Coldplay"},
+  {t:"Trouble", a:"Coldplay"},{t:"Magic", a:"Coldplay"},
+  {t:"The Hardest Part", a:"Coldplay"},{t:"Adventure of a Lifetime", a:"Coldplay"},
+  {t:"Hymn for the Weekend", a:"Coldplay"},
+  {t:"What Goes Around... Comes Around", a:"Justin Timberlake"},
+  {t:"My Love", a:"Justin Timberlake"},{t:"LoveStoned", a:"Justin Timberlake"},
+  {t:"Like I Love You", a:"Justin Timberlake"},
+  {t:"Crazy", a:"Britney Spears"},{t:"Lucky", a:"Britney Spears"},
+  {t:"Circus", a:"Britney Spears"},
+  {t:"Smooth Operator", a:"Sade"},{t:"No Ordinary Love", a:"Sade"},
+  {t:"By Your Side", a:"Sade"},
+  {t:"Family Affair", a:"Mary J. Blige"},{t:"Be Without You", a:"Mary J. Blige"},
+  {t:"Real Love", a:"Mary J. Blige"},
+  {t:"Bound 2", a:"Kanye West"},{t:"Love Lockdown", a:"Kanye West"},
+  {t:"Power", a:"Kanye West"},{t:"Through the Wire", a:"Kanye West"},
+  {t:"All Falls Down", a:"Kanye West"},{t:"Jesus Walks", a:"Kanye West"},
+  {t:"Pumped Up Kicks", a:"Foster the People"},
+  {t:"My Songs Know What You Did in the Dark", a:"Fall Out Boy"},
+  {t:"Sugar, We're Goin Down", a:"Fall Out Boy"},
+  {t:"Thnks fr th Mmrs", a:"Fall Out Boy"},
+  {t:"Centuries", a:"Fall Out Boy"},
+  {t:"I Write Sins Not Tragedies", a:"Panic! at the Disco"},
+  {t:"High Hopes", a:"Panic! at the Disco"},
+  {t:"This Is Gospel", a:"Panic! at the Disco"},
+  {t:"Hallelujah", a:"Panic! at the Disco"},
+  {t:"Mr. Brightside", a:"The Killers"},{t:"Human", a:"The Killers"},
+  {t:"All These Things That I've Done", a:"The Killers"},
+  {t:"Read My Mind", a:"The Killers"},{t:"Smile Like You Mean It", a:"The Killers"},
+  {t:"Take Me Out", a:"Franz Ferdinand"},
+  {t:"Seven Nation Army", a:"The White Stripes"},
+  {t:"Fell in Love with a Girl", a:"The White Stripes"},
+  {t:"My Doorbell", a:"The White Stripes"},
+  {t:"Are You Gonna Be My Girl", a:"Jet"},
+  {t:"American Boy", a:"Estelle"},
+  {t:"Bleeding Love", a:"Leona Lewis"},
+  {t:"Beautiful Soul", a:"Jesse McCartney"},{t:"Leavin'", a:"Jesse McCartney"},
+  {t:"Buttons", a:"The Pussycat Dolls"},{t:"Don't Cha", a:"The Pussycat Dolls"},
+  {t:"When I Grow Up", a:"The Pussycat Dolls"},
+  {t:"Promiscuous", a:"Nelly Furtado"},{t:"Maneater", a:"Nelly Furtado"},
+  {t:"Say It Right", a:"Nelly Furtado"},{t:"I'm Like a Bird", a:"Nelly Furtado"},
+  {t:"Big Yellow Taxi", a:"Joni Mitchell"},{t:"Both Sides Now", a:"Joni Mitchell"},
+  {t:"Heart of Glass", a:"Blondie"},{t:"Call Me", a:"Blondie"},
+  {t:"One Way or Another", a:"Blondie"},{t:"The Tide Is High", a:"Blondie"},
+  {t:"Rapture", a:"Blondie"},
+  {t:"I Love Rock 'n Roll", a:"Joan Jett"},{t:"Bad Reputation", a:"Joan Jett"},
+  {t:"Cherry Bomb", a:"The Runaways"},
+  {t:"Dust in the Wind", a:"Kansas"},{t:"Carry On Wayward Son", a:"Kansas"},
+  {t:"More Than a Feeling", a:"Boston"},
+  {t:"Beth", a:"KISS"},{t:"Rock and Roll All Nite", a:"KISS"},
+  {t:"You Shook Me All Night Long", a:"AC/DC"},{t:"Highway to Hell", a:"AC/DC"},
+  {t:"Back in Black", a:"AC/DC"},{t:"Thunderstruck", a:"AC/DC"},
+  {t:"T.N.T.", a:"AC/DC"},{t:"Hells Bells", a:"AC/DC"},
+  {t:"Smoke on the Water", a:"Deep Purple"},{t:"Highway Star", a:"Deep Purple"},
+  {t:"Sweet Home Alabama", a:"Lynyrd Skynyrd"},{t:"Free Bird", a:"Lynyrd Skynyrd"},
+  {t:"What's Up?", a:"4 Non Blondes"},
+  {t:"Mambo Italiano", a:"Rosemary Clooney"},
+  {t:"Que Sera, Sera", a:"Doris Day"},
+  {t:"My Way", a:"Frank Sinatra"},{t:"New York, New York", a:"Frank Sinatra"},
+  {t:"Fly Me to the Moon", a:"Frank Sinatra"},{t:"That's Life", a:"Frank Sinatra"},
+  {t:"Strangers in the Night", a:"Frank Sinatra"},{t:"Summer Wind", a:"Frank Sinatra"},
+  {t:"L-O-V-E", a:"Nat King Cole"},{t:"Unforgettable", a:"Nat King Cole"},
+  {t:"Mona Lisa", a:"Nat King Cole"},
+  {t:"At Last", a:"Etta James"},{t:"I'd Rather Go Blind", a:"Etta James"},
+  {t:"Feeling Good", a:"Nina Simone"},{t:"Sinnerman", a:"Nina Simone"},
+  {t:"My Funny Valentine", a:"Chet Baker"},
+  {t:"Take Five", a:"Dave Brubeck"},
+  {t:"Round Midnight", a:"Thelonious Monk"},
+  {t:"So What", a:"Miles Davis"},{t:"Kind of Blue", a:"Miles Davis"},
+  {t:"A Love Supreme", a:"John Coltrane"},
+  {t:"Caravan", a:"Duke Ellington"},
+  {t:"What a Difference a Day Makes", a:"Dinah Washington"},
+  {t:"Lullaby of Birdland", a:"Sarah Vaughan"},
+  {t:"Misty", a:"Sarah Vaughan"},
+  {t:"Summertime", a:"Ella Fitzgerald"},{t:"Dream a Little Dream of Me", a:"Ella Fitzgerald"},
+  {t:"Cheek to Cheek", a:"Ella Fitzgerald"},
+  {t:"Strange Fruit", a:"Billie Holiday"},{t:"God Bless the Child", a:"Billie Holiday"},
+  {t:"Solitude", a:"Billie Holiday"},
+];
 
 const MODES = [
-  { id: "amy",   name: "Amy",   emoji: "💙", desc: "2000's pop and on" },
-  { id: "jeff",  name: "Jeff",  emoji: "💚", desc: "All-time pop · 80's vibes" },
-  { id: "david", name: "David", emoji: "⚾", desc: "Top hits 60's–90's" },
-  { id: "grace", name: "Grace", emoji: "💜", desc: "Pinoy hits + classics" },
+  { id: "80s90s", name: "80s & 90s", emoji: "📼", desc: "1980 through 1999" },
+  { id: "2000s",  name: "2000s+",    emoji: "🎧", desc: "2000 to today" },
 ];
 
 const REVEAL_TIMES = [1, 2, 4, 7, 11, 16];
 const MAX_GUESSES = 6;
 const DIE_FACES = ["⚀","⚁","⚂","⚃","⚄","⚅"];
 const LAUNCH_DATE = "2026-05-09";
-const MOTHERS_DAY = "2026-05-10";
-const MOM_SONGS_PER_MODE = 5;
-const VERSION = "v1.0.1";
+const VERSION = "v1.1.1";
+
+// Auto-generated
+const MEMOJIS = {
+  "amy": "data:image/png;base64,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",
+  "grace": "data:image/png;base64,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",
+  "david": "data:image/png;base64,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",
+  "jeff": "data:image/png;base64,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",
+};
+
+// User profiles for personalized greetings
+const USER_PROFILES = {
+  "amy":   { avatar: "👩🏻", greet: "Hi Mom!", sub: "Love you and hope you have a great day 💙" },
+  "jeff":  { avatar: "👨🏻", greet: "Hi Dad!", sub: "Love you, and listen to Mom today, ok? 😄" },
+  "grace": { avatar: "👩🏻", greet: "Hi Grace!", sub: "Hope you sell a listing today! 🏡" },
+  "david": { avatar: "👨🏻", greet: "LGM 4ever! 🧡💙", sub: "Let's go Mets!" },
+  "suk yi":{ avatar: "💛", greet: "Hi favorite aunt!", sub: "💛💙💜" },
+  "sukyi": { avatar: "💛", greet: "Hi favorite aunt!", sub: "💛💙💜" },
+  "carly": { avatar: "💜", greet: "Hey sis!", sub: "Welcome to the vibe code Olympics lol 💜💜" },
+};
 
 let state = {
   mode: null, current: null, round: 0, guesses: [], done: false,
   isArchive: false, archiveDateStr: null,
-  momIndex: 0,        // 0..4 for which Mother's Day song we're on
-  isMomMode: false,
 };
 let stats = loadStats();
 let played = loadPlayed();
-let leaderboard = loadLeaderboard();
 let userName = loadName();
 let audio = document.getElementById('audio');
 let playing = false;
@@ -1118,24 +1227,19 @@ let progressTimer = null;
 
 /* STORAGE */
 function loadStats() {
-  try { const r = localStorage.getItem('heardle_ge_stats'); if (r) return JSON.parse(r); } catch(e) {}
+  try { const r = localStorage.getItem('heardle_v11_stats'); if (r) return JSON.parse(r); } catch(e) {}
   return { streak: 0, score: 0, played: 0, won: 0 };
 }
-function saveStats() { try { localStorage.setItem('heardle_ge_stats', JSON.stringify(stats)); } catch(e) {} }
+function saveStats() { try { localStorage.setItem('heardle_v11_stats', JSON.stringify(stats)); } catch(e) {} }
 function loadPlayed() {
-  try { const r = localStorage.getItem('heardle_ge_played'); if (r) return JSON.parse(r); } catch(e) {}
+  try { const r = localStorage.getItem('heardle_v11_played'); if (r) return JSON.parse(r); } catch(e) {}
   return {};
 }
-function savePlayed() { try { localStorage.setItem('heardle_ge_played', JSON.stringify(played)); } catch(e) {} }
+function savePlayed() { try { localStorage.setItem('heardle_v11_played', JSON.stringify(played)); } catch(e) {} }
 function loadName() {
-  try { return localStorage.getItem('heardle_ge_name') || ''; } catch(e) { return ''; }
+  try { return localStorage.getItem('heardle_v11_name') || ''; } catch(e) { return ''; }
 }
-function saveName(n) { try { localStorage.setItem('heardle_ge_name', n); } catch(e) {} }
-function loadLeaderboard() {
-  try { const r = localStorage.getItem('heardle_ge_leaderboard'); if (r) return JSON.parse(r); } catch(e) {}
-  return []; // [{name, score, streak, dateStr, mode}]
-}
-function saveLeaderboard() { try { localStorage.setItem('heardle_ge_leaderboard', JSON.stringify(leaderboard)); } catch(e) {} }
+function saveName(n) { try { localStorage.setItem('heardle_v11_name', n); } catch(e) {} }
 
 /* DATE */
 function todayStr() {
@@ -1156,7 +1260,6 @@ function daysBetween(a, b) {
   const [by,bm,bd] = b.split('-').map(Number);
   return Math.round((new Date(by,bm-1,bd) - new Date(ay,am-1,ad)) / (1000*60*60*24));
 }
-function isMothersDay(dateStr) { return dateStr === MOTHERS_DAY; }
 
 /* PRNG + DETERMINISTIC SONG */
 function strHash(str) {
@@ -1181,27 +1284,18 @@ function stableShuffle(arr, seed) {
   }
   return a;
 }
-function songForDate(dateStr, mode, momIndex) {
+function songForDate(dateStr, mode) {
   const pool = POOLS[mode];
-  const seedKey = isMothersDay(dateStr) ? `mom-seed::${mode}` : `seed::${mode}`;
+  const seedKey = `seed-v11::${mode}`;
   const order = stableShuffle(pool.map((_, i) => i), strHash(seedKey));
   const baseDays = daysBetween(LAUNCH_DATE, dateStr);
-  let idx;
-  if (isMothersDay(dateStr)) {
-    // 5 distinct songs for the day
-    idx = (momIndex || 0) % order.length;
-  } else {
-    idx = ((baseDays % order.length) + order.length) % order.length;
-  }
+  const idx = ((baseDays % order.length) + order.length) % order.length;
   return pool[order[idx]];
 }
 
-/* ITUNES — iOS-resilient: timeout, JSONP fallback, real error tracking */
-let lastLoadError = ""; // surfaced in toast for diagnostics
+/* ITUNES — iOS-resilient: timeout, JSONP fallback */
+let lastLoadError = "";
 
-// JSONP fallback: iTunes Search supports ?callback=fn for cross-origin script-tag calls.
-// Some iOS configurations (Private Relay, strict cellular carriers, certain VPNs) block
-// fetch() to itunes.apple.com but allow <script> loads — JSONP works there.
 function jsonpFetch(url, timeoutMs = 7000) {
   return new Promise((resolve, reject) => {
     const cbName = '__itunes_cb_' + Math.random().toString(36).slice(2);
@@ -1251,7 +1345,6 @@ async function fetchWithTimeout(url, ms = 7000) {
 
 async function searchItunes(q) {
   const base = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&entity=song&limit=10`;
-  // Try fetch first (faster, works on most browsers/desktop)
   try {
     const r = await fetchWithTimeout(base, 7000);
     if (r.ok) {
@@ -1262,7 +1355,6 @@ async function searchItunes(q) {
   } catch(e) {
     lastLoadError = "fetch: " + (e && e.message ? e.message : 'unknown');
   }
-  // JSONP fallback for iOS / Private Relay / strict networks
   try {
     const data = await jsonpFetch(base, 8000);
     if (data && data.results) return data;
@@ -1298,24 +1390,55 @@ async function fetchPreview(title, artist) {
         previewUrl: best.previewUrl,
         art: (best.artworkUrl100 || "").replace("100x100", "300x300"),
         year: best.releaseDate ? best.releaseDate.slice(0,4) : "",
+        trackId: best.trackId,
       };
     }
   }
   return null;
 }
-async function loadSong(dateStr, mode, momIndex) {
+async function loadSong(dateStr, mode) {
   lastLoadError = "";
   const pool = POOLS[mode];
-  const seedKey = isMothersDay(dateStr) ? `mom-seed::${mode}` : `seed::${mode}`;
+  const seedKey = `seed-v11::${mode}`;
   const order = stableShuffle(pool.map((_, i) => i), strHash(seedKey));
-  const startIdx = isMothersDay(dateStr)
-    ? (momIndex || 0) % order.length
-    : ((daysBetween(LAUNCH_DATE, dateStr) % order.length) + order.length) % order.length;
+  const startIdx = ((daysBetween(LAUNCH_DATE, dateStr) % order.length) + order.length) % order.length;
   for (let off = 0; off < Math.min(8, order.length); off++) {
     const idx = (startIdx + off) % order.length;
     const pick = pool[order[idx]];
     const meta = await fetchPreview(pick.t, pick.a);
     if (meta) return { title: pick.t, artist: pick.a, ...meta };
+  }
+  return null;
+}
+
+/* FUN FACT — Wikipedia-based, with graceful fallback */
+async function fetchFunFact(title, artist) {
+  // Try song page first
+  const candidates = [
+    `${title} (${artist} song)`,
+    `${title} (song)`,
+    `${title} ${artist}`,
+    artist,
+  ];
+  for (const q of candidates) {
+    try {
+      const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q.replace(/ /g, '_'))}`;
+      const r = await fetchWithTimeout(url, 5000);
+      if (!r.ok) continue;
+      const data = await r.json();
+      if (data && data.extract && data.extract.length > 30 && !data.extract.toLowerCase().includes('may refer to')) {
+        // Pick the first sentence or two, max ~200 chars
+        let extract = data.extract;
+        const sentences = extract.split(/(?<=[.!?])\s+/);
+        let out = "";
+        for (const s of sentences) {
+          if ((out + s).length > 220) break;
+          out += (out ? " " : "") + s;
+        }
+        if (!out) out = extract.slice(0, 200);
+        return out.trim();
+      }
+    } catch(e) { /* try next */ }
   }
   return null;
 }
@@ -1352,16 +1475,32 @@ function isTitleMatch(guess, target) {
   return dist <= tol;
 }
 
-/* AUTOCOMPLETE */
+/* AUTOCOMPLETE — pulls from current mode pool + filler pool */
 const guessInput = document.getElementById('guessInput');
 const suggestions = document.getElementById('suggestions');
 const submitBtn = document.getElementById('submitBtn');
 function buildSuggestions(q) {
   const nq = normalize(q);
   if (!nq) return [];
-  const pool = POOLS[state.mode] || [];
+  // Combined pool: current mode + filler. Dedup by title+artist.
+  const combined = [];
+  const seen = new Set();
+  const add = (s) => {
+    const k = normalize(s.t) + "::" + normalize(s.a);
+    if (seen.has(k)) return;
+    seen.add(k);
+    combined.push(s);
+  };
+  if (state.mode && POOLS[state.mode]) {
+    for (const s of POOLS[state.mode]) add(s);
+  }
+  for (const s of FILLER_POOL) add(s);
+  // Also add the OTHER mode's pool to widen the search but mark them lower priority
+  const otherMode = state.mode === "80s90s" ? "2000s" : "80s90s";
+  if (POOLS[otherMode]) for (const s of POOLS[otherMode]) add(s);
+
   const ranked = [];
-  for (const s of pool) {
+  for (const s of combined) {
     const nt = normalize(s.t), na = normalize(s.a);
     let score = 0;
     if (nt.startsWith(nq)) score += 10;
@@ -1371,7 +1510,7 @@ function buildSuggestions(q) {
     if (score > 0) ranked.push({ s, score });
   }
   ranked.sort((x,y) => y.score - x.score);
-  return ranked.slice(0, 6).map(r => r.s);
+  return ranked.slice(0, 8).map(r => r.s);
 }
 function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function renderSuggestions(q) {
@@ -1393,7 +1532,6 @@ suggestions.addEventListener('mousedown', (e) => {
   const item = e.target.closest('.suggestion');
   if (!item) return;
   guessInput.value = item.dataset.title;
-  guessInput.dataset.artist = item.dataset.artist;
   submitBtn.disabled = state.done;
   suggestions.classList.remove('show');
 });
@@ -1401,7 +1539,7 @@ guessInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !submitBtn.disabled) { e.preventDefault(); submitGuess(); }
 });
 
-/* PLAYBACK */
+/* PLAYBACK — start at beginning (currentTime = 0) */
 const playBtn = document.getElementById('playBtn');
 const playIcon = document.getElementById('playIcon');
 const progressFill = document.getElementById('progressFill');
@@ -1416,8 +1554,11 @@ playBtn.addEventListener('click', () => {
 });
 function playClip() {
   if (!state.current) return;
-  audio.src = state.current.previewUrl;
-  audio.currentTime = 0;
+  // Only set src if it changed; reusing the loaded element is smoother on iOS
+  if (audio.src !== state.current.previewUrl) {
+    audio.src = state.current.previewUrl;
+  }
+  audio.currentTime = 0; // start at beginning of preview
   playMaxMs = REVEAL_TIMES[Math.min(state.round, REVEAL_TIMES.length - 1)] * 1000;
   audio.play().then(() => {
     playing = true;
@@ -1453,7 +1594,6 @@ const roundNum = document.getElementById('roundNum');
 const roundLabel = document.getElementById('roundLabel');
 const skipBtn = document.getElementById('skipBtn');
 const modeBadge = document.getElementById('modeBadge');
-const momProgress = document.getElementById('momProgress');
 
 function buildGrid() {
   grid.innerHTML = '';
@@ -1470,22 +1610,6 @@ function buildGrid() {
     const m = document.createElement('div');
     m.className = 'mark'; m.style.left = pct + "%";
     progressMarks.appendChild(m);
-  }
-}
-function updateMomProgress() {
-  if (!state.isMomMode) { momProgress.style.display = 'none'; return; }
-  momProgress.style.display = 'flex';
-  momProgress.innerHTML = '';
-  const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
-  for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'mom-dot';
-    const key = `${dateStr}::${state.mode}::mom${i}`;
-    const p = played[key];
-    if (i === state.momIndex && !state.done) dot.classList.add('current');
-    if (p) dot.classList.add(p.result === 'won' ? 'win' : 'lose');
-    dot.textContent = (i+1);
-    momProgress.appendChild(dot);
   }
 }
 function updateRoundUI() {
@@ -1505,10 +1629,7 @@ function updateRoundUI() {
   progressFill.style.width = "0%";
   curTimeEl.textContent = "0.0";
   const m = MODES.find(x => x.id === state.mode);
-  if (m) modeBadge.textContent = state.isMomMode
-    ? `🌷 ${m.emoji} ${m.name} · Song ${state.momIndex+1}/${MOM_SONGS_PER_MODE}`
-    : `${m.emoji} ${m.name}`;
-  updateMomProgress();
+  if (m) modeBadge.textContent = `${m.emoji} ${m.name}`;
 }
 
 function submitGuess() {
@@ -1516,25 +1637,17 @@ function submitGuess() {
   const guessText = guessInput.value.trim();
   if (!guessText) return;
   const titleMatch = isTitleMatch(guessText, state.current.title);
-  let artistBonus = false;
-  if (guessInput.dataset.artist && normalize(guessInput.dataset.artist) === normalize(state.current.artist)) {
-    artistBonus = titleMatch;
-  } else {
-    const ng = normalize(guessText), na = normalize(state.current.artist);
-    if (na && ng.includes(na)) artistBonus = titleMatch;
-  }
   if (titleMatch) {
-    state.guesses[state.round] = artistBonus ? 'bonus' : 'correct';
+    state.guesses[state.round] = 'correct';
     animateCell(state.round);
     state.done = true;
-    finalize(true, artistBonus);
+    finalize(true);
   } else {
     state.guesses[state.round] = 'wrong';
     animateCell(state.round);
     advanceRound();
   }
   guessInput.value = "";
-  delete guessInput.dataset.artist;
   submitBtn.disabled = true;
   suggestions.classList.remove('show');
 }
@@ -1542,7 +1655,7 @@ function advanceRound() {
   state.round++;
   if (state.round >= MAX_GUESSES) {
     state.done = true;
-    finalize(false, false);
+    finalize(false);
     return;
   }
   updateRoundUI();
@@ -1552,10 +1665,9 @@ function animateCell(idx) {
   if (!c) return;
   c.classList.add('flip');
   const status = state.guesses[idx];
-  if (status === 'bonus') { c.classList.add('correct', 'bonus'); c.textContent = '✓'; }
-  else if (status === 'correct') { c.classList.add('correct'); c.textContent = '✓'; }
+  if (status === 'correct') { c.classList.add('correct'); c.textContent = '✓'; }
   else if (status === 'wrong') { c.classList.add('wrong'); c.textContent = '✕'; }
-  else if (status === 'skip') { c.classList.add('skip'); c.textContent = '↷'; }
+  else if (status === 'skip') { c.classList.add('skip'); c.textContent = '?'; }
   c.classList.remove('active');
   setTimeout(() => c.classList.remove('flip'), 500);
 }
@@ -1575,28 +1687,27 @@ const revealArt = document.getElementById('revealArt');
 const revealTitle = document.getElementById('revealTitle');
 const revealArtist = document.getElementById('revealArtist');
 const revealMeta = document.getElementById('revealMeta');
+const funfactEl = document.getElementById('funfact');
+const funfactText = document.getElementById('funfactText');
 const scorecardLine = document.getElementById('scorecardLine');
 const scorecardMeta = document.getElementById('scorecardMeta');
-const scorecardTitle = document.getElementById('scorecardTitle');
 const shareBtn = document.getElementById('shareBtn');
 const nextBtn = document.getElementById('nextBtn');
 
 function emojiFor(status) {
   if (status === 'correct') return '🟩';
-  if (status === 'bonus') return '⭐';
   if (status === 'wrong') return '🟥';
   if (status === 'skip') return '🟦';
   return '⬜';
 }
 
-function finalize(won, bonus) {
+async function finalize(won) {
   stopAudio();
   let pts = 0;
   const isToday = !state.isArchive;
   if (won) {
     const used = state.guesses.filter(g => g).length;
     pts = (MAX_GUESSES - used + 1);
-    if (bonus) pts += 3;
     if (isToday) {
       stats.streak++; stats.score += pts; stats.won++;
     }
@@ -1607,122 +1718,64 @@ function finalize(won, bonus) {
   updateStatsUI();
 
   const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
-  const key = state.isMomMode
-    ? `${dateStr}::${state.mode}::mom${state.momIndex}`
-    : `${dateStr}::${state.mode}`;
-  played[key] = { result: won ? 'won' : 'lost', guesses: state.guesses.slice(), bonus: !!bonus };
+  const key = `${dateStr}::${state.mode}`;
+  played[key] = { result: won ? 'won' : 'lost', guesses: state.guesses.slice() };
   savePlayed();
-
-  // Update leaderboard if today
-  if (isToday && userName) {
-    addLeaderboardEntry({
-      name: userName,
-      score: stats.score,
-      streak: stats.streak,
-      dateStr, mode: state.mode,
-      isMom: state.isMomMode,
-    });
-  }
 
   modalHeadline.classList.remove('win', 'lose');
   const m = MODES.find(x => x.id === state.mode);
 
-  // For Mother's Day mode: if all 5 songs done, show combined scorecard
-  let isMomFinal = false;
-  if (state.isMomMode) {
-    isMomFinal = (state.momIndex >= MOM_SONGS_PER_MODE - 1);
-  }
-
   if (won) {
-    modalHeadline.textContent = bonus ? 'Bonus round! ⭐' : 'Got it! 🎉';
+    modalHeadline.textContent = 'Got it! 🎉';
     modalHeadline.classList.add('win');
     const used = state.guesses.filter(g => g).length;
     modalSub.textContent = isToday
-      ? `Found in ${used} guess${used === 1 ? '' : 'es'} · +${pts} points${bonus ? ' (artist bonus!)' : ''}`
-      : `Archive replay · ${used} guess${used === 1 ? '' : 'es'}${bonus ? ' (artist bonus!)' : ''}`;
+      ? `Found in ${used} guess${used === 1 ? '' : 'es'} · +${pts} points`
+      : `Archive replay · ${used} guess${used === 1 ? '' : 'es'}`;
   } else {
     modalHeadline.textContent = 'So close.';
     modalHeadline.classList.add('lose');
-    modalSub.textContent = isToday ? `Streak reset. Try a different mode!` : `Archive replay`;
+    modalSub.textContent = isToday ? `Streak reset. Try the other category!` : `Archive replay`;
   }
   revealArt.src = state.current.art || "";
   revealTitle.textContent = state.current.title;
   revealArtist.textContent = state.current.artist;
   revealMeta.textContent = state.current.year ? `${state.current.year}` : '';
 
-  // Build scorecard line
-  let line, sub;
-  if (state.isMomMode && isMomFinal) {
-    // Combined Mother's Day scorecard
-    scorecardTitle.textContent = "🌷 Mother's Day Scorecard";
-    let combined = '';
-    for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
-      const k = `${dateStr}::${state.mode}::mom${i}`;
-      const p = played[k];
-      if (!p) { combined += '⬜'; continue; }
-      const hasBonus = p.guesses.includes('bonus');
-      const hasCorrect = p.guesses.includes('correct') || hasBonus;
-      combined += hasBonus ? '⭐' : (hasCorrect ? '🟩' : '🟥');
+  // Fun fact: show loading state, then populate when ready
+  funfactEl.style.display = 'flex';
+  funfactText.innerHTML = '<span class="funfact-loading">Loading a fun fact…</span>';
+  fetchFunFact(state.current.title, state.current.artist).then(fact => {
+    if (fact) {
+      funfactText.innerHTML = `<b>Did you know?</b> ${escapeHtml(fact)}`;
+    } else {
+      funfactEl.style.display = 'none';
     }
-    line = combined;
-    sub = `${m.emoji} ${m.name} · 🌷 Mother's Day · ${shortDate(dateStr)}<br>` +
-          (userName ? `${userName} · ` : '') + `🔥 Streak ${stats.streak} · ⭐ Total ${stats.score} pts`;
-  } else {
-    scorecardTitle.textContent = "Your Scorecard";
-    line = state.guesses.map(emojiFor).join('') + '⬜'.repeat(MAX_GUESSES - state.guesses.length);
-    const momLbl = state.isMomMode ? `🌷 Song ${state.momIndex+1}/${MOM_SONGS_PER_MODE} · ` : '';
-    sub = won
-      ? `${momLbl}${m.emoji} ${m.name} · ${shortDate(dateStr)}<br>` +
-        (userName ? `${userName} · ` : '') + `🔥 Streak ${stats.streak} · ⭐ Total ${stats.score} pts`
-      : `${momLbl}${m.emoji} ${m.name} · ${shortDate(dateStr)}<br>` +
-        (userName ? `${userName} · ` : '') + `Streak reset · ⭐ Total ${stats.score} pts`;
-  }
+  });
+
+  const line = state.guesses.map(emojiFor).join('') + '⬜'.repeat(MAX_GUESSES - state.guesses.length);
+  const sub = won
+    ? `${m.emoji} ${m.name} · ${shortDate(dateStr)}<br>` +
+      (userName ? `${userName} · ` : '') + `🔥 Streak ${stats.streak} · ⭐ Total ${stats.score} pts`
+    : `${m.emoji} ${m.name} · ${shortDate(dateStr)}<br>` +
+      (userName ? `${userName} · ` : '') + `Streak reset · ⭐ Total ${stats.score} pts`;
   scorecardLine.textContent = line;
   scorecardMeta.innerHTML = sub;
 
-  // "Next" button label
-  if (state.isMomMode && !isMomFinal) {
-    nextBtn.textContent = `Next 🌷 song →`;
-  } else {
-    nextBtn.textContent = `Back to Modes →`;
-  }
-
+  nextBtn.textContent = `Back to Categories →`;
   modalBg.classList.add('show');
 }
 
 shareBtn.addEventListener('click', async () => {
   const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
   const m = MODES.find(x => x.id === state.mode);
-  let text;
-  if (state.isMomMode && state.momIndex >= MOM_SONGS_PER_MODE - 1) {
-    // Combined Mother's Day share
-    let combined = '';
-    let wonCount = 0;
-    for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
-      const k = `${dateStr}::${state.mode}::mom${i}`;
-      const p = played[k];
-      if (!p) { combined += '⬜'; continue; }
-      const hasBonus = p.guesses.includes('bonus');
-      const hasCorrect = p.guesses.includes('correct') || hasBonus;
-      if (hasCorrect) wonCount++;
-      combined += hasBonus ? '⭐' : (hasCorrect ? '🟩' : '🟥');
-    }
-    text = `🌷 Heardle: The Gamer's Edition · Mother's Day
-${m.emoji} ${m.name} mode · ${shortDate(dateStr)}
-${combined}
-${wonCount}/${MOM_SONGS_PER_MODE} solved
-${userName ? userName + ' · ' : ''}🔥 Streak: ${stats.streak} · ⭐ Score: ${stats.score}
-Happy Mother's Day to all the moms playing! 🌷`;
-  } else {
-    const line = state.guesses.map(emojiFor).join('') + '⬜'.repeat(MAX_GUESSES - state.guesses.length);
-    const won = state.guesses.includes('correct') || state.guesses.includes('bonus');
-    const momLbl = state.isMomMode ? ` · 🌷 Song ${state.momIndex+1}/${MOM_SONGS_PER_MODE}` : '';
-    text = `🎲 Heardle: The Gamer's Edition
-${m.emoji} ${m.name} mode${momLbl} · ${shortDate(dateStr)}
+  const line = state.guesses.map(emojiFor).join('') + '⬜'.repeat(MAX_GUESSES - state.guesses.length);
+  const won = state.guesses.includes('correct');
+  const text = `🎲 Heardle: The Gamer's Edition
+${m.emoji} ${m.name} · ${shortDate(dateStr)}
 ${line}
 ${won ? `Solved in ${state.guesses.filter(g => g).length} of ${MAX_GUESSES}` : `Stumped today!`}
 ${userName ? userName + ' · ' : ''}🔥 Streak: ${stats.streak} · ⭐ Score: ${stats.score}`;
-  }
   try {
     if (navigator.share) { await navigator.share({ text }); return; }
   } catch(e) {}
@@ -1734,14 +1787,44 @@ ${userName ? userName + ' · ' : ''}🔥 Streak: ${stats.streak} · ⭐ Score: $
 
 nextBtn.addEventListener('click', () => {
   modalBg.classList.remove('show');
-  if (state.isMomMode && state.momIndex < MOM_SONGS_PER_MODE - 1) {
-    // Continue to next Mother's Day song in same mode
-    const nextIdx = state.momIndex + 1;
-    startMode(state.mode, state.isArchive, state.archiveDateStr, nextIdx);
-  } else {
-    showView('picker');
-  }
+  showView('picker');
 });
+
+/* USER PROFILE / GREETING */
+function profileFor(name) {
+  if (!name) return null;
+  const key = name.toLowerCase().trim();
+  return USER_PROFILES[key] || null;
+}
+function avatarFor(name) {
+  const p = profileFor(name);
+  return p ? p.avatar : '👋';
+}
+function renderHelloBanner() {
+  const banner = document.getElementById('helloBanner');
+  if (!userName) { banner.style.display = 'none'; return; }
+  const key = userName.toLowerCase().trim();
+  const p = profileFor(userName);
+  const avatar = document.getElementById('helloAvatar');
+  const greet = document.getElementById('helloGreet');
+  const sub = document.getElementById('helloSub');
+  // Memoji image takes priority over emoji avatar
+  if (MEMOJIS[key]) {
+    avatar.innerHTML = `<img src="${MEMOJIS[key]}" alt="${escapeHtml(userName)}" />`;
+  } else if (p) {
+    avatar.textContent = p.avatar;
+  } else {
+    avatar.textContent = '👋';
+  }
+  if (p) {
+    greet.textContent = p.greet;
+    sub.textContent = p.sub;
+  } else {
+    greet.textContent = `Hi ${userName}!`;
+    sub.textContent = 'Welcome back to the game.';
+  }
+  banner.style.display = 'flex';
+}
 
 /* STATS UI / TOAST / VIEWS */
 const streakNum = document.getElementById('streakNum');
@@ -1749,14 +1832,7 @@ const scoreNum = document.getElementById('scoreNum');
 function updateStatsUI() {
   streakNum.textContent = stats.streak;
   scoreNum.textContent = stats.score;
-  const np = document.getElementById('namePill');
-  const nd = document.getElementById('nameDisplay');
-  if (userName) {
-    np.style.display = 'flex';
-    nd.textContent = userName;
-  } else {
-    np.style.display = 'none';
-  }
+  renderHelloBanner();
 }
 const toast = document.getElementById('toast');
 let toastTimer = null;
@@ -1771,7 +1847,6 @@ const pickerView = document.getElementById('pickerView');
 const gameView = document.getElementById('gameView');
 const archiveView = document.getElementById('archiveView');
 const dateBar = document.getElementById('dateBar');
-const momBanner = document.getElementById('momBanner');
 
 function showView(name) {
   pickerView.classList.toggle('show', name === 'picker');
@@ -1780,11 +1855,15 @@ function showView(name) {
   if (name === 'game' && state.isArchive) {
     dateBar.innerHTML = `<span class="archive-tag">📚 Archive</span> · ${prettyDate(state.archiveDateStr)}`;
   } else {
-    const today = todayStr();
-    dateBar.innerHTML = isMothersDay(today) ? `🌷 ${prettyDate(today)} 🌷` : prettyDate(today);
+    dateBar.innerHTML = prettyDate(todayStr());
   }
-  // Show Mother's Day banner only on May 10 + on picker view
-  momBanner.style.display = (isMothersDay(todayStr()) && name === 'picker') ? 'flex' : 'none';
+  // Hello banner shown only on picker view
+  const banner = document.getElementById('helloBanner');
+  if (name === 'picker' && userName) {
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
+  }
   if (name === 'picker') renderPicker();
 }
 
@@ -1793,62 +1872,23 @@ const modesGrid = document.getElementById('modesGrid');
 function renderPicker() {
   modesGrid.innerHTML = '';
   const today = todayStr();
-  const isMom = isMothersDay(today);
   for (const m of MODES) {
     const tile = document.createElement('div');
     tile.className = 'mode-tile';
-    let badge = '', complete = false;
-    if (isMom) {
-      tile.classList.add('mom-active');
-      // Count completed mom songs for this mode
-      let done = 0, anyLost = false;
-      for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
-        const k = `${today}::${m.id}::mom${i}`;
-        if (played[k]) { done++; if (played[k].result === 'lost') anyLost = true; }
-      }
-      if (done >= MOM_SONGS_PER_MODE) {
-        complete = true;
-        tile.classList.add('complete');
-        badge = `<div class="mode-played mom">${done}/${MOM_SONGS_PER_MODE} ✓</div>`;
-      } else {
-        badge = `<div class="mode-played mom">${done}/${MOM_SONGS_PER_MODE}</div>`;
-      }
-      tile.innerHTML = `
-        <div class="mom-tulip">🌷</div>
-        ${badge}
-        <div class="mode-emoji">${m.emoji}</div>
-        <div class="mode-name">${m.name}</div>
-        <div class="mode-desc">${m.desc}</div>
-      `;
-    } else {
-      const key = `${today}::${m.id}`;
-      const p = played[key];
-      if (p) badge = `<div class="mode-played ${p.result === 'won' ? 'done' : ''}">${p.result === 'won' ? '✓ played' : 'try again'}</div>`;
-      tile.innerHTML = `
-        ${badge}
-        <div class="mode-emoji">${m.emoji}</div>
-        <div class="mode-name">${m.name}</div>
-        <div class="mode-desc">${m.desc}</div>
-      `;
+    let badge = '';
+    const key = `${today}::${m.id}`;
+    const p = played[key];
+    if (p) {
+      badge = `<div class="mode-played ${p.result === 'won' ? 'done' : ''}">${p.result === 'won' ? '✓ played' : 'try again'}</div>`;
+      if (p.result === 'won') tile.classList.add('complete');
     }
-    tile.addEventListener('click', () => {
-      if (isMom) {
-        // Find next unplayed mom song
-        let nextIdx = 0;
-        for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
-          const k = `${today}::${m.id}::mom${i}`;
-          if (!played[k]) { nextIdx = i; break; }
-          if (i === MOM_SONGS_PER_MODE - 1) nextIdx = -1;
-        }
-        if (nextIdx === -1) {
-          showToast("All 5 done for today! Replay in Archive.");
-          return;
-        }
-        startMode(m.id, false, null, nextIdx);
-      } else {
-        startMode(m.id, false);
-      }
-    });
+    tile.innerHTML = `
+      ${badge}
+      <div class="mode-emoji">${m.emoji}</div>
+      <div class="mode-name">${m.name}</div>
+      <div class="mode-desc">${m.desc}</div>
+    `;
+    tile.addEventListener('click', () => startMode(m.id, false));
     modesGrid.appendChild(tile);
   }
   const archive = document.createElement('div');
@@ -1863,9 +1903,8 @@ function renderPicker() {
   modesGrid.appendChild(archive);
 }
 
-async function startMode(modeId, isArchive, dateStr, momIndex) {
+async function startMode(modeId, isArchive, dateStr) {
   const targetDate = isArchive ? dateStr : todayStr();
-  const isMomCtx = isMothersDay(targetDate);
   state = {
     mode: modeId,
     current: null,
@@ -1874,18 +1913,15 @@ async function startMode(modeId, isArchive, dateStr, momIndex) {
     done: false,
     isArchive: !!isArchive,
     archiveDateStr: dateStr || null,
-    momIndex: isMomCtx ? (momIndex || 0) : 0,
-    isMomMode: isMomCtx,
   };
   buildGrid();
   updateRoundUI();
   guessInput.value = "";
-  delete guessInput.dataset.artist;
   submitBtn.disabled = true;
   showView('game');
   roundLabel.textContent = "Loading today's tune…";
   playBtn.disabled = true;
-  const song = await loadSong(targetDate, modeId, state.momIndex);
+  const song = await loadSong(targetDate, modeId);
   if (!song) {
     showToast("Couldn't load a song. " + (lastLoadError ? "Reason: " + lastLoadError : "Check connection."));
     showView('picker');
@@ -1896,15 +1932,12 @@ async function startMode(modeId, isArchive, dateStr, momIndex) {
   playBtn.disabled = false;
   updateRoundUI();
 
-  // If this exact slot was already played, replay result modal
-  const key = state.isMomMode
-    ? `${targetDate}::${modeId}::mom${state.momIndex}`
-    : `${targetDate}::${modeId}`;
+  const key = `${targetDate}::${modeId}`;
   if (played[key] && !isArchive) {
     state.guesses = played[key].guesses.slice();
     state.done = true;
     for (let i = 0; i < state.guesses.length; i++) animateCell(i);
-    setTimeout(() => finalize(played[key].result === 'won', !!played[key].bonus), 300);
+    setTimeout(() => finalize(played[key].result === 'won'), 300);
   }
 }
 
@@ -1934,65 +1967,32 @@ function renderArchiveList() {
     days.push(ds);
   }
   for (const ds of days) {
-    const isMom = isMothersDay(ds);
     for (const m of MODES) {
-      if (isMom) {
-        // 5 rows for Mother's Day, one per song
-        for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
-          const key = `${ds}::${m.id}::mom${i}`;
-          const p = played[key];
-          const row = document.createElement('div');
-          row.className = 'archive-row';
-          let status = '';
-          if (p) status = `<div class="ar-status ${p.result === 'won' ? 'played' : 'lost'}">${p.result === 'won' ? '✓' : '✕'}</div>`;
-          else status = `<div class="ar-status">play</div>`;
-          row.innerHTML = `
-            <div>
-              <div class="ar-date">🌷 ${m.emoji} ${m.name} · Song ${i+1}/${MOM_SONGS_PER_MODE}</div>
-              <div class="ar-mode">${shortDate(ds)} · Mother's Day</div>
-            </div>${status}`;
-          row.addEventListener('click', () => startMode(m.id, true, ds, i));
-          archiveList.appendChild(row);
-        }
-      } else {
-        const key = `${ds}::${m.id}`;
-        const p = played[key];
-        const row = document.createElement('div');
-        row.className = 'archive-row';
-        const isToday = ds === today;
-        let status = '';
-        if (p) status = `<div class="ar-status ${p.result === 'won' ? 'played' : 'lost'}">${p.result === 'won' ? '✓' : '✕'}</div>`;
-        else status = `<div class="ar-status">${isToday ? 'today' : 'play'}</div>`;
-        row.innerHTML = `
-          <div>
-            <div class="ar-date">${m.emoji} ${m.name} · ${shortDate(ds)}</div>
-            <div class="ar-mode">${isToday ? 'Today' : ''}</div>
-          </div>${status}`;
-        row.addEventListener('click', () => startMode(m.id, true, ds));
-        archiveList.appendChild(row);
-      }
+      const key = `${ds}::${m.id}`;
+      const p = played[key];
+      const row = document.createElement('div');
+      row.className = 'archive-row';
+      const isToday = ds === today;
+      let status = '';
+      if (p) status = `<div class="ar-status ${p.result === 'won' ? 'played' : 'lost'}">${p.result === 'won' ? '✓' : '✕'}</div>`;
+      else status = `<div class="ar-status">${isToday ? 'today' : 'play'}</div>`;
+      row.innerHTML = `
+        <div>
+          <div class="ar-date">${m.emoji} ${m.name} · ${shortDate(ds)}</div>
+          <div class="ar-mode">${isToday ? 'Today' : ''}</div>
+        </div>${status}`;
+      row.addEventListener('click', () => startMode(m.id, true, ds));
+      archiveList.appendChild(row);
     }
   }
 }
 
 document.getElementById('devShowAnswer').addEventListener('click', () => {
   const today = todayStr();
-  let answer;
-  if (isMothersDay(today)) {
-    answer = MODES.map(m => {
-      const songs = [];
-      for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
-        const s = songForDate(today, m.id, i);
-        songs.push(`  ${i+1}. ${s.t} — ${s.a}`);
-      }
-      return `${m.emoji} ${m.name}:\n${songs.join('\n')}`;
-    }).join('\n\n');
-  } else {
-    answer = MODES.map(m => {
-      const s = songForDate(today, m.id);
-      return `${m.emoji} ${m.name}: ${s.t} — ${s.a}`;
-    }).join('\n');
-  }
+  const answer = MODES.map(m => {
+    const s = songForDate(today, m.id);
+    return `${m.emoji} ${m.name}: ${s.t} — ${s.a}`;
+  }).join('\n');
   alert(`Today's answers (${shortDate(today)}):\n\n${answer}\n\n(If a preview is missing, the game uses the next deterministic pick.)`);
 });
 document.getElementById('devResetStats').addEventListener('click', () => {
@@ -2008,38 +2008,6 @@ document.getElementById('devResetPlayed').addEventListener('click', () => {
 document.getElementById('devChangeName').addEventListener('click', () => {
   document.getElementById('nameInput').value = userName || '';
   document.getElementById('nameModalBg').classList.add('show');
-});
-document.getElementById('devLeaderboard').addEventListener('click', () => openLeaderboard());
-
-/* LEADERBOARD */
-function addLeaderboardEntry(entry) {
-  // Keep best per (name, mode, dateStr) — winner = highest score-snapshot
-  leaderboard.push(entry);
-  // Cap at 100 entries, newest first
-  leaderboard.sort((a,b) => (b.score - a.score) || (b.streak - a.streak));
-  if (leaderboard.length > 100) leaderboard = leaderboard.slice(0, 100);
-  saveLeaderboard();
-}
-function openLeaderboard() {
-  const body = document.getElementById('lbBody');
-  if (!leaderboard.length) {
-    body.innerHTML = `<div style="text-align:center; color:var(--muted); padding:14px; font-size:13px;">No entries yet — play a round to get on the board!</div>`;
-  } else {
-    body.innerHTML = leaderboard.slice(0, 20).map((e, i) => {
-      const m = MODES.find(x => x.id === e.mode);
-      return `<div class="lb-row">
-        <div>
-          <div class="lb-name">${i+1}. ${escapeHtml(e.name)}</div>
-          <div class="lb-meta">${m ? m.emoji + ' ' + m.name : e.mode} · ${shortDate(e.dateStr)}${e.isMom ? ' · 🌷' : ''}</div>
-        </div>
-        <div class="lb-score">⭐ ${e.score} · 🔥 ${e.streak}</div>
-      </div>`;
-    }).join('');
-  }
-  document.getElementById('lbModalBg').classList.add('show');
-}
-document.getElementById('lbCloseBtn').addEventListener('click', () => {
-  document.getElementById('lbModalBg').classList.remove('show');
 });
 
 /* NAME PROMPT */
@@ -2059,6 +2027,7 @@ nameSaveBtn.addEventListener('click', () => {
   userName = v; saveName(v);
   nameModalBg.classList.remove('show');
   updateStatsUI();
+  renderHelloBanner();
 });
 nameInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') { e.preventDefault(); nameSaveBtn.click(); }
@@ -2074,7 +2043,7 @@ document.getElementById('bugBtn').addEventListener('click', (e) => {
 I found a bug in Heardle: The Gamer's Edition (${VERSION}).
 
 Date: ${prettyDate(todayStr())}
-Mode: ${state.mode ? MODES.find(m=>m.id===state.mode).name : '(not in a game)'}
+Category: ${state.mode ? MODES.find(m=>m.id===state.mode).name : '(not in a game)'}
 Name: ${userName || '(no name set)'}
 What happened:
 [describe the bug here]
@@ -2108,11 +2077,11 @@ document.getElementById('dieEmoji').addEventListener('click', () => {
 updateStatsUI();
 buildGrid();
 updateRoundUI();
-const today = todayStr();
-dateBar.innerHTML = isMothersDay(today) ? `🌷 ${prettyDate(today)} 🌷` : prettyDate(today);
+dateBar.innerHTML = prettyDate(todayStr());
 renderPicker();
 showView('picker');
 ensureName();
+renderHelloBanner();
 </script>
 </body>
 </html>
