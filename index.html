@@ -560,7 +560,7 @@
 <div class="footer-note">
   Made with love by Kyra Hu · V2 launching by Christmas 2026 (or sooner)!<br>
   <a href="#" id="bugBtn">🐛 Report a bug</a>
-  <div class="footer-version">v1.0 · If you don't see updates, fully close and reopen the page.</div>
+  <div class="footer-version">v1.0.1 · If you don't see updates, fully close and reopen the page.</div>
 </div>
 
 <!-- RESULT MODAL -->
@@ -1098,7 +1098,7 @@ const DIE_FACES = ["⚀","⚁","⚂","⚃","⚄","⚅"];
 const LAUNCH_DATE = "2026-05-09";
 const MOTHERS_DAY = "2026-05-10";
 const MOM_SONGS_PER_MODE = 5;
-const VERSION = "v1.0";
+const VERSION = "v1.0.1";
 
 let state = {
   mode: null, current: null, round: 0, guesses: [], done: false,
@@ -1196,43 +1196,115 @@ function songForDate(dateStr, mode, momIndex) {
   return pool[order[idx]];
 }
 
-/* ITUNES */
+/* ITUNES — iOS-resilient: timeout, JSONP fallback, real error tracking */
+let lastLoadError = ""; // surfaced in toast for diagnostics
+
+// JSONP fallback: iTunes Search supports ?callback=fn for cross-origin script-tag calls.
+// Some iOS configurations (Private Relay, strict cellular carriers, certain VPNs) block
+// fetch() to itunes.apple.com but allow <script> loads — JSONP works there.
+function jsonpFetch(url, timeoutMs = 7000) {
+  return new Promise((resolve, reject) => {
+    const cbName = '__itunes_cb_' + Math.random().toString(36).slice(2);
+    const script = document.createElement('script');
+    let done = false;
+    const cleanup = () => {
+      try { delete window[cbName]; } catch(e) { window[cbName] = undefined; }
+      if (script.parentNode) script.parentNode.removeChild(script);
+    };
+    const timer = setTimeout(() => {
+      if (done) return;
+      done = true;
+      cleanup();
+      reject(new Error('jsonp timeout'));
+    }, timeoutMs);
+    window[cbName] = (data) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      cleanup();
+      resolve(data);
+    };
+    script.onerror = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      cleanup();
+      reject(new Error('jsonp script error'));
+    };
+    script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+    document.head.appendChild(script);
+  });
+}
+
+async function fetchWithTimeout(url, ms = 7000) {
+  const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  const t = setTimeout(() => { if (ctrl) ctrl.abort(); }, ms);
+  try {
+    const r = await fetch(url, ctrl ? { signal: ctrl.signal } : {});
+    clearTimeout(t);
+    return r;
+  } catch(e) {
+    clearTimeout(t);
+    throw e;
+  }
+}
+
+async function searchItunes(q) {
+  const base = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&entity=song&limit=10`;
+  // Try fetch first (faster, works on most browsers/desktop)
+  try {
+    const r = await fetchWithTimeout(base, 7000);
+    if (r.ok) {
+      const data = await r.json();
+      if (data && data.results) return data;
+    }
+    lastLoadError = "fetch returned " + (r ? r.status : 'no response');
+  } catch(e) {
+    lastLoadError = "fetch: " + (e && e.message ? e.message : 'unknown');
+  }
+  // JSONP fallback for iOS / Private Relay / strict networks
+  try {
+    const data = await jsonpFetch(base, 8000);
+    if (data && data.results) return data;
+    lastLoadError = "jsonp: empty results";
+  } catch(e) {
+    lastLoadError = "jsonp: " + (e && e.message ? e.message : 'unknown');
+  }
+  return null;
+}
+
 async function fetchPreview(title, artist) {
   const queries = [`${title} ${artist}`, `${artist} ${title}`, title];
   for (const q of queries) {
-    try {
-      const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&entity=song&limit=10`;
-      const r = await fetch(url);
-      if (!r.ok) continue;
-      const data = await r.json();
-      if (!data.results || !data.results.length) continue;
-      const lcArtist = artist.toLowerCase(), lcTitle = title.toLowerCase();
-      let best = null, bestScore = -1;
-      for (const item of data.results) {
-        if (!item.previewUrl) continue;
-        const ai = (item.artistName || "").toLowerCase();
-        const ti = (item.trackName || "").toLowerCase();
-        let score = 0;
-        if (ai === lcArtist) score += 5;
-        else if (ai.includes(lcArtist) || lcArtist.includes(ai)) score += 3;
-        if (ti === lcTitle) score += 5;
-        else if (ti.includes(lcTitle) || lcTitle.includes(ti)) score += 2;
-        const bad = /(live|remix|karaoke|tribute|cover|instrumental|reprise|sped\s?up|slowed)/i;
-        if (bad.test(item.trackName || "") || bad.test(item.collectionName || "")) score -= 4;
-        if (score > bestScore) { bestScore = score; best = item; }
-      }
-      if (best && best.previewUrl) {
-        return {
-          previewUrl: best.previewUrl,
-          art: (best.artworkUrl100 || "").replace("100x100", "300x300"),
-          year: best.releaseDate ? best.releaseDate.slice(0,4) : "",
-        };
-      }
-    } catch(e) {}
+    const data = await searchItunes(q);
+    if (!data || !data.results || !data.results.length) continue;
+    const lcArtist = artist.toLowerCase(), lcTitle = title.toLowerCase();
+    let best = null, bestScore = -1;
+    for (const item of data.results) {
+      if (!item.previewUrl) continue;
+      const ai = (item.artistName || "").toLowerCase();
+      const ti = (item.trackName || "").toLowerCase();
+      let score = 0;
+      if (ai === lcArtist) score += 5;
+      else if (ai.includes(lcArtist) || lcArtist.includes(ai)) score += 3;
+      if (ti === lcTitle) score += 5;
+      else if (ti.includes(lcTitle) || lcTitle.includes(ti)) score += 2;
+      const bad = /(live|remix|karaoke|tribute|cover|instrumental|reprise|sped\s?up|slowed)/i;
+      if (bad.test(item.trackName || "") || bad.test(item.collectionName || "")) score -= 4;
+      if (score > bestScore) { bestScore = score; best = item; }
+    }
+    if (best && best.previewUrl) {
+      return {
+        previewUrl: best.previewUrl,
+        art: (best.artworkUrl100 || "").replace("100x100", "300x300"),
+        year: best.releaseDate ? best.releaseDate.slice(0,4) : "",
+      };
+    }
   }
   return null;
 }
 async function loadSong(dateStr, mode, momIndex) {
+  lastLoadError = "";
   const pool = POOLS[mode];
   const seedKey = isMothersDay(dateStr) ? `mom-seed::${mode}` : `seed::${mode}`;
   const order = stableShuffle(pool.map((_, i) => i), strHash(seedKey));
@@ -1815,7 +1887,7 @@ async function startMode(modeId, isArchive, dateStr, momIndex) {
   playBtn.disabled = true;
   const song = await loadSong(targetDate, modeId, state.momIndex);
   if (!song) {
-    showToast("Couldn't load a song. Check connection.");
+    showToast("Couldn't load a song. " + (lastLoadError ? "Reason: " + lastLoadError : "Check connection."));
     showView('picker');
     return;
   }
