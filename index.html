@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#0a3d4a" />
+<title>🎲 Heardle: The Gamer's Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a2a33;
+    --deep: #0a3d4a;
+    --teal: #14b8a6;
+    --teal-2: #0d9488;
+    --green: #34d399;
+    --green-2: #10b981;
+    --blue: #38bdf8;
+    --blue-2: #0ea5e9;
+    --purple: #a78bfa;
+    --purple-2: #8b5cf6;
+    --pink: #f9a8d4;
+    --pink-2: #ec4899;
+    --paper: #f0fdfa;
+    --paper-2: #ecfeff;
+    --line: #ccfbf1;
+    --muted: #5b8a92;
+    --warn: #f87171;
+    --warn-2: #ef4444;
+    --skip: #94a3b8;
+    --gold: #fbbf24;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; min-height: 100vh;
+    font-family: 'Geist', -apple-system, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(1200px 800px at 10% -10%, #99f6e4 0%, transparent 50%),
+      radial-gradient(900px 700px at 110% 10%, #bae6fd 0%, transparent 55%),
+      radial-gradient(800px 600px at 50% 110%, #a7f3d0 0%, transparent 50%),
+      linear-gradient(180deg, #f0fdfa 0%, #ecfeff 100%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+  body {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 16px 14px 32px; gap: 14px;
+  }
+
+  .topbar {
+    width: 100%; max-width: 540px; display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+  }
+  .logo {
+    font-family: 'Fraunces', serif; font-weight: 800; font-size: 22px; letter-spacing: -0.02em;
+    line-height: 1.1;
+    background: linear-gradient(135deg, var(--deep) 0%, var(--teal-2) 60%, var(--green-2) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    display: flex; align-items: center; gap: 8px;
+    flex: 1; min-width: 0;
+  }
+  .logo .die {
+    font-size: 22px; -webkit-text-fill-color: initial; cursor: pointer;
+    user-select: none; flex-shrink: 0;
+  }
+  .stats { display: flex; gap: 6px; flex-shrink: 0; }
+  .pill {
+    background: rgba(255,255,255,0.7); backdrop-filter: blur(8px);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 5px 10px; font-size: 11px; font-weight: 600; color: var(--deep);
+    display: flex; align-items: center; gap: 4px;
+    cursor: pointer;
+  }
+  .pill .num { font-family: 'Fraunces', serif; font-size: 13px; font-weight: 800; color: var(--teal-2); }
+  .pill .label { color: var(--muted); font-weight: 600; }
+
+  .datebar {
+    width: 100%; max-width: 540px;
+    font-size: 11px; color: var(--muted); text-align: center;
+    text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600;
+    margin-top: -6px;
+  }
+  .datebar .archive-tag { color: var(--purple-2); font-weight: 700; }
+
+  .mom-banner {
+    width: 100%; max-width: 540px;
+    background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+    border: 1.5px solid var(--pink);
+    border-radius: 16px; padding: 12px 14px;
+    font-size: 13px; line-height: 1.4; color: #831843;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .mom-banner .tulip { font-size: 22px; flex-shrink: 0; }
+  .mom-banner b { font-family: 'Fraunces', serif; font-weight: 700; }
+
+  .card {
+    width: 100%; max-width: 540px;
+    background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
+    border: 1px solid rgba(204,251,241,0.8);
+    border-radius: 22px;
+    box-shadow: 0 10px 40px rgba(13,148,136,0.08), 0 2px 8px rgba(13,148,136,0.04);
+    padding: 20px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+
+  .picker-title {
+    font-family: 'Fraunces', serif; font-weight: 700; font-size: 22px;
+    line-height: 1.15; color: var(--deep); text-align: center;
+    margin-bottom: 2px;
+  }
+  .picker-sub {
+    font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 6px;
+  }
+  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mode-tile {
+    border: 1.5px solid var(--line);
+    border-radius: 16px; padding: 16px 12px;
+    background: white;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    cursor: pointer; transition: transform 0.12s, box-shadow 0.2s, border-color 0.2s;
+    position: relative;
+  }
+  .mode-tile:active { transform: scale(0.97); }
+  .mode-tile:hover { border-color: var(--teal); box-shadow: 0 6px 18px rgba(13,148,136,0.12); }
+  .mode-tile.mom-active {
+    border-color: var(--pink);
+    background: linear-gradient(135deg, #fff 0%, #fdf2f8 100%);
+  }
+  .mode-tile.complete {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-color: var(--green-2);
+  }
+  .mode-emoji { font-size: 36px; line-height: 1; }
+  .mode-name { font-family: 'Fraunces', serif; font-weight: 700; font-size: 17px; color: var(--deep); }
+  .mode-desc { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.3; }
+  .mode-played {
+    position: absolute; top: 8px; right: 8px;
+    font-size: 10px; padding: 2px 7px; border-radius: 999px;
+    background: var(--paper); color: var(--teal-2); font-weight: 700;
+    border: 1px solid var(--line);
+  }
+  .mode-played.done {
+    background: linear-gradient(135deg, var(--green) 0%, var(--green-2) 100%);
+    color: white; border-color: var(--green-2);
+  }
+  .mode-played.mom {
+    background: linear-gradient(135deg, var(--pink) 0%, var(--pink-2) 100%);
+    color: white; border-color: var(--pink-2);
+  }
+  .mom-tulip { position: absolute; top: 8px; left: 8px; font-size: 14px; }
+
+  .archive-tile {
+    border: 1.5px dashed var(--purple);
+    background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%);
+    grid-column: span 2;
+    flex-direction: row; justify-content: center; gap: 12px;
+    padding: 14px;
+  }
+  .archive-tile:hover { border-color: var(--purple-2); }
+  .archive-tile .mode-emoji { font-size: 28px; }
+  .archive-tile .mode-name { font-size: 15px; color: var(--purple-2); }
+  .archive-tile .mode-desc { text-align: left; }
+
+  .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .cell {
+    aspect-ratio: 1.3 / 1;
+    border-radius: 10px;
+    background: var(--paper-2);
+    border: 1.5px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 800;
+    color: var(--muted);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative; overflow: hidden;
+    font-size: 24px;
+  }
+  .cell.active {
+    border-color: var(--teal); background: white;
+    box-shadow: 0 0 0 3px rgba(20,184,166,0.15);
+    animation: bob 1.4s ease-in-out infinite;
+  }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+  .cell.skip { background: var(--skip); border-color: var(--skip); color: white; }
+  .cell.wrong { background: linear-gradient(135deg, var(--warn) 0%, var(--warn-2) 100%); border-color: var(--warn-2); color: white; }
+  .cell.correct { background: linear-gradient(135deg, var(--green) 0%, var(--green-2) 100%); border-color: var(--green-2); color: white; }
+  .cell.correct.bonus::after {
+    content: '★'; position: absolute; top: 2px; right: 4px;
+    font-size: 10px; color: var(--gold);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+  .cell.flip { animation: flip 0.5s ease-out; }
+  @keyframes flip { 0%{transform:rotateX(0);} 50%{transform:rotateX(90deg);} 100%{transform:rotateX(0);} }
+
+  .progress-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .progress-track {
+    position: relative;
+    height: 10px; background: var(--paper-2); border-radius: 999px;
+    border: 1px solid var(--line); overflow: hidden;
+  }
+  .progress-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 50%, var(--green) 100%);
+    border-radius: 999px;
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+  .progress-marks { position: absolute; inset: 0; pointer-events: none; }
+  .mark { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.7); }
+  .progress-labels {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums;
+  }
+
+  .play-row { display: flex; align-items: center; gap: 14px; }
+  .play-btn {
+    width: 64px; height: 64px; border-radius: 50%; border: none;
+    background: linear-gradient(135deg, var(--deep) 0%, var(--teal-2) 100%);
+    color: white; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(13,148,136,0.35);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+    flex-shrink: 0; position: relative;
+  }
+  .play-btn:active { transform: scale(0.94); }
+  .play-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .play-btn svg { width: 28px; height: 28px; }
+  .play-btn.pulse::before {
+    content: ''; position: absolute; inset: -6px;
+    border-radius: 50%; border: 2px solid var(--teal);
+    animation: ringPulse 1.6s ease-out infinite;
+  }
+  @keyframes ringPulse { 0%{transform:scale(0.9);opacity:1;} 100%{transform:scale(1.4);opacity:0;} }
+  .play-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .play-info .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; }
+  .play-info .val { font-family: 'Fraunces', serif; font-weight: 600; font-size: 17px; color: var(--deep); }
+
+  .input-wrap { position: relative; }
+  .guess-input {
+    width: 100%; padding: 14px 16px;
+    border: 1.5px solid var(--line); border-radius: 14px;
+    background: white; color: var(--ink);
+    font-family: 'Geist', sans-serif; font-size: 16px;
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .guess-input:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(20,184,166,0.12); }
+  .guess-input::placeholder { color: var(--muted); }
+  .suggestions {
+    position: absolute; left: 0; right: 0; top: calc(100% + 6px);
+    background: white; border: 1px solid var(--line);
+    border-radius: 14px; max-height: 240px; overflow-y: auto;
+    box-shadow: 0 12px 32px rgba(13,148,136,0.12);
+    z-index: 20;
+    display: none;
+  }
+  .suggestions.show { display: block; }
+  .suggestion {
+    padding: 11px 14px; cursor: pointer;
+    border-bottom: 1px solid var(--paper-2);
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .suggestion:last-child { border-bottom: none; }
+  .suggestion:active { background: var(--paper-2); }
+  .suggestion .title { font-weight: 600; font-size: 14px; color: var(--ink); }
+  .suggestion .artist { font-size: 12px; color: var(--muted); }
+
+  .actions { display: flex; gap: 8px; }
+  .btn {
+    flex: 1; padding: 13px 16px;
+    border: none; border-radius: 12px;
+    font-family: 'Geist', sans-serif; font-weight: 600; font-size: 14px;
+    cursor: pointer; transition: transform 0.1s, box-shadow 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--teal) 0%, var(--green-2) 100%);
+    color: white;
+    box-shadow: 0 4px 14px rgba(20,184,166,0.3);
+  }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+  .btn-skip { background: white; color: var(--deep); border: 1.5px solid var(--line); }
+  .btn-back {
+    width: 100%; padding: 10px; background: transparent; border: none;
+    font-size: 13px; color: var(--muted); cursor: pointer; font-weight: 500;
+  }
+
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(10,42,51,0.55); backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center;
+    padding: 20px; z-index: 100;
+    animation: fadeIn 0.3s ease-out;
+  }
+  .modal-bg.show { display: flex; }
+  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+  .modal {
+    background: white; border-radius: 22px; padding: 24px;
+    max-width: 460px; width: 100%;
+    box-shadow: 0 24px 60px rgba(10,42,51,0.3);
+    animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-height: 90vh; overflow-y: auto;
+  }
+  @keyframes slideUp { from{transform:translateY(40px); opacity:0;} to{transform:translateY(0); opacity:1;} }
+  .modal-headline {
+    font-family: 'Fraunces', serif; font-weight: 800; font-size: 30px;
+    line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 4px;
+  }
+  .modal-headline.win { color: var(--green-2); }
+  .modal-headline.lose { color: var(--warn-2); }
+  .modal-sub { font-size: 14px; color: var(--muted); margin-bottom: 18px; }
+  .reveal {
+    display: flex; gap: 14px; align-items: center;
+    padding: 14px; border-radius: 16px;
+    background: linear-gradient(135deg, var(--paper) 0%, var(--paper-2) 100%);
+    border: 1px solid var(--line);
+    margin-bottom: 16px;
+  }
+  .reveal img {
+    width: 76px; height: 76px; border-radius: 12px; object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+  }
+  .reveal-info { flex: 1; min-width: 0; }
+  .reveal-title {
+    font-family: 'Fraunces', serif; font-weight: 700; font-size: 18px;
+    color: var(--deep); line-height: 1.2; margin-bottom: 2px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .reveal-artist { font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+  .reveal-meta { font-size: 11px; color: var(--teal-2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+  .scorecard-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em;
+    font-weight: 700; color: var(--deep); margin-bottom: 6px;
+  }
+  .scorecard {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 14px; padding: 14px;
+    font-family: 'Geist', sans-serif;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .scorecard-line {
+    font-size: 22px; letter-spacing: 4px; margin-bottom: 6px;
+    user-select: all;
+  }
+  .scorecard-meta { font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .modal-actions .btn { flex: 1 1 calc(50% - 4px); min-width: 130px; }
+
+  .mom-progress {
+    display: flex; gap: 6px; align-items: center; justify-content: center;
+    margin-bottom: 4px;
+  }
+  .mom-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--paper-2); border: 1.5px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--muted);
+  }
+  .mom-dot.win { background: linear-gradient(135deg, var(--green) 0%, var(--green-2) 100%); border-color: var(--green-2); color: white; }
+  .mom-dot.lose { background: linear-gradient(135deg, var(--warn) 0%, var(--warn-2) 100%); border-color: var(--warn-2); color: white; }
+  .mom-dot.current { border-color: var(--pink-2); box-shadow: 0 0 0 3px rgba(236,72,153,0.18); color: var(--pink-2); }
+
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: var(--deep); color: white;
+    padding: 10px 18px; border-radius: 999px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: 0 8px 20px rgba(10,42,51,0.3);
+    opacity: 0; transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none; z-index: 200;
+    max-width: 90%; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+
+  .archive-list {
+    display: flex; flex-direction: column; gap: 6px;
+    max-height: 360px; overflow-y: auto;
+    border-radius: 12px; padding: 4px;
+  }
+  .archive-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; border-radius: 10px;
+    background: var(--paper); border: 1px solid var(--line);
+    cursor: pointer;
+  }
+  .archive-row:active { transform: scale(0.98); }
+  .archive-row .ar-date {
+    font-family: 'Fraunces', serif; font-weight: 700; font-size: 14px; color: var(--deep);
+  }
+  .archive-row .ar-mode { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .archive-row .ar-status {
+    font-size: 11px; padding: 3px 8px; border-radius: 999px;
+    background: white; color: var(--muted); font-weight: 600;
+  }
+  .archive-row .ar-status.played { background: var(--green); color: white; }
+  .archive-row .ar-status.lost { background: var(--warn); color: white; }
+  .archive-controls {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    padding: 8px 4px;
+    border-top: 1px dashed var(--line);
+    margin-top: 6px;
+  }
+  .archive-controls button {
+    flex: 1; min-width: 100px; padding: 8px 10px;
+    background: white; border: 1px solid var(--line); border-radius: 10px;
+    font-size: 12px; cursor: pointer; color: var(--deep);
+  }
+
+  .leaderboard {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 14px; padding: 12px;
+    margin-bottom: 12px;
+  }
+  .lb-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 4px; border-bottom: 1px solid var(--paper-2);
+    font-size: 13px;
+  }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-row .lb-name { font-weight: 600; color: var(--deep); }
+  .lb-row .lb-meta { color: var(--muted); font-size: 11px; }
+  .lb-row .lb-score { font-family: 'Fraunces', serif; font-weight: 700; color: var(--teal-2); }
+
+  .name-prompt {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .name-prompt input {
+    width: 100%; padding: 14px 16px;
+    border: 1.5px solid var(--line); border-radius: 14px;
+    background: white; color: var(--ink);
+    font-family: 'Geist', sans-serif; font-size: 16px;
+    outline: none;
+  }
+  .name-prompt input:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(20,184,166,0.12); }
+
+  .footer-note {
+    font-size: 11px; color: var(--muted); text-align: center; margin-top: 4px;
+    max-width: 540px; line-height: 1.6;
+  }
+  .footer-note a { color: var(--teal-2); text-decoration: none; font-weight: 600; }
+  .footer-version { color: var(--muted); opacity: 0.7; font-size: 10px; }
+
+  .view { display: none; }
+  .view.show { display: flex; flex-direction: column; gap: 16px; }
+
+  @media (max-width: 380px) {
+    .cell { font-size: 20px; }
+    .modal-headline { font-size: 26px; }
+    .play-btn { width: 56px; height: 56px; }
+    .mode-emoji { font-size: 30px; }
+    .mode-name { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <span class="die" id="dieEmoji">🎲</span>
+    Heardle: The Gamer's Edition
+  </div>
+  <div class="stats">
+    <div class="pill" id="namePill" style="display:none;">👤 <span class="num" id="nameDisplay">—</span></div>
+    <div class="pill" id="streakPill">🔥 <span class="num" id="streakNum">0</span></div>
+    <div class="pill" id="scorePill">⭐ <span class="num" id="scoreNum">0</span></div>
+  </div>
+</div>
+
+<div class="datebar" id="dateBar"></div>
+
+<div class="mom-banner" id="momBanner" style="display:none;">
+  <span class="tulip">🌷</span>
+  <div><b>Mother's Day Mode!</b> (Only available today · 5 songs per mode; here on out will be 1× per mode per day)</div>
+</div>
+
+<!-- MODE PICKER -->
+<div class="card view show" id="pickerView">
+  <div class="picker-title">Pick today's player</div>
+  <div class="picker-sub" id="pickerSub">A new song each day per mode. Everyone playing this mode today gets the same song.</div>
+  <div class="modes" id="modesGrid"></div>
+</div>
+
+<!-- GAME -->
+<div class="card view" id="gameView">
+  <button class="btn-back" id="backBtn">← back to modes</button>
+  <div class="mom-progress" id="momProgress" style="display:none;"></div>
+  <div class="grid" id="grid"></div>
+  <div class="progress-wrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+      <div class="progress-marks" id="progressMarks"></div>
+    </div>
+    <div class="progress-labels">
+      <span id="curTime">0.0</span>
+      <span id="maxTime">/ 1.0s</span>
+    </div>
+  </div>
+  <div class="play-row">
+    <button class="play-btn pulse" id="playBtn" aria-label="Play clip">
+      <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <div class="play-info">
+      <div class="lbl"><span id="modeBadge"></span> · Round <span id="roundNum">1</span> of 6</div>
+      <div class="val" id="roundLabel">Tap to play 1 second</div>
+    </div>
+  </div>
+  <div class="input-wrap">
+    <input class="guess-input" id="guessInput" type="text" placeholder="Type a song title…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+    <div class="suggestions" id="suggestions"></div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-skip" id="skipBtn">⏭ Skip</button>
+    <button class="btn btn-primary" id="submitBtn" disabled>Submit Guess</button>
+  </div>
+</div>
+
+<!-- ARCHIVE -->
+<div class="card view" id="archiveView">
+  <button class="btn-back" id="archiveBackBtn">← back to modes</button>
+  <div class="picker-title" style="font-size:18px;">📚 Archive</div>
+  <div class="picker-sub">Replay past days. The date and mode are shown before play.</div>
+  <div class="archive-list" id="archiveList"></div>
+  <div class="archive-controls">
+    <button id="devShowAnswer">👁 Show today's answer</button>
+    <button id="devResetStats">🗑 Reset stats</button>
+    <button id="devResetPlayed">🔄 Reset played history</button>
+    <button id="devChangeName">✏️ Change name</button>
+    <button id="devLeaderboard">🏆 Local leaderboard</button>
+  </div>
+</div>
+
+<!-- NAME PROMPT -->
+<div class="modal-bg" id="nameModalBg">
+  <div class="modal">
+    <div class="modal-headline">👋 What's your name?</div>
+    <div class="modal-sub">First name only. We'll add it to your share scorecards so friends know who's winning.</div>
+    <div class="name-prompt">
+      <input id="nameInput" type="text" placeholder="e.g., Grace" maxlength="20" autocapitalize="words" />
+      <button class="btn btn-primary" id="nameSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEADERBOARD MODAL -->
+<div class="modal-bg" id="lbModalBg">
+  <div class="modal">
+    <div class="modal-headline">🏆 Local Leaderboard</div>
+    <div class="modal-sub">Best results saved on this device only. (Real shared leaderboard coming in v1.1!)</div>
+    <div class="leaderboard" id="lbBody"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="lbCloseBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">
+  Made with love by Kyra Hu · V2 launching by Christmas 2026 (or sooner)!<br>
+  <a href="#" id="bugBtn">🐛 Report a bug</a>
+  <div class="footer-version">v1.0 · If you don't see updates, fully close and reopen the page.</div>
+</div>
+
+<!-- RESULT MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-headline" id="modalHeadline">Got it!</div>
+    <div class="modal-sub" id="modalSub">You found the tune.</div>
+    <div class="reveal">
+      <img id="revealArt" src="" alt="" />
+      <div class="reveal-info">
+        <div class="reveal-title" id="revealTitle"></div>
+        <div class="reveal-artist" id="revealArtist"></div>
+        <div class="reveal-meta" id="revealMeta"></div>
+      </div>
+    </div>
+    <div class="scorecard-title" id="scorecardTitle">Your Scorecard</div>
+    <div class="scorecard">
+      <div class="scorecard-line" id="scorecardLine"></div>
+      <div class="scorecard-meta" id="scorecardMeta"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-skip" id="shareBtn">📋 Share Result</button>
+      <button class="btn btn-primary" id="nextBtn">Back to Modes →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<audio id="audio" preload="auto" crossorigin="anonymous"></audio>
+
+<script>
+/* ================================================================
+   SONG POOLS — same as before. Edit at the top of the file.
+   ================================================================ */
+const POOLS = {
+  jeff: [
+    {t:"Billie Jean", a:"Michael Jackson"},{t:"Beat It", a:"Michael Jackson"},{t:"Thriller", a:"Michael Jackson"},
+    {t:"Rock with You", a:"Michael Jackson"},{t:"Don't Stop 'Til You Get Enough", a:"Michael Jackson"},
+    {t:"Smooth Criminal", a:"Michael Jackson"},{t:"Man in the Mirror", a:"Michael Jackson"},
+    {t:"The Way You Make Me Feel", a:"Michael Jackson"},{t:"Bad", a:"Michael Jackson"},{t:"Black or White", a:"Michael Jackson"},
+    {t:"Like a Virgin", a:"Madonna"},{t:"Like a Prayer", a:"Madonna"},{t:"Material Girl", a:"Madonna"},
+    {t:"Vogue", a:"Madonna"},{t:"Holiday", a:"Madonna"},{t:"Borderline", a:"Madonna"},{t:"Papa Don't Preach", a:"Madonna"},
+    {t:"La Isla Bonita", a:"Madonna"},{t:"Express Yourself", a:"Madonna"},{t:"Into the Groove", a:"Madonna"},
+    {t:"Don't Stop Believin'", a:"Journey"},{t:"Any Way You Want It", a:"Journey"},{t:"Faithfully", a:"Journey"},
+    {t:"Open Arms", a:"Journey"},{t:"Take On Me", a:"a-ha"},{t:"Sweet Dreams (Are Made of This)", a:"Eurythmics"},
+    {t:"Here Comes the Rain Again", a:"Eurythmics"},{t:"Girls Just Want to Have Fun", a:"Cyndi Lauper"},
+    {t:"Time After Time", a:"Cyndi Lauper"},{t:"True Colors", a:"Cyndi Lauper"},
+    {t:"Every Breath You Take", a:"The Police"},{t:"Roxanne", a:"The Police"},{t:"Message in a Bottle", a:"The Police"},
+    {t:"Don't Stand So Close to Me", a:"The Police"},{t:"Livin' on a Prayer", a:"Bon Jovi"},
+    {t:"You Give Love a Bad Name", a:"Bon Jovi"},{t:"Wanted Dead or Alive", a:"Bon Jovi"},{t:"It's My Life", a:"Bon Jovi"},
+    {t:"Wake Me Up Before You Go-Go", a:"Wham!"},{t:"Last Christmas", a:"Wham!"},
+    {t:"Careless Whisper", a:"George Michael"},{t:"Faith", a:"George Michael"},{t:"Father Figure", a:"George Michael"},
+    {t:"I Wanna Dance with Somebody", a:"Whitney Houston"},{t:"How Will I Know", a:"Whitney Houston"},
+    {t:"Greatest Love of All", a:"Whitney Houston"},{t:"Saving All My Love for You", a:"Whitney Houston"},
+    {t:"I Will Always Love You", a:"Whitney Houston"},{t:"Africa", a:"Toto"},{t:"Hold the Line", a:"Toto"},
+    {t:"Rosanna", a:"Toto"},{t:"Total Eclipse of the Heart", a:"Bonnie Tyler"},
+    {t:"What's Love Got to Do with It", a:"Tina Turner"},{t:"Private Dancer", a:"Tina Turner"},
+    {t:"Simply the Best", a:"Tina Turner"},{t:"Jump", a:"Van Halen"},{t:"Why Can't This Be Love", a:"Van Halen"},
+    {t:"Eye of the Tiger", a:"Survivor"},{t:"Karma Chameleon", a:"Culture Club"},
+    {t:"Do You Really Want to Hurt Me", a:"Culture Club"},{t:"Footloose", a:"Kenny Loggins"},
+    {t:"Danger Zone", a:"Kenny Loggins"},{t:"Walking on Sunshine", a:"Katrina and the Waves"},
+    {t:"Tainted Love", a:"Soft Cell"},{t:"With or Without You", a:"U2"},
+    {t:"I Still Haven't Found What I'm Looking For", a:"U2"},{t:"Where the Streets Have No Name", a:"U2"},
+    {t:"One", a:"U2"},{t:"Born in the U.S.A.", a:"Bruce Springsteen"},
+    {t:"Dancing in the Dark", a:"Bruce Springsteen"},{t:"Glory Days", a:"Bruce Springsteen"},
+    {t:"Born to Run", a:"Bruce Springsteen"},{t:"Purple Rain", a:"Prince"},{t:"When Doves Cry", a:"Prince"},
+    {t:"Kiss", a:"Prince"},{t:"Little Red Corvette", a:"Prince"},{t:"1999", a:"Prince"},{t:"Raspberry Beret", a:"Prince"},
+    {t:"Hungry Like the Wolf", a:"Duran Duran"},{t:"Rio", a:"Duran Duran"},{t:"Notorious", a:"Duran Duran"},
+    {t:"Don't You (Forget About Me)", a:"Simple Minds"},{t:"Owner of a Lonely Heart", a:"Yes"},
+    {t:"Centerfold", a:"J. Geils Band"},{t:"Tom Sawyer", a:"Rush"},{t:"99 Luftballons", a:"Nena"},
+    {t:"Maneater", a:"Hall & Oates"},{t:"Rich Girl", a:"Hall & Oates"},{t:"You Make My Dreams", a:"Hall & Oates"},
+    {t:"I Can't Go for That", a:"Hall & Oates"},{t:"Private Eyes", a:"Hall & Oates"},
+    {t:"Sweet Child o' Mine", a:"Guns N' Roses"},{t:"November Rain", a:"Guns N' Roses"},
+    {t:"Welcome to the Jungle", a:"Guns N' Roses"},{t:"Paradise City", a:"Guns N' Roses"},
+    {t:"Pour Some Sugar on Me", a:"Def Leppard"},{t:"Photograph", a:"Def Leppard"},
+    {t:"Every Rose Has Its Thorn", a:"Poison"},{t:"Don't Stop Me Now", a:"Queen"},
+    {t:"Bohemian Rhapsody", a:"Queen"},{t:"Somebody to Love", a:"Queen"},{t:"We Will Rock You", a:"Queen"},
+    {t:"We Are the Champions", a:"Queen"},{t:"Another One Bites the Dust", a:"Queen"},
+    {t:"Under Pressure", a:"Queen"},{t:"Radio Ga Ga", a:"Queen"},{t:"I Want to Break Free", a:"Queen"},
+    {t:"Crazy Little Thing Called Love", a:"Queen"},{t:"You're the Inspiration", a:"Chicago"},
+    {t:"Hard to Say I'm Sorry", a:"Chicago"},{t:"Saturday in the Park", a:"Chicago"},
+    {t:"You're the One That I Want", a:"John Travolta"},{t:"Summer Nights", a:"John Travolta"},
+    {t:"Hopelessly Devoted to You", a:"Olivia Newton-John"},{t:"Physical", a:"Olivia Newton-John"},
+    {t:"Xanadu", a:"Olivia Newton-John"},{t:"Bette Davis Eyes", a:"Kim Carnes"},
+    {t:"Endless Love", a:"Lionel Richie"},{t:"All Night Long", a:"Lionel Richie"},{t:"Hello", a:"Lionel Richie"},
+    {t:"Say You, Say Me", a:"Lionel Richie"},{t:"Dancing on the Ceiling", a:"Lionel Richie"},
+    {t:"Easy", a:"Commodores"},{t:"Three Times a Lady", a:"Commodores"},{t:"Brick House", a:"Commodores"},
+    {t:"Wannabe", a:"Spice Girls"},{t:"...Baby One More Time", a:"Britney Spears"},{t:"Toxic", a:"Britney Spears"},
+    {t:"Oops!... I Did It Again", a:"Britney Spears"},{t:"I Want It That Way", a:"Backstreet Boys"},
+    {t:"Bye Bye Bye", a:"NSYNC"},{t:"My Heart Will Go On", a:"Celine Dion"},{t:"Vision of Love", a:"Mariah Carey"},
+    {t:"Hero", a:"Mariah Carey"},{t:"Fantasy", a:"Mariah Carey"},{t:"All I Want for Christmas Is You", a:"Mariah Carey"},
+    {t:"Always Be My Baby", a:"Mariah Carey"},{t:"Crazy in Love", a:"Beyoncé"},
+    {t:"Single Ladies (Put a Ring on It)", a:"Beyoncé"},{t:"Halo", a:"Beyoncé"},{t:"Irreplaceable", a:"Beyoncé"},
+    {t:"Umbrella", a:"Rihanna"},{t:"Bad Romance", a:"Lady Gaga"},{t:"Poker Face", a:"Lady Gaga"},
+    {t:"Just Dance", a:"Lady Gaga"},{t:"Rolling in the Deep", a:"Adele"},{t:"Someone Like You", a:"Adele"},
+    {t:"Hello", a:"Adele"},{t:"Firework", a:"Katy Perry"},{t:"Roar", a:"Katy Perry"},
+    {t:"Teenage Dream", a:"Katy Perry"},{t:"Shake It Off", a:"Taylor Swift"},{t:"Blank Space", a:"Taylor Swift"},
+    {t:"Love Story", a:"Taylor Swift"},{t:"Happy", a:"Pharrell Williams"},{t:"Uptown Funk", a:"Mark Ronson"},
+    {t:"Just the Way You Are", a:"Bruno Mars"},{t:"Grenade", a:"Bruno Mars"},
+    {t:"Locked Out of Heaven", a:"Bruno Mars"},{t:"24K Magic", a:"Bruno Mars"},
+    {t:"Call Me Maybe", a:"Carly Rae Jepsen"},{t:"Royals", a:"Lorde"},{t:"Stay With Me", a:"Sam Smith"},
+    {t:"Thinking Out Loud", a:"Ed Sheeran"},{t:"Shape of You", a:"Ed Sheeran"},{t:"Perfect", a:"Ed Sheeran"},
+    {t:"Despacito", a:"Luis Fonsi"},{t:"Sorry", a:"Justin Bieber"},{t:"Dance Monkey", a:"Tones and I"},
+    {t:"Old Town Road", a:"Lil Nas X"},{t:"Bad Guy", a:"Billie Eilish"},{t:"Sunflower", a:"Post Malone"},
+    {t:"Closer", a:"The Chainsmokers"},{t:"Cheap Thrills", a:"Sia"},{t:"Chandelier", a:"Sia"},
+    {t:"Titanium", a:"David Guetta"},{t:"Wake Me Up", a:"Avicii"},{t:"Levitating", a:"Dua Lipa"},
+    {t:"Don't Start Now", a:"Dua Lipa"},{t:"7 Rings", a:"Ariana Grande"},{t:"thank u, next", a:"Ariana Grande"},
+    {t:"Blinding Lights", a:"The Weeknd"},{t:"Watermelon Sugar", a:"Harry Styles"},{t:"As It Was", a:"Harry Styles"},
+    {t:"Memories", a:"Maroon 5"},{t:"Sugar", a:"Maroon 5"},{t:"Moves Like Jagger", a:"Maroon 5"},
+    {t:"Anti-Hero", a:"Taylor Swift"},{t:"Cruel Summer", a:"Taylor Swift"},{t:"Drivers License", a:"Olivia Rodrigo"},
+    {t:"Good 4 U", a:"Olivia Rodrigo"},{t:"Flowers", a:"Miley Cyrus"},{t:"Stay", a:"The Kid LAROI"},
+    {t:"Heat Waves", a:"Glass Animals"},{t:"Hey Jude", a:"The Beatles"},{t:"Let It Be", a:"The Beatles"},
+    {t:"Yesterday", a:"The Beatles"},{t:"Here Comes the Sun", a:"The Beatles"},{t:"Come Together", a:"The Beatles"},
+    {t:"Imagine", a:"John Lennon"},{t:"(Sittin' On) The Dock of the Bay", a:"Otis Redding"},
+    {t:"My Girl", a:"The Temptations"},{t:"I Heard It Through the Grapevine", a:"Marvin Gaye"},
+    {t:"What's Going On", a:"Marvin Gaye"},{t:"Let's Get It On", a:"Marvin Gaye"},
+    {t:"Sexual Healing", a:"Marvin Gaye"},{t:"Stand by Me", a:"Ben E. King"},
+    {t:"You've Lost That Lovin' Feelin'", a:"The Righteous Brothers"},
+    {t:"Unchained Melody", a:"The Righteous Brothers"},{t:"California Dreamin'", a:"The Mamas & The Papas"},
+    {t:"Good Vibrations", a:"The Beach Boys"},{t:"Wouldn't It Be Nice", a:"The Beach Boys"},
+    {t:"Surfin' U.S.A.", a:"The Beach Boys"},{t:"Hotel California", a:"Eagles"},{t:"Take It Easy", a:"Eagles"},
+    {t:"Desperado", a:"Eagles"},{t:"Lyin' Eyes", a:"Eagles"},{t:"Stairway to Heaven", a:"Led Zeppelin"},
+    {t:"Whole Lotta Love", a:"Led Zeppelin"},{t:"Rocket Man", a:"Elton John"},{t:"Tiny Dancer", a:"Elton John"},
+    {t:"Crocodile Rock", a:"Elton John"},{t:"Your Song", a:"Elton John"},
+    {t:"Don't Let the Sun Go Down on Me", a:"Elton John"},{t:"Bennie and the Jets", a:"Elton John"},
+    {t:"I'm Still Standing", a:"Elton John"},{t:"Sacrifice", a:"Elton John"},{t:"Dancing Queen", a:"ABBA"},
+    {t:"Mamma Mia", a:"ABBA"},{t:"Take a Chance on Me", a:"ABBA"},{t:"Waterloo", a:"ABBA"},
+    {t:"The Winner Takes It All", a:"ABBA"},{t:"Knowing Me, Knowing You", a:"ABBA"},
+    {t:"Super Trouper", a:"ABBA"},{t:"Stayin' Alive", a:"Bee Gees"},{t:"Night Fever", a:"Bee Gees"},
+    {t:"How Deep Is Your Love", a:"Bee Gees"},{t:"More Than a Woman", a:"Bee Gees"},
+    {t:"You Should Be Dancing", a:"Bee Gees"},{t:"I Will Survive", a:"Gloria Gaynor"},
+    {t:"Don't Stop", a:"Fleetwood Mac"},{t:"Go Your Own Way", a:"Fleetwood Mac"},
+    {t:"Dreams", a:"Fleetwood Mac"},{t:"Landslide", a:"Fleetwood Mac"},{t:"The Chain", a:"Fleetwood Mac"},
+    {t:"Don't Worry, Be Happy", a:"Bobby McFerrin"},{t:"Time of My Life", a:"Bill Medley"},
+    {t:"She Drives Me Crazy", a:"Fine Young Cannibals"},{t:"Free Fallin'", a:"Tom Petty"},
+    {t:"American Pie", a:"Don McLean"},{t:"Vincent", a:"Don McLean"},{t:"Piano Man", a:"Billy Joel"},
+    {t:"Uptown Girl", a:"Billy Joel"},{t:"We Didn't Start the Fire", a:"Billy Joel"},
+    {t:"Just the Way You Are", a:"Billy Joel"},{t:"It's Still Rock and Roll to Me", a:"Billy Joel"},
+    {t:"Tell Her About It", a:"Billy Joel"},{t:"Sweet Caroline", a:"Neil Diamond"},
+    {t:"Cracklin' Rosie", a:"Neil Diamond"},{t:"Brown Eyed Girl", a:"Van Morrison"},
+    {t:"Moondance", a:"Van Morrison"},{t:"Layla", a:"Eric Clapton"},{t:"Tears in Heaven", a:"Eric Clapton"},
+    {t:"Wonderful Tonight", a:"Eric Clapton"},{t:"Cocaine", a:"Eric Clapton"},
+    {t:"Heaven Is a Place on Earth", a:"Belinda Carlisle"},{t:"Manic Monday", a:"The Bangles"},
+    {t:"Walk Like an Egyptian", a:"The Bangles"},{t:"Eternal Flame", a:"The Bangles"},
+    {t:"I'll Be There for You", a:"The Rembrandts"},{t:"Tubthumping", a:"Chumbawamba"},
+    {t:"What's Up?", a:"4 Non Blondes"},
+  ],
+  amy: [
+    {t:"Toxic", a:"Britney Spears"},{t:"Oops!... I Did It Again", a:"Britney Spears"},
+    {t:"I'm a Slave 4 U", a:"Britney Spears"},{t:"Gimme More", a:"Britney Spears"},
+    {t:"Womanizer", a:"Britney Spears"},{t:"Stronger", a:"Britney Spears"},{t:"Lucky", a:"Britney Spears"},
+    {t:"Crazy in Love", a:"Beyoncé"},{t:"Single Ladies (Put a Ring on It)", a:"Beyoncé"},{t:"Halo", a:"Beyoncé"},
+    {t:"Irreplaceable", a:"Beyoncé"},{t:"Drunk in Love", a:"Beyoncé"},{t:"Formation", a:"Beyoncé"},
+    {t:"Run the World (Girls)", a:"Beyoncé"},{t:"Love On Top", a:"Beyoncé"},{t:"7/11", a:"Beyoncé"},
+    {t:"Hollaback Girl", a:"Gwen Stefani"},{t:"Cool", a:"Gwen Stefani"},{t:"The Sweet Escape", a:"Gwen Stefani"},
+    {t:"Hey Ya!", a:"OutKast"},{t:"Ms. Jackson", a:"OutKast"},{t:"Since U Been Gone", a:"Kelly Clarkson"},
+    {t:"Stronger (What Doesn't Kill You)", a:"Kelly Clarkson"},{t:"Behind These Hazel Eyes", a:"Kelly Clarkson"},
+    {t:"Because of You", a:"Kelly Clarkson"},{t:"Umbrella", a:"Rihanna"},{t:"Don't Stop the Music", a:"Rihanna"},
+    {t:"Disturbia", a:"Rihanna"},{t:"Take a Bow", a:"Rihanna"},{t:"Only Girl (In the World)", a:"Rihanna"},
+    {t:"We Found Love", a:"Rihanna"},{t:"Diamonds", a:"Rihanna"},{t:"Rude Boy", a:"Rihanna"},
+    {t:"S&M", a:"Rihanna"},{t:"What's My Name?", a:"Rihanna"},{t:"Stay", a:"Rihanna"},{t:"Work", a:"Rihanna"},
+    {t:"Bad Romance", a:"Lady Gaga"},{t:"Poker Face", a:"Lady Gaga"},{t:"Just Dance", a:"Lady Gaga"},
+    {t:"Paparazzi", a:"Lady Gaga"},{t:"Born This Way", a:"Lady Gaga"},{t:"Telephone", a:"Lady Gaga"},
+    {t:"Edge of Glory", a:"Lady Gaga"},{t:"Applause", a:"Lady Gaga"},{t:"Shallow", a:"Lady Gaga"},
+    {t:"Rain on Me", a:"Lady Gaga"},{t:"I Gotta Feeling", a:"The Black Eyed Peas"},
+    {t:"Boom Boom Pow", a:"The Black Eyed Peas"},{t:"Where Is the Love?", a:"The Black Eyed Peas"},
+    {t:"Pump It", a:"The Black Eyed Peas"},{t:"My Humps", a:"The Black Eyed Peas"},
+    {t:"Don't Phunk with My Heart", a:"The Black Eyed Peas"},{t:"Sk8er Boi", a:"Avril Lavigne"},
+    {t:"Complicated", a:"Avril Lavigne"},{t:"Girlfriend", a:"Avril Lavigne"},{t:"My Happy Ending", a:"Avril Lavigne"},
+    {t:"In da Club", a:"50 Cent"},{t:"Lose Yourself", a:"Eminem"},{t:"Without Me", a:"Eminem"},
+    {t:"The Real Slim Shady", a:"Eminem"},{t:"Stan", a:"Eminem"},{t:"Not Afraid", a:"Eminem"},
+    {t:"Love the Way You Lie", a:"Eminem"},{t:"Mr. Brightside", a:"The Killers"},
+    {t:"Somebody Told Me", a:"The Killers"},{t:"When You Were Young", a:"The Killers"},
+    {t:"Beautiful", a:"Christina Aguilera"},{t:"Ain't No Other Man", a:"Christina Aguilera"},
+    {t:"Genie in a Bottle", a:"Christina Aguilera"},{t:"Dirrty", a:"Christina Aguilera"},
+    {t:"Fighter", a:"Christina Aguilera"},{t:"Hips Don't Lie", a:"Shakira"},
+    {t:"Whenever, Wherever", a:"Shakira"},{t:"Underneath Your Clothes", a:"Shakira"},
+    {t:"Waka Waka (This Time for Africa)", a:"Shakira"},{t:"Yeah!", a:"Usher"},{t:"Burn", a:"Usher"},
+    {t:"Confessions Part II", a:"Usher"},{t:"DJ Got Us Fallin' in Love", a:"Usher"},{t:"OMG", a:"Usher"},
+    {t:"Hot in Herre", a:"Nelly"},{t:"Dilemma", a:"Nelly"},{t:"Drops of Jupiter", a:"Train"},
+    {t:"Hey, Soul Sister", a:"Train"},{t:"Drive By", a:"Train"},{t:"Hey There Delilah", a:"Plain White T's"},
+    {t:"Apologize", a:"OneRepublic"},{t:"Counting Stars", a:"OneRepublic"},{t:"Good Life", a:"OneRepublic"},
+    {t:"Bleeding Love", a:"Leona Lewis"},{t:"Big Girls Don't Cry", a:"Fergie"},{t:"London Bridge", a:"Fergie"},
+    {t:"Glamorous", a:"Fergie"},{t:"SexyBack", a:"Justin Timberlake"},
+    {t:"Cry Me a River", a:"Justin Timberlake"},{t:"Mirrors", a:"Justin Timberlake"},
+    {t:"Suit & Tie", a:"Justin Timberlake"},{t:"Can't Stop the Feeling!", a:"Justin Timberlake"},
+    {t:"Rock Your Body", a:"Justin Timberlake"},{t:"American Idiot", a:"Green Day"},
+    {t:"Boulevard of Broken Dreams", a:"Green Day"},{t:"Wake Me Up When September Ends", a:"Green Day"},
+    {t:"21 Guns", a:"Green Day"},{t:"Clocks", a:"Coldplay"},{t:"Viva la Vida", a:"Coldplay"},
+    {t:"Yellow", a:"Coldplay"},{t:"Fix You", a:"Coldplay"},{t:"The Scientist", a:"Coldplay"},
+    {t:"Paradise", a:"Coldplay"},{t:"A Sky Full of Stars", a:"Coldplay"},{t:"Chasing Cars", a:"Snow Patrol"},
+    {t:"Beautiful Day", a:"U2"},{t:"Vertigo", a:"U2"},{t:"Rolling in the Deep", a:"Adele"},
+    {t:"Someone Like You", a:"Adele"},{t:"Hello", a:"Adele"},{t:"Set Fire to the Rain", a:"Adele"},
+    {t:"Skyfall", a:"Adele"},{t:"Easy On Me", a:"Adele"},{t:"Chasing Pavements", a:"Adele"},
+    {t:"When We Were Young", a:"Adele"},{t:"Firework", a:"Katy Perry"},{t:"Roar", a:"Katy Perry"},
+    {t:"Teenage Dream", a:"Katy Perry"},{t:"California Gurls", a:"Katy Perry"},{t:"Dark Horse", a:"Katy Perry"},
+    {t:"I Kissed a Girl", a:"Katy Perry"},{t:"Hot N Cold", a:"Katy Perry"},
+    {t:"Last Friday Night", a:"Katy Perry"},{t:"E.T.", a:"Katy Perry"},{t:"Wide Awake", a:"Katy Perry"},
+    {t:"Shake It Off", a:"Taylor Swift"},{t:"Blank Space", a:"Taylor Swift"},{t:"Bad Blood", a:"Taylor Swift"},
+    {t:"You Belong with Me", a:"Taylor Swift"},{t:"Love Story", a:"Taylor Swift"},{t:"22", a:"Taylor Swift"},
+    {t:"Wildest Dreams", a:"Taylor Swift"},{t:"Style", a:"Taylor Swift"},
+    {t:"Look What You Made Me Do", a:"Taylor Swift"},{t:"Delicate", a:"Taylor Swift"},
+    {t:"Lover", a:"Taylor Swift"},{t:"ME!", a:"Taylor Swift"},{t:"Anti-Hero", a:"Taylor Swift"},
+    {t:"Cruel Summer", a:"Taylor Swift"},{t:"Lavender Haze", a:"Taylor Swift"},{t:"Cardigan", a:"Taylor Swift"},
+    {t:"Willow", a:"Taylor Swift"},{t:"Happy", a:"Pharrell Williams"},{t:"Get Lucky", a:"Daft Punk"},
+    {t:"Uptown Funk", a:"Mark Ronson"},{t:"Just the Way You Are", a:"Bruno Mars"},
+    {t:"Grenade", a:"Bruno Mars"},{t:"Locked Out of Heaven", a:"Bruno Mars"},{t:"24K Magic", a:"Bruno Mars"},
+    {t:"That's What I Like", a:"Bruno Mars"},{t:"Treasure", a:"Bruno Mars"},
+    {t:"When I Was Your Man", a:"Bruno Mars"},{t:"Marry You", a:"Bruno Mars"},
+    {t:"The Lazy Song", a:"Bruno Mars"},{t:"Call Me Maybe", a:"Carly Rae Jepsen"},
+    {t:"I Really Like You", a:"Carly Rae Jepsen"},{t:"Royals", a:"Lorde"},{t:"Team", a:"Lorde"},
+    {t:"Stay With Me", a:"Sam Smith"},{t:"Too Good at Goodbyes", a:"Sam Smith"},
+    {t:"Thinking Out Loud", a:"Ed Sheeran"},{t:"Shape of You", a:"Ed Sheeran"},
+    {t:"Perfect", a:"Ed Sheeran"},{t:"Photograph", a:"Ed Sheeran"},{t:"Castle on the Hill", a:"Ed Sheeran"},
+    {t:"Bad Habits", a:"Ed Sheeran"},{t:"Shivers", a:"Ed Sheeran"},{t:"Despacito", a:"Luis Fonsi"},
+    {t:"Sorry", a:"Justin Bieber"},{t:"Love Yourself", a:"Justin Bieber"},
+    {t:"What Do You Mean?", a:"Justin Bieber"},{t:"Baby", a:"Justin Bieber"},{t:"Peaches", a:"Justin Bieber"},
+    {t:"Stay", a:"The Kid LAROI"},{t:"Dance Monkey", a:"Tones and I"},{t:"Old Town Road", a:"Lil Nas X"},
+    {t:"Industry Baby", a:"Lil Nas X"},{t:"Montero (Call Me By Your Name)", a:"Lil Nas X"},
+    {t:"Bad Guy", a:"Billie Eilish"},{t:"Lovely", a:"Billie Eilish"},
+    {t:"When the Party's Over", a:"Billie Eilish"},{t:"Happier Than Ever", a:"Billie Eilish"},
+    {t:"What Was I Made For?", a:"Billie Eilish"},{t:"Sunflower", a:"Post Malone"},
+    {t:"Circles", a:"Post Malone"},{t:"Better Now", a:"Post Malone"},{t:"Rockstar", a:"Post Malone"},
+    {t:"Closer", a:"The Chainsmokers"},{t:"Something Just Like This", a:"The Chainsmokers"},
+    {t:"Don't Let Me Down", a:"The Chainsmokers"},{t:"Rather Be", a:"Clean Bandit"},
+    {t:"Cheap Thrills", a:"Sia"},{t:"Chandelier", a:"Sia"},{t:"Elastic Heart", a:"Sia"},
+    {t:"Titanium", a:"David Guetta"},{t:"Wake Me Up", a:"Avicii"},{t:"Levels", a:"Avicii"},
+    {t:"Hey Brother", a:"Avicii"},{t:"Pumped Up Kicks", a:"Foster the People"},
+    {t:"Some Nights", a:"fun."},{t:"We Are Young", a:"fun."},{t:"Ho Hey", a:"The Lumineers"},
+    {t:"Riptide", a:"Vance Joy"},{t:"Lights", a:"Ellie Goulding"},{t:"Burn", a:"Ellie Goulding"},
+    {t:"Love Me Like You Do", a:"Ellie Goulding"},{t:"Levitating", a:"Dua Lipa"},
+    {t:"Don't Start Now", a:"Dua Lipa"},{t:"New Rules", a:"Dua Lipa"},{t:"IDGAF", a:"Dua Lipa"},
+    {t:"Physical", a:"Dua Lipa"},{t:"Houdini", a:"Dua Lipa"},{t:"7 Rings", a:"Ariana Grande"},
+    {t:"thank u, next", a:"Ariana Grande"},{t:"Side to Side", a:"Ariana Grande"},
+    {t:"Problem", a:"Ariana Grande"},{t:"No Tears Left to Cry", a:"Ariana Grande"},
+    {t:"Break Free", a:"Ariana Grande"},{t:"Bang Bang", a:"Jessie J"},
+    {t:"Blinding Lights", a:"The Weeknd"},{t:"Can't Feel My Face", a:"The Weeknd"},
+    {t:"Starboy", a:"The Weeknd"},{t:"The Hills", a:"The Weeknd"},{t:"Save Your Tears", a:"The Weeknd"},
+    {t:"Watermelon Sugar", a:"Harry Styles"},{t:"Adore You", a:"Harry Styles"},
+    {t:"Sign of the Times", a:"Harry Styles"},{t:"As It Was", a:"Harry Styles"},
+    {t:"Memories", a:"Maroon 5"},{t:"Sugar", a:"Maroon 5"},{t:"Moves Like Jagger", a:"Maroon 5"},
+    {t:"Girls Like You", a:"Maroon 5"},{t:"Payphone", a:"Maroon 5"},{t:"This Love", a:"Maroon 5"},
+    {t:"She Will Be Loved", a:"Maroon 5"},{t:"Drivers License", a:"Olivia Rodrigo"},
+    {t:"Good 4 U", a:"Olivia Rodrigo"},{t:"Vampire", a:"Olivia Rodrigo"},
+    {t:"Deja Vu", a:"Olivia Rodrigo"},{t:"Flowers", a:"Miley Cyrus"},{t:"Wrecking Ball", a:"Miley Cyrus"},
+    {t:"Party in the U.S.A.", a:"Miley Cyrus"},{t:"Espresso", a:"Sabrina Carpenter"},
+    {t:"Please Please Please", a:"Sabrina Carpenter"},{t:"Heat Waves", a:"Glass Animals"},
+    {t:"Kill Bill", a:"SZA"},{t:"Snooze", a:"SZA"},{t:"Unholy", a:"Sam Smith"},
+    {t:"About Damn Time", a:"Lizzo"},{t:"Good as Hell", a:"Lizzo"},{t:"Truth Hurts", a:"Lizzo"},
+    {t:"Calm Down", a:"Rema"},{t:"I'm Good (Blue)", a:"David Guetta"},{t:"Greedy", a:"Tate McRae"},
+    {t:"Paint The Town Red", a:"Doja Cat"},{t:"Say So", a:"Doja Cat"},{t:"Woman", a:"Doja Cat"},
+    {t:"Texas Hold 'Em", a:"Beyoncé"},{t:"Murder On The Dancefloor", a:"Sophie Ellis-Bextor"},
+    {t:"Crazy", a:"Gnarls Barkley"},{t:"Empire State of Mind", a:"Jay-Z"},
+    {t:"Gold Digger", a:"Kanye West"},{t:"Stronger", a:"Kanye West"},{t:"Heartless", a:"Kanye West"},
+    {t:"Praying", a:"Kesha"},{t:"Tik Tok", a:"Kesha"},{t:"Die Young", a:"Kesha"},
+    {t:"Demons", a:"Imagine Dragons"},{t:"Radioactive", a:"Imagine Dragons"},
+    {t:"Believer", a:"Imagine Dragons"},{t:"Thunder", a:"Imagine Dragons"},
+    {t:"Whatever It Takes", a:"Imagine Dragons"},{t:"It's Time", a:"Imagine Dragons"},
+  ],
+  david: [
+    {t:"Hey Jude", a:"The Beatles"},{t:"Let It Be", a:"The Beatles"},{t:"Yesterday", a:"The Beatles"},
+    {t:"Here Comes the Sun", a:"The Beatles"},{t:"Come Together", a:"The Beatles"},{t:"Help!", a:"The Beatles"},
+    {t:"I Want to Hold Your Hand", a:"The Beatles"},{t:"A Hard Day's Night", a:"The Beatles"},
+    {t:"Something", a:"The Beatles"},{t:"Twist and Shout", a:"The Beatles"},
+    {t:"Strawberry Fields Forever", a:"The Beatles"},{t:"Penny Lane", a:"The Beatles"},
+    {t:"Imagine", a:"John Lennon"},{t:"My Girl", a:"The Temptations"},
+    {t:"Papa Was a Rollin' Stone", a:"The Temptations"},{t:"Ain't Too Proud to Beg", a:"The Temptations"},
+    {t:"I Heard It Through the Grapevine", a:"Marvin Gaye"},{t:"What's Going On", a:"Marvin Gaye"},
+    {t:"Let's Get It On", a:"Marvin Gaye"},{t:"Sexual Healing", a:"Marvin Gaye"},
+    {t:"How Sweet It Is (To Be Loved by You)", a:"Marvin Gaye"},{t:"Stand by Me", a:"Ben E. King"},
+    {t:"You've Lost That Lovin' Feelin'", a:"The Righteous Brothers"},
+    {t:"Unchained Melody", a:"The Righteous Brothers"},{t:"California Dreamin'", a:"The Mamas & The Papas"},
+    {t:"Good Vibrations", a:"The Beach Boys"},{t:"Wouldn't It Be Nice", a:"The Beach Boys"},
+    {t:"Surfin' U.S.A.", a:"The Beach Boys"},{t:"Help Me, Rhonda", a:"The Beach Boys"},
+    {t:"I Get Around", a:"The Beach Boys"},{t:"Kokomo", a:"The Beach Boys"},
+    {t:"Hotel California", a:"Eagles"},{t:"Take It Easy", a:"Eagles"},{t:"Desperado", a:"Eagles"},
+    {t:"Lyin' Eyes", a:"Eagles"},{t:"One of These Nights", a:"Eagles"},
+    {t:"Take It to the Limit", a:"Eagles"},{t:"New Kid in Town", a:"Eagles"},
+    {t:"Stairway to Heaven", a:"Led Zeppelin"},{t:"Whole Lotta Love", a:"Led Zeppelin"},
+    {t:"Black Dog", a:"Led Zeppelin"},{t:"Kashmir", a:"Led Zeppelin"},
+    {t:"Rocket Man", a:"Elton John"},{t:"Tiny Dancer", a:"Elton John"},
+    {t:"Crocodile Rock", a:"Elton John"},{t:"Your Song", a:"Elton John"},
+    {t:"Goodbye Yellow Brick Road", a:"Elton John"},{t:"Don't Let the Sun Go Down on Me", a:"Elton John"},
+    {t:"Bennie and the Jets", a:"Elton John"},{t:"I'm Still Standing", a:"Elton John"},
+    {t:"Sacrifice", a:"Elton John"},{t:"Candle in the Wind", a:"Elton John"},
+    {t:"Saturday Night's Alright for Fighting", a:"Elton John"},{t:"Dancing Queen", a:"ABBA"},
+    {t:"Mamma Mia", a:"ABBA"},{t:"Take a Chance on Me", a:"ABBA"},{t:"Waterloo", a:"ABBA"},
+    {t:"The Winner Takes It All", a:"ABBA"},{t:"Knowing Me, Knowing You", a:"ABBA"},
+    {t:"Super Trouper", a:"ABBA"},{t:"Fernando", a:"ABBA"},{t:"Money, Money, Money", a:"ABBA"},
+    {t:"Stayin' Alive", a:"Bee Gees"},{t:"Night Fever", a:"Bee Gees"},
+    {t:"How Deep Is Your Love", a:"Bee Gees"},{t:"More Than a Woman", a:"Bee Gees"},
+    {t:"You Should Be Dancing", a:"Bee Gees"},{t:"Tragedy", a:"Bee Gees"},
+    {t:"I Will Survive", a:"Gloria Gaynor"},{t:"Don't Stop", a:"Fleetwood Mac"},
+    {t:"Go Your Own Way", a:"Fleetwood Mac"},{t:"Dreams", a:"Fleetwood Mac"},
+    {t:"Landslide", a:"Fleetwood Mac"},{t:"The Chain", a:"Fleetwood Mac"},
+    {t:"Rhiannon", a:"Fleetwood Mac"},{t:"Free Fallin'", a:"Tom Petty"},
+    {t:"American Girl", a:"Tom Petty"},{t:"I Won't Back Down", a:"Tom Petty"},
+    {t:"Refugee", a:"Tom Petty"},{t:"Learning to Fly", a:"Tom Petty"},
+    {t:"American Pie", a:"Don McLean"},{t:"Vincent", a:"Don McLean"},
+    {t:"Piano Man", a:"Billy Joel"},{t:"Uptown Girl", a:"Billy Joel"},
+    {t:"We Didn't Start the Fire", a:"Billy Joel"},{t:"Just the Way You Are", a:"Billy Joel"},
+    {t:"It's Still Rock and Roll to Me", a:"Billy Joel"},{t:"Tell Her About It", a:"Billy Joel"},
+    {t:"Only the Good Die Young", a:"Billy Joel"},{t:"Sweet Caroline", a:"Neil Diamond"},
+    {t:"Cracklin' Rosie", a:"Neil Diamond"},{t:"Song Sung Blue", a:"Neil Diamond"},
+    {t:"Brown Eyed Girl", a:"Van Morrison"},{t:"Moondance", a:"Van Morrison"},
+    {t:"Layla", a:"Eric Clapton"},{t:"Tears in Heaven", a:"Eric Clapton"},
+    {t:"Wonderful Tonight", a:"Eric Clapton"},{t:"Cocaine", a:"Eric Clapton"},
+    {t:"Change the World", a:"Eric Clapton"},{t:"(I Can't Get No) Satisfaction", a:"The Rolling Stones"},
+    {t:"Paint It Black", a:"The Rolling Stones"},{t:"Gimme Shelter", a:"The Rolling Stones"},
+    {t:"Sympathy for the Devil", a:"The Rolling Stones"},{t:"Brown Sugar", a:"The Rolling Stones"},
+    {t:"Start Me Up", a:"The Rolling Stones"},{t:"Angie", a:"The Rolling Stones"},
+    {t:"Wild Horses", a:"The Rolling Stones"},
+    {t:"You Can't Always Get What You Want", a:"The Rolling Stones"},
+    {t:"Honky Tonk Women", a:"The Rolling Stones"},{t:"Blowin' in the Wind", a:"Bob Dylan"},
+    {t:"The Times They Are a-Changin'", a:"Bob Dylan"},{t:"Like a Rolling Stone", a:"Bob Dylan"},
+    {t:"Knockin' on Heaven's Door", a:"Bob Dylan"},{t:"Mr. Tambourine Man", a:"Bob Dylan"},
+    {t:"The Sound of Silence", a:"Simon & Garfunkel"},{t:"Bridge Over Troubled Water", a:"Simon & Garfunkel"},
+    {t:"Mrs. Robinson", a:"Simon & Garfunkel"},{t:"Cecilia", a:"Simon & Garfunkel"},
+    {t:"Scarborough Fair", a:"Simon & Garfunkel"},{t:"You Can Call Me Al", a:"Paul Simon"},
+    {t:"Graceland", a:"Paul Simon"},{t:"50 Ways to Leave Your Lover", a:"Paul Simon"},
+    {t:"Light My Fire", a:"The Doors"},{t:"Riders on the Storm", a:"The Doors"},
+    {t:"Break On Through (To the Other Side)", a:"The Doors"},{t:"Hello, I Love You", a:"The Doors"},
+    {t:"L.A. Woman", a:"The Doors"},{t:"Hey Joe", a:"Jimi Hendrix"},
+    {t:"Purple Haze", a:"Jimi Hendrix"},{t:"All Along the Watchtower", a:"Jimi Hendrix"},
+    {t:"Voodoo Child", a:"Jimi Hendrix"},{t:"I Got You Babe", a:"Sonny & Cher"},
+    {t:"Respect", a:"Aretha Franklin"},
+    {t:"(You Make Me Feel Like) A Natural Woman", a:"Aretha Franklin"},{t:"Think", a:"Aretha Franklin"},
+    {t:"Chain of Fools", a:"Aretha Franklin"},{t:"I Say a Little Prayer", a:"Aretha Franklin"},
+    {t:"What a Wonderful World", a:"Louis Armstrong"},{t:"Crazy", a:"Patsy Cline"},
+    {t:"I Walk the Line", a:"Johnny Cash"},{t:"Ring of Fire", a:"Johnny Cash"},
+    {t:"Folsom Prison Blues", a:"Johnny Cash"},{t:"Suspicious Minds", a:"Elvis Presley"},
+    {t:"Jailhouse Rock", a:"Elvis Presley"},{t:"Hound Dog", a:"Elvis Presley"},
+    {t:"Heartbreak Hotel", a:"Elvis Presley"},{t:"Can't Help Falling in Love", a:"Elvis Presley"},
+    {t:"Love Me Tender", a:"Elvis Presley"},{t:"In the Ghetto", a:"Elvis Presley"},
+    {t:"Always on My Mind", a:"Elvis Presley"},{t:"Burning Love", a:"Elvis Presley"},
+    {t:"Don't Be Cruel", a:"Elvis Presley"},{t:"Pretty Woman", a:"Roy Orbison"},
+    {t:"Crying", a:"Roy Orbison"},{t:"Only the Lonely", a:"Roy Orbison"},
+    {t:"Hit the Road Jack", a:"Ray Charles"},{t:"Georgia on My Mind", a:"Ray Charles"},
+    {t:"I Can't Stop Loving You", a:"Ray Charles"},{t:"What'd I Say", a:"Ray Charles"},
+    {t:"Billie Jean", a:"Michael Jackson"},{t:"Beat It", a:"Michael Jackson"},
+    {t:"Thriller", a:"Michael Jackson"},{t:"Smooth Criminal", a:"Michael Jackson"},
+    {t:"Man in the Mirror", a:"Michael Jackson"},{t:"Bad", a:"Michael Jackson"},
+    {t:"Black or White", a:"Michael Jackson"},{t:"Like a Virgin", a:"Madonna"},
+    {t:"Like a Prayer", a:"Madonna"},{t:"Material Girl", a:"Madonna"},
+    {t:"Vogue", a:"Madonna"},{t:"Holiday", a:"Madonna"},{t:"Take On Me", a:"a-ha"},
+    {t:"Don't Stop Believin'", a:"Journey"},{t:"Open Arms", a:"Journey"},
+    {t:"Faithfully", a:"Journey"},{t:"Sweet Dreams (Are Made of This)", a:"Eurythmics"},
+    {t:"Girls Just Want to Have Fun", a:"Cyndi Lauper"},{t:"Time After Time", a:"Cyndi Lauper"},
+    {t:"Every Breath You Take", a:"The Police"},{t:"Roxanne", a:"The Police"},
+    {t:"Livin' on a Prayer", a:"Bon Jovi"},{t:"Wanted Dead or Alive", a:"Bon Jovi"},
+    {t:"Careless Whisper", a:"George Michael"},{t:"Faith", a:"George Michael"},
+    {t:"I Wanna Dance with Somebody", a:"Whitney Houston"},{t:"How Will I Know", a:"Whitney Houston"},
+    {t:"I Will Always Love You", a:"Whitney Houston"},{t:"Greatest Love of All", a:"Whitney Houston"},
+    {t:"Africa", a:"Toto"},{t:"Total Eclipse of the Heart", a:"Bonnie Tyler"},
+    {t:"What's Love Got to Do with It", a:"Tina Turner"},{t:"Eye of the Tiger", a:"Survivor"},
+    {t:"Karma Chameleon", a:"Culture Club"},{t:"Footloose", a:"Kenny Loggins"},
+    {t:"Walking on Sunshine", a:"Katrina and the Waves"},{t:"With or Without You", a:"U2"},
+    {t:"One", a:"U2"},{t:"Born in the U.S.A.", a:"Bruce Springsteen"},
+    {t:"Dancing in the Dark", a:"Bruce Springsteen"},{t:"Born to Run", a:"Bruce Springsteen"},
+    {t:"Glory Days", a:"Bruce Springsteen"},{t:"Purple Rain", a:"Prince"},
+    {t:"When Doves Cry", a:"Prince"},{t:"Kiss", a:"Prince"},{t:"1999", a:"Prince"},
+    {t:"Hungry Like the Wolf", a:"Duran Duran"},{t:"Don't You (Forget About Me)", a:"Simple Minds"},
+    {t:"Sweet Child o' Mine", a:"Guns N' Roses"},{t:"November Rain", a:"Guns N' Roses"},
+    {t:"Welcome to the Jungle", a:"Guns N' Roses"},{t:"Bohemian Rhapsody", a:"Queen"},
+    {t:"We Will Rock You", a:"Queen"},{t:"We Are the Champions", a:"Queen"},
+    {t:"Don't Stop Me Now", a:"Queen"},{t:"Another One Bites the Dust", a:"Queen"},
+    {t:"Under Pressure", a:"Queen"},{t:"Crazy Little Thing Called Love", a:"Queen"},
+    {t:"Smells Like Teen Spirit", a:"Nirvana"},{t:"Come As You Are", a:"Nirvana"},
+    {t:"Heart-Shaped Box", a:"Nirvana"},{t:"In Bloom", a:"Nirvana"},
+    {t:"Black", a:"Pearl Jam"},{t:"Alive", a:"Pearl Jam"},{t:"Jeremy", a:"Pearl Jam"},
+    {t:"Even Flow", a:"Pearl Jam"},{t:"Losing My Religion", a:"R.E.M."},
+    {t:"Everybody Hurts", a:"R.E.M."},{t:"Man on the Moon", a:"R.E.M."},
+    {t:"It's the End of the World as We Know It", a:"R.E.M."},
+    {t:"Wonderwall", a:"Oasis"},{t:"Don't Look Back in Anger", a:"Oasis"},
+    {t:"Champagne Supernova", a:"Oasis"},{t:"Live Forever", a:"Oasis"},
+    {t:"Ironic", a:"Alanis Morissette"},{t:"You Oughta Know", a:"Alanis Morissette"},
+    {t:"Hand in My Pocket", a:"Alanis Morissette"},{t:"Zombie", a:"The Cranberries"},
+    {t:"Linger", a:"The Cranberries"},{t:"Dreams", a:"The Cranberries"},
+    {t:"Don't Speak", a:"No Doubt"},{t:"Just a Girl", a:"No Doubt"},
+    {t:"My Heart Will Go On", a:"Celine Dion"},{t:"Because You Loved Me", a:"Celine Dion"},
+    {t:"It's All Coming Back to Me Now", a:"Celine Dion"},{t:"The Power of Love", a:"Celine Dion"},
+    {t:"All by Myself", a:"Celine Dion"},{t:"Vision of Love", a:"Mariah Carey"},
+    {t:"Hero", a:"Mariah Carey"},{t:"Fantasy", a:"Mariah Carey"},
+    {t:"Always Be My Baby", a:"Mariah Carey"},{t:"All I Want for Christmas Is You", a:"Mariah Carey"},
+    {t:"One Sweet Day", a:"Mariah Carey"},{t:"Wannabe", a:"Spice Girls"},
+    {t:"Say You'll Be There", a:"Spice Girls"},{t:"Spice Up Your Life", a:"Spice Girls"},
+    {t:"Smooth", a:"Santana"},{t:"Maria Maria", a:"Santana"},
+    {t:"Livin' La Vida Loca", a:"Ricky Martin"},{t:"She Bangs", a:"Ricky Martin"},
+    {t:"MMMBop", a:"Hanson"},{t:"Believe", a:"Cher"},{t:"Strong Enough", a:"Cher"},
+    {t:"If I Could Turn Back Time", a:"Cher"},{t:"Torn", a:"Natalie Imbruglia"},
+    {t:"No Scrubs", a:"TLC"},{t:"Waterfalls", a:"TLC"},{t:"Lovefool", a:"The Cardigans"},
+    {t:"Black Velvet", a:"Alannah Myles"},{t:"Nothing Compares 2 U", a:"Sinéad O'Connor"},
+    {t:"Mambo No. 5", a:"Lou Bega"},{t:"Macarena", a:"Los del Río"},
+    {t:"Barbie Girl", a:"Aqua"},{t:"Tubthumping", a:"Chumbawamba"},
+    {t:"What's Up?", a:"4 Non Blondes"},{t:"All Star", a:"Smash Mouth"},{t:"I'm Yours", a:"Jason Mraz"},
+  ],
+  grace: [
+    {t:"Anak", a:"Freddie Aguilar"},{t:"Pare Ko", a:"Eraserheads"},{t:"Ang Huling El Bimbo", a:"Eraserheads"},
+    {t:"With a Smile", a:"Eraserheads"},{t:"Alapaap", a:"Eraserheads"},{t:"Magasin", a:"Eraserheads"},
+    {t:"Spoliarium", a:"Eraserheads"},{t:"Toyang", a:"Eraserheads"},{t:"Ligaya", a:"Eraserheads"},
+    {t:"Overdrive", a:"Eraserheads"},{t:"Tindahan ni Aling Nena", a:"Eraserheads"},
+    {t:"Huwag Mo Nang Itanong", a:"Eraserheads"},{t:"Kaleidoscope World", a:"Francis Magalona"},
+    {t:"Mga Kababayan", a:"Francis Magalona"},{t:"Ako Ay Pilipino", a:"Francis Magalona"},
+    {t:"Awit ng Kabataan", a:"Rivermaya"},{t:"Hinahanap-Hanap Kita", a:"Rivermaya"},
+    {t:"Ulan", a:"Rivermaya"},{t:"Kisapmata", a:"Rivermaya"},{t:"Elesi", a:"Rivermaya"},
+    {t:"214", a:"Rivermaya"},{t:"Noypi", a:"Bamboo"},{t:"Hallelujah", a:"Bamboo"},
+    {t:"Masaya", a:"Bamboo"},{t:"Tatsulok", a:"Bamboo"},{t:"Much Has Been Said", a:"Bamboo"},
+    {t:"Probinsyana", a:"Bamboo"},{t:"Pinoy Ako", a:"Orange and Lemons"},
+    {t:"Hanggang Kailan", a:"Orange and Lemons"},{t:"Heaven Knows (This Angel Has Flown)", a:"Orange and Lemons"},
+    {t:"Pagsamo", a:"Arthur Nery"},{t:"Binibini", a:"Zack Tabudlo"},{t:"Habang Buhay", a:"Zack Tabudlo"},
+    {t:"Pano", a:"Zack Tabudlo"},{t:"Mundo", a:"IV of Spades"},{t:"Hey Barbara", a:"IV of Spades"},
+    {t:"Take That Man", a:"IV of Spades"},{t:"Bawat Kaluluwa", a:"Cup of Joe"},
+    {t:"Tingin", a:"Cup of Joe"},{t:"Multo", a:"Cup of Joe"},
+    {t:"Maybe the Night", a:"Ben&Ben"},{t:"Kathang Isip", a:"Ben&Ben"},{t:"Leaves", a:"Ben&Ben"},
+    {t:"Pagtingin", a:"Ben&Ben"},{t:"Lifetime", a:"Ben&Ben"},{t:"Limasawa Street", a:"Ben&Ben"},
+    {t:"Araw-Araw", a:"Ben&Ben"},{t:"Upuan", a:"Ben&Ben"},
+    {t:"Mahika", a:"TJ Monterde"},{t:"Dating Tayo", a:"TJ Monterde"},{t:"Tulad Mo", a:"TJ Monterde"},
+    {t:"Ikaw at Ako", a:"Moira Dela Torre"},{t:"Tagpuan", a:"Moira Dela Torre"},
+    {t:"Malaya", a:"Moira Dela Torre"},{t:"Paubaya", a:"Moira Dela Torre"},
+    {t:"Patawad", a:"Moira Dela Torre"},{t:"Titibo-Tibo", a:"Moira Dela Torre"},
+    {t:"Bakit Ba Ikaw", a:"Moira Dela Torre"},{t:"Gento", a:"SB19"},{t:"MAPA", a:"SB19"},
+    {t:"Bazinga", a:"SB19"},{t:"What?", a:"SB19"},{t:"Go Up", a:"SB19"},
+    {t:"Ikaw Lamang", a:"Silent Sanctuary"},{t:"Sa'yo", a:"Silent Sanctuary"},
+    {t:"Hay Naku", a:"True Faith"},{t:"Perfect", a:"True Faith"},
+    {t:"Forevermore", a:"Side A"},{t:"Tell Me", a:"Side A"},{t:"Eva Marie", a:"Side A"},
+    {t:"Forever's Not Enough", a:"Sarah Geronimo"},{t:"Sa Iyo", a:"Sarah Geronimo"},
+    {t:"Tala", a:"Sarah Geronimo"},{t:"Kilometro", a:"Sarah Geronimo"},
+    {t:"How Could You Say You Love Me", a:"Sarah Geronimo"},
+    {t:"Ikaw", a:"Sharon Cuneta"},{t:"High School Life", a:"Sharon Cuneta"},
+    {t:"Bituing Walang Ningning", a:"Sharon Cuneta"},
+    {t:"On the Wings of Love", a:"Regine Velasquez"},{t:"Pangako", a:"Regine Velasquez"},
+    {t:"Reach Out", a:"Regine Velasquez"},{t:"Sana Maulit Muli", a:"Regine Velasquez"},
+    {t:"Narito Ako", a:"Regine Velasquez"},
+    {t:"Kahit Kailan", a:"South Border"},{t:"Rainbow", a:"South Border"},
+    {t:"Habang May Buhay", a:"South Border"},{t:"Hanggang", a:"Wency Cornejo"},
+    {t:"Tuyong Damo", a:"Asin"},{t:"Masdan Mo Ang Kapaligiran", a:"Asin"},
+    {t:"Kahit Konting Pagtingin", a:"APO Hiking Society"},{t:"Pumapatak ang Ulan", a:"APO Hiking Society"},
+    {t:"When I Met You", a:"APO Hiking Society"},{t:"Doo Bidoo", a:"APO Hiking Society"},
+    {t:"Mahirap Magmahal Ng Syota Ng Iba", a:"APO Hiking Society"},
+    {t:"Yakap sa Dilim", a:"Rico J. Puno"},{t:"The Way We Were", a:"Rico J. Puno"},
+    {t:"Buko", a:"Jireh Lim"},{t:"Magkabilang Mundo", a:"Jireh Lim"},
+    {t:"Salamat", a:"Yeng Constantino"},{t:"Hawak Kamay", a:"Yeng Constantino"},
+    {t:"Jeepney Love Story", a:"Yeng Constantino"},
+    {t:"Pero Atik Ra", a:"Hev Abi"},{t:"Pasilyo", a:"SunKissed Lola"},
+    {t:"Imahe", a:"Magnus Haven"},{t:"Migraine", a:"Moonstar88"},
+    {t:"Torete", a:"Moonstar88"},{t:"Sundo", a:"Moonstar88"},
+    // Top hits grab-bag (deduped)
+    {t:"Everybody (Backstreet's Back)", a:"Backstreet Boys"},
+    {t:"Quit Playing Games (with My Heart)", a:"Backstreet Boys"},
+    {t:"As Long as You Love Me", a:"Backstreet Boys"},
+    {t:"Show Me the Meaning of Being Lonely", a:"Backstreet Boys"},
+    {t:"Larger Than Life", a:"Backstreet Boys"},
+    {t:"Tearin' Up My Heart", a:"NSYNC"},{t:"It's Gonna Be Me", a:"NSYNC"},
+    {t:"This I Promise You", a:"NSYNC"},{t:"Pop", a:"NSYNC"},
+    {t:"What a Girl Wants", a:"Christina Aguilera"},
+    {t:"Come On Over Baby", a:"Christina Aguilera"},
+    {t:"Sometimes", a:"Britney Spears"},
+    {t:"Saving All My Love for You", a:"Whitney Houston"},
+    {t:"Where Do Broken Hearts Go", a:"Whitney Houston"},
+    {t:"Run to You", a:"Whitney Houston"},
+    {t:"Without You", a:"Mariah Carey"},{t:"My All", a:"Mariah Carey"},
+    {t:"Honey", a:"Mariah Carey"},{t:"Emotions", a:"Mariah Carey"},
+    {t:"Dreamlover", a:"Mariah Carey"},
+    {t:"Beauty and the Beast", a:"Celine Dion"},
+    {t:"To Love You More", a:"Celine Dion"},{t:"Have You Ever Been in Love", a:"Celine Dion"},
+    {t:"That's the Way It Is", a:"Celine Dion"},{t:"A New Day Has Come", a:"Celine Dion"},
+    {t:"Truly Madly Deeply", a:"Savage Garden"},{t:"I Knew I Loved You", a:"Savage Garden"},
+    {t:"To the Moon and Back", a:"Savage Garden"},
+    {t:"How Do I Live", a:"LeAnn Rimes"},
+    {t:"Un-Break My Heart", a:"Toni Braxton"},{t:"You're Makin' Me High", a:"Toni Braxton"},
+    {t:"Breathe Again", a:"Toni Braxton"},{t:"Another Sad Love Song", a:"Toni Braxton"},
+    {t:"He Wasn't Man Enough", a:"Toni Braxton"},
+    {t:"Don't Let Go (Love)", a:"En Vogue"},{t:"Hold On", a:"En Vogue"},{t:"Free Your Mind", a:"En Vogue"},
+    {t:"Killing Me Softly", a:"Fugees"},{t:"Ready or Not", a:"Fugees"},
+    {t:"Doo Wop (That Thing)", a:"Lauryn Hill"},
+    {t:"Survivor", a:"Destiny's Child"},{t:"Independent Women, Pt. I", a:"Destiny's Child"},
+    {t:"Bootylicious", a:"Destiny's Child"},{t:"Lose My Breath", a:"Destiny's Child"},
+    {t:"Jumpin' Jumpin'", a:"Destiny's Child"},{t:"Bills, Bills, Bills", a:"Destiny's Child"},
+    {t:"Say My Name", a:"Destiny's Child"},
+    {t:"More Than Words", a:"Extreme"},{t:"To Be With You", a:"Mr. Big"},
+    {t:"Kiss from a Rose", a:"Seal"},
+    {t:"All for You", a:"Janet Jackson"},{t:"Together Again", a:"Janet Jackson"},
+    {t:"That's the Way Love Goes", a:"Janet Jackson"},{t:"Rhythm Nation", a:"Janet Jackson"},
+    {t:"Escapade", a:"Janet Jackson"},
+    {t:"Don't Wanna Lose You", a:"Gloria Estefan"},{t:"Coming Out of the Dark", a:"Gloria Estefan"},
+    {t:"Conga", a:"Gloria Estefan"},{t:"Rhythm Is Gonna Get You", a:"Gloria Estefan"},
+    {t:"Crazy for You", a:"Madonna"},{t:"Lucky Star", a:"Madonna"},
+    {t:"Open Your Heart", a:"Madonna"},{t:"Music", a:"Madonna"},
+    {t:"4 Minutes", a:"Madonna"},{t:"Hung Up", a:"Madonna"},
+    {t:"I Don't Want to Miss a Thing", a:"Aerosmith"},{t:"Crazy", a:"Aerosmith"},
+    {t:"Cryin'", a:"Aerosmith"},{t:"Dream On", a:"Aerosmith"},{t:"Walk This Way", a:"Aerosmith"},
+    {t:"Iris", a:"Goo Goo Dolls"},{t:"Name", a:"Goo Goo Dolls"},{t:"Slide", a:"Goo Goo Dolls"},
+    {t:"3 AM", a:"Matchbox 20"},{t:"Push", a:"Matchbox 20"},{t:"Real World", a:"Matchbox 20"},
+    {t:"Bent", a:"Matchbox 20"},{t:"If You're Gone", a:"Matchbox 20"},{t:"Unwell", a:"Matchbox 20"},
+    {t:"How's It Going to Be", a:"Third Eye Blind"},{t:"Semi-Charmed Life", a:"Third Eye Blind"},
+    {t:"Jumper", a:"Third Eye Blind"},
+    {t:"You Were Meant for Me", a:"Jewel"},{t:"Foolish Games", a:"Jewel"},
+    {t:"Who Will Save Your Soul", a:"Jewel"},{t:"Hands", a:"Jewel"},
+    {t:"Building a Mystery", a:"Sarah McLachlan"},{t:"Angel", a:"Sarah McLachlan"},
+    {t:"Adia", a:"Sarah McLachlan"},{t:"I Will Remember You", a:"Sarah McLachlan"},
+    {t:"This Kiss", a:"Faith Hill"},{t:"Breathe", a:"Faith Hill"},
+    {t:"There You'll Be", a:"Faith Hill"},{t:"The Way You Love Me", a:"Faith Hill"},
+    {t:"You're Still the One", a:"Shania Twain"},{t:"From This Moment On", a:"Shania Twain"},
+    {t:"Man! I Feel Like a Woman!", a:"Shania Twain"},{t:"That Don't Impress Me Much", a:"Shania Twain"},
+    {t:"Come On Over", a:"Shania Twain"},{t:"Any Man of Mine", a:"Shania Twain"},
+    {t:"Meet Virginia", a:"Train"},{t:"Calling All Angels", a:"Train"},
+    {t:"Have You Ever?", a:"Brandy"},{t:"The Boy Is Mine", a:"Brandy"},
+    {t:"Sittin' Up in My Room", a:"Brandy"},
+    {t:"Tell Me It's Real", a:"K-Ci & JoJo"},{t:"All My Life", a:"K-Ci & JoJo"},
+  ],
+};
+
+(function dedupGrace(){
+  const seen = new Set();
+  const stamp = s => (s.t.toLowerCase().trim() + "::" + s.a.toLowerCase().trim());
+  for (const m of ["jeff","amy","david"]) for (const s of POOLS[m]) seen.add(stamp(s));
+  POOLS.grace = POOLS.grace.filter(s => {
+    const k = stamp(s);
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+})();
+
+const MODES = [
+  { id: "amy",   name: "Amy",   emoji: "💙", desc: "2000's pop and on" },
+  { id: "jeff",  name: "Jeff",  emoji: "💚", desc: "All-time pop · 80's vibes" },
+  { id: "david", name: "David", emoji: "⚾", desc: "Top hits 60's–90's" },
+  { id: "grace", name: "Grace", emoji: "💜", desc: "Pinoy hits + classics" },
+];
+
+const REVEAL_TIMES = [1, 2, 4, 7, 11, 16];
+const MAX_GUESSES = 6;
+const DIE_FACES = ["⚀","⚁","⚂","⚃","⚄","⚅"];
+const LAUNCH_DATE = "2026-05-09";
+const MOTHERS_DAY = "2026-05-10";
+const MOM_SONGS_PER_MODE = 5;
+const VERSION = "v1.0";
+
+let state = {
+  mode: null, current: null, round: 0, guesses: [], done: false,
+  isArchive: false, archiveDateStr: null,
+  momIndex: 0,        // 0..4 for which Mother's Day song we're on
+  isMomMode: false,
+};
+let stats = loadStats();
+let played = loadPlayed();
+let leaderboard = loadLeaderboard();
+let userName = loadName();
+let audio = document.getElementById('audio');
+let playing = false;
+let playStart = 0;
+let playMaxMs = REVEAL_TIMES[0] * 1000;
+let progressTimer = null;
+
+/* STORAGE */
+function loadStats() {
+  try { const r = localStorage.getItem('heardle_ge_stats'); if (r) return JSON.parse(r); } catch(e) {}
+  return { streak: 0, score: 0, played: 0, won: 0 };
+}
+function saveStats() { try { localStorage.setItem('heardle_ge_stats', JSON.stringify(stats)); } catch(e) {} }
+function loadPlayed() {
+  try { const r = localStorage.getItem('heardle_ge_played'); if (r) return JSON.parse(r); } catch(e) {}
+  return {};
+}
+function savePlayed() { try { localStorage.setItem('heardle_ge_played', JSON.stringify(played)); } catch(e) {} }
+function loadName() {
+  try { return localStorage.getItem('heardle_ge_name') || ''; } catch(e) { return ''; }
+}
+function saveName(n) { try { localStorage.setItem('heardle_ge_name', n); } catch(e) {} }
+function loadLeaderboard() {
+  try { const r = localStorage.getItem('heardle_ge_leaderboard'); if (r) return JSON.parse(r); } catch(e) {}
+  return []; // [{name, score, streak, dateStr, mode}]
+}
+function saveLeaderboard() { try { localStorage.setItem('heardle_ge_leaderboard', JSON.stringify(leaderboard)); } catch(e) {} }
+
+/* DATE */
+function todayStr() {
+  const d = new Date();
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), dd = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
+function prettyDate(s) {
+  const [y,m,d] = s.split('-').map(Number);
+  return new Date(y, m-1, d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+}
+function shortDate(s) {
+  const [y,m,d] = s.split('-').map(Number);
+  return new Date(y, m-1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function daysBetween(a, b) {
+  const [ay,am,ad] = a.split('-').map(Number);
+  const [by,bm,bd] = b.split('-').map(Number);
+  return Math.round((new Date(by,bm-1,bd) - new Date(ay,am-1,ad)) / (1000*60*60*24));
+}
+function isMothersDay(dateStr) { return dateStr === MOTHERS_DAY; }
+
+/* PRNG + DETERMINISTIC SONG */
+function strHash(str) {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function mulberry32(seed) {
+  return function() {
+    let t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function stableShuffle(arr, seed) {
+  const rng = mulberry32(seed);
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function songForDate(dateStr, mode, momIndex) {
+  const pool = POOLS[mode];
+  const seedKey = isMothersDay(dateStr) ? `mom-seed::${mode}` : `seed::${mode}`;
+  const order = stableShuffle(pool.map((_, i) => i), strHash(seedKey));
+  const baseDays = daysBetween(LAUNCH_DATE, dateStr);
+  let idx;
+  if (isMothersDay(dateStr)) {
+    // 5 distinct songs for the day
+    idx = (momIndex || 0) % order.length;
+  } else {
+    idx = ((baseDays % order.length) + order.length) % order.length;
+  }
+  return pool[order[idx]];
+}
+
+/* ITUNES */
+async function fetchPreview(title, artist) {
+  const queries = [`${title} ${artist}`, `${artist} ${title}`, title];
+  for (const q of queries) {
+    try {
+      const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&entity=song&limit=10`;
+      const r = await fetch(url);
+      if (!r.ok) continue;
+      const data = await r.json();
+      if (!data.results || !data.results.length) continue;
+      const lcArtist = artist.toLowerCase(), lcTitle = title.toLowerCase();
+      let best = null, bestScore = -1;
+      for (const item of data.results) {
+        if (!item.previewUrl) continue;
+        const ai = (item.artistName || "").toLowerCase();
+        const ti = (item.trackName || "").toLowerCase();
+        let score = 0;
+        if (ai === lcArtist) score += 5;
+        else if (ai.includes(lcArtist) || lcArtist.includes(ai)) score += 3;
+        if (ti === lcTitle) score += 5;
+        else if (ti.includes(lcTitle) || lcTitle.includes(ti)) score += 2;
+        const bad = /(live|remix|karaoke|tribute|cover|instrumental|reprise|sped\s?up|slowed)/i;
+        if (bad.test(item.trackName || "") || bad.test(item.collectionName || "")) score -= 4;
+        if (score > bestScore) { bestScore = score; best = item; }
+      }
+      if (best && best.previewUrl) {
+        return {
+          previewUrl: best.previewUrl,
+          art: (best.artworkUrl100 || "").replace("100x100", "300x300"),
+          year: best.releaseDate ? best.releaseDate.slice(0,4) : "",
+        };
+      }
+    } catch(e) {}
+  }
+  return null;
+}
+async function loadSong(dateStr, mode, momIndex) {
+  const pool = POOLS[mode];
+  const seedKey = isMothersDay(dateStr) ? `mom-seed::${mode}` : `seed::${mode}`;
+  const order = stableShuffle(pool.map((_, i) => i), strHash(seedKey));
+  const startIdx = isMothersDay(dateStr)
+    ? (momIndex || 0) % order.length
+    : ((daysBetween(LAUNCH_DATE, dateStr) % order.length) + order.length) % order.length;
+  for (let off = 0; off < Math.min(8, order.length); off++) {
+    const idx = (startIdx + off) % order.length;
+    const pick = pool[order[idx]];
+    const meta = await fetchPreview(pick.t, pick.a);
+    if (meta) return { title: pick.t, artist: pick.a, ...meta };
+  }
+  return null;
+}
+
+/* MATCHING */
+function normalize(s) {
+  return (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/\(.*?\)/g, " ").replace(/\[.*?\]/g, " ")
+    .replace(/\bfeat\.?\b.*$/g, " ").replace(/\bft\.?\b.*$/g, " ")
+    .replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+}
+function levenshtein(a, b) {
+  if (a === b) return 0;
+  const m = a.length, n = b.length;
+  if (!m) return n; if (!n) return m;
+  const dp = Array.from({length: m+1}, () => new Array(n+1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const c = a[i-1] === b[j-1] ? 0 : 1;
+      dp[i][j] = Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+c);
+    }
+  }
+  return dp[m][n];
+}
+function isTitleMatch(guess, target) {
+  const g = normalize(guess), t = normalize(target);
+  if (!g) return false;
+  if (g === t) return true;
+  if (g.length >= 4 && t.includes(g) && g.length / t.length > 0.55) return true;
+  const dist = levenshtein(g, t);
+  const tol = Math.max(1, Math.floor(t.length / 8));
+  return dist <= tol;
+}
+
+/* AUTOCOMPLETE */
+const guessInput = document.getElementById('guessInput');
+const suggestions = document.getElementById('suggestions');
+const submitBtn = document.getElementById('submitBtn');
+function buildSuggestions(q) {
+  const nq = normalize(q);
+  if (!nq) return [];
+  const pool = POOLS[state.mode] || [];
+  const ranked = [];
+  for (const s of pool) {
+    const nt = normalize(s.t), na = normalize(s.a);
+    let score = 0;
+    if (nt.startsWith(nq)) score += 10;
+    else if (nt.includes(nq)) score += 5;
+    if (na.startsWith(nq)) score += 4;
+    else if (na.includes(nq)) score += 2;
+    if (score > 0) ranked.push({ s, score });
+  }
+  ranked.sort((x,y) => y.score - x.score);
+  return ranked.slice(0, 6).map(r => r.s);
+}
+function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function renderSuggestions(q) {
+  const list = buildSuggestions(q);
+  if (!list.length) { suggestions.classList.remove('show'); suggestions.innerHTML = ''; return; }
+  suggestions.innerHTML = list.map(s =>
+    `<div class="suggestion" data-title="${escapeHtml(s.t)}" data-artist="${escapeHtml(s.a)}">
+      <div class="title">${escapeHtml(s.t)}</div><div class="artist">${escapeHtml(s.a)}</div></div>`
+  ).join('');
+  suggestions.classList.add('show');
+}
+guessInput.addEventListener('input', (e) => {
+  submitBtn.disabled = !e.target.value.trim() || state.done;
+  renderSuggestions(e.target.value);
+});
+guessInput.addEventListener('focus', () => { if (guessInput.value) renderSuggestions(guessInput.value); });
+guessInput.addEventListener('blur', () => setTimeout(() => suggestions.classList.remove('show'), 150));
+suggestions.addEventListener('mousedown', (e) => {
+  const item = e.target.closest('.suggestion');
+  if (!item) return;
+  guessInput.value = item.dataset.title;
+  guessInput.dataset.artist = item.dataset.artist;
+  submitBtn.disabled = state.done;
+  suggestions.classList.remove('show');
+});
+guessInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !submitBtn.disabled) { e.preventDefault(); submitGuess(); }
+});
+
+/* PLAYBACK */
+const playBtn = document.getElementById('playBtn');
+const playIcon = document.getElementById('playIcon');
+const progressFill = document.getElementById('progressFill');
+const curTimeEl = document.getElementById('curTime');
+const maxTimeEl = document.getElementById('maxTime');
+function setIconPlay() { playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
+function setIconPause() { playIcon.innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'; }
+playBtn.addEventListener('click', () => {
+  if (!state.current) return;
+  playBtn.classList.remove('pulse');
+  if (playing) stopAudio(); else playClip();
+});
+function playClip() {
+  if (!state.current) return;
+  audio.src = state.current.previewUrl;
+  audio.currentTime = 0;
+  playMaxMs = REVEAL_TIMES[Math.min(state.round, REVEAL_TIMES.length - 1)] * 1000;
+  audio.play().then(() => {
+    playing = true;
+    setIconPause();
+    playStart = performance.now();
+    if (progressTimer) cancelAnimationFrame(progressTimer);
+    tickProgress();
+  }).catch(() => showToast("Tap play again — your phone needs a tap to unlock audio."));
+}
+function stopAudio() {
+  audio.pause(); playing = false; setIconPlay();
+  if (progressTimer) cancelAnimationFrame(progressTimer);
+}
+function tickProgress() {
+  const elapsed = performance.now() - playStart;
+  const pct = Math.min(100, (elapsed / playMaxMs) * 100);
+  progressFill.style.width = pct + "%";
+  curTimeEl.textContent = (Math.min(elapsed, playMaxMs) / 1000).toFixed(1);
+  if (elapsed >= playMaxMs) {
+    stopAudio();
+    progressFill.style.width = "100%";
+    curTimeEl.textContent = (playMaxMs / 1000).toFixed(1);
+    return;
+  }
+  progressTimer = requestAnimationFrame(tickProgress);
+}
+audio.addEventListener('ended', () => stopAudio());
+
+/* GAME LOGIC */
+const grid = document.getElementById('grid');
+const progressMarks = document.getElementById('progressMarks');
+const roundNum = document.getElementById('roundNum');
+const roundLabel = document.getElementById('roundLabel');
+const skipBtn = document.getElementById('skipBtn');
+const modeBadge = document.getElementById('modeBadge');
+const momProgress = document.getElementById('momProgress');
+
+function buildGrid() {
+  grid.innerHTML = '';
+  for (let i = 0; i < MAX_GUESSES; i++) {
+    const c = document.createElement('div');
+    c.className = 'cell'; c.id = 'cell-' + i;
+    c.textContent = DIE_FACES[i];
+    grid.appendChild(c);
+  }
+  progressMarks.innerHTML = '';
+  const total = REVEAL_TIMES[REVEAL_TIMES.length - 1];
+  for (let i = 0; i < REVEAL_TIMES.length - 1; i++) {
+    const pct = (REVEAL_TIMES[i] / total) * 100;
+    const m = document.createElement('div');
+    m.className = 'mark'; m.style.left = pct + "%";
+    progressMarks.appendChild(m);
+  }
+}
+function updateMomProgress() {
+  if (!state.isMomMode) { momProgress.style.display = 'none'; return; }
+  momProgress.style.display = 'flex';
+  momProgress.innerHTML = '';
+  const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
+  for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'mom-dot';
+    const key = `${dateStr}::${state.mode}::mom${i}`;
+    const p = played[key];
+    if (i === state.momIndex && !state.done) dot.classList.add('current');
+    if (p) dot.classList.add(p.result === 'won' ? 'win' : 'lose');
+    dot.textContent = (i+1);
+    momProgress.appendChild(dot);
+  }
+}
+function updateRoundUI() {
+  for (let i = 0; i < MAX_GUESSES; i++) {
+    const c = document.getElementById('cell-' + i);
+    c.classList.remove('active');
+    if (state.guesses[i]) c.classList.add(state.guesses[i]);
+  }
+  if (!state.done) {
+    const cur = document.getElementById('cell-' + state.round);
+    if (cur) cur.classList.add('active');
+  }
+  roundNum.textContent = (state.round + 1);
+  const sec = REVEAL_TIMES[Math.min(state.round, REVEAL_TIMES.length-1)];
+  roundLabel.textContent = state.round === 0 ? `Tap ▶ to play ${sec} second` : `Listening for ${sec} second${sec === 1 ? '' : 's'}`;
+  maxTimeEl.textContent = `/ ${sec.toFixed(1)}s`;
+  progressFill.style.width = "0%";
+  curTimeEl.textContent = "0.0";
+  const m = MODES.find(x => x.id === state.mode);
+  if (m) modeBadge.textContent = state.isMomMode
+    ? `🌷 ${m.emoji} ${m.name} · Song ${state.momIndex+1}/${MOM_SONGS_PER_MODE}`
+    : `${m.emoji} ${m.name}`;
+  updateMomProgress();
+}
+
+function submitGuess() {
+  if (state.done) return;
+  const guessText = guessInput.value.trim();
+  if (!guessText) return;
+  const titleMatch = isTitleMatch(guessText, state.current.title);
+  let artistBonus = false;
+  if (guessInput.dataset.artist && normalize(guessInput.dataset.artist) === normalize(state.current.artist)) {
+    artistBonus = titleMatch;
+  } else {
+    const ng = normalize(guessText), na = normalize(state.current.artist);
+    if (na && ng.includes(na)) artistBonus = titleMatch;
+  }
+  if (titleMatch) {
+    state.guesses[state.round] = artistBonus ? 'bonus' : 'correct';
+    animateCell(state.round);
+    state.done = true;
+    finalize(true, artistBonus);
+  } else {
+    state.guesses[state.round] = 'wrong';
+    animateCell(state.round);
+    advanceRound();
+  }
+  guessInput.value = "";
+  delete guessInput.dataset.artist;
+  submitBtn.disabled = true;
+  suggestions.classList.remove('show');
+}
+function advanceRound() {
+  state.round++;
+  if (state.round >= MAX_GUESSES) {
+    state.done = true;
+    finalize(false, false);
+    return;
+  }
+  updateRoundUI();
+}
+function animateCell(idx) {
+  const c = document.getElementById('cell-' + idx);
+  if (!c) return;
+  c.classList.add('flip');
+  const status = state.guesses[idx];
+  if (status === 'bonus') { c.classList.add('correct', 'bonus'); c.textContent = '✓'; }
+  else if (status === 'correct') { c.classList.add('correct'); c.textContent = '✓'; }
+  else if (status === 'wrong') { c.classList.add('wrong'); c.textContent = '✕'; }
+  else if (status === 'skip') { c.classList.add('skip'); c.textContent = '↷'; }
+  c.classList.remove('active');
+  setTimeout(() => c.classList.remove('flip'), 500);
+}
+skipBtn.addEventListener('click', () => {
+  if (state.done) return;
+  state.guesses[state.round] = 'skip';
+  animateCell(state.round);
+  advanceRound();
+});
+submitBtn.addEventListener('click', () => submitGuess());
+
+/* FINALIZE */
+const modalBg = document.getElementById('modalBg');
+const modalHeadline = document.getElementById('modalHeadline');
+const modalSub = document.getElementById('modalSub');
+const revealArt = document.getElementById('revealArt');
+const revealTitle = document.getElementById('revealTitle');
+const revealArtist = document.getElementById('revealArtist');
+const revealMeta = document.getElementById('revealMeta');
+const scorecardLine = document.getElementById('scorecardLine');
+const scorecardMeta = document.getElementById('scorecardMeta');
+const scorecardTitle = document.getElementById('scorecardTitle');
+const shareBtn = document.getElementById('shareBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+function emojiFor(status) {
+  if (status === 'correct') return '🟩';
+  if (status === 'bonus') return '⭐';
+  if (status === 'wrong') return '🟥';
+  if (status === 'skip') return '🟦';
+  return '⬜';
+}
+
+function finalize(won, bonus) {
+  stopAudio();
+  let pts = 0;
+  const isToday = !state.isArchive;
+  if (won) {
+    const used = state.guesses.filter(g => g).length;
+    pts = (MAX_GUESSES - used + 1);
+    if (bonus) pts += 3;
+    if (isToday) {
+      stats.streak++; stats.score += pts; stats.won++;
+    }
+  } else {
+    if (isToday) stats.streak = 0;
+  }
+  if (isToday) { stats.played++; saveStats(); }
+  updateStatsUI();
+
+  const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
+  const key = state.isMomMode
+    ? `${dateStr}::${state.mode}::mom${state.momIndex}`
+    : `${dateStr}::${state.mode}`;
+  played[key] = { result: won ? 'won' : 'lost', guesses: state.guesses.slice(), bonus: !!bonus };
+  savePlayed();
+
+  // Update leaderboard if today
+  if (isToday && userName) {
+    addLeaderboardEntry({
+      name: userName,
+      score: stats.score,
+      streak: stats.streak,
+      dateStr, mode: state.mode,
+      isMom: state.isMomMode,
+    });
+  }
+
+  modalHeadline.classList.remove('win', 'lose');
+  const m = MODES.find(x => x.id === state.mode);
+
+  // For Mother's Day mode: if all 5 songs done, show combined scorecard
+  let isMomFinal = false;
+  if (state.isMomMode) {
+    isMomFinal = (state.momIndex >= MOM_SONGS_PER_MODE - 1);
+  }
+
+  if (won) {
+    modalHeadline.textContent = bonus ? 'Bonus round! ⭐' : 'Got it! 🎉';
+    modalHeadline.classList.add('win');
+    const used = state.guesses.filter(g => g).length;
+    modalSub.textContent = isToday
+      ? `Found in ${used} guess${used === 1 ? '' : 'es'} · +${pts} points${bonus ? ' (artist bonus!)' : ''}`
+      : `Archive replay · ${used} guess${used === 1 ? '' : 'es'}${bonus ? ' (artist bonus!)' : ''}`;
+  } else {
+    modalHeadline.textContent = 'So close.';
+    modalHeadline.classList.add('lose');
+    modalSub.textContent = isToday ? `Streak reset. Try a different mode!` : `Archive replay`;
+  }
+  revealArt.src = state.current.art || "";
+  revealTitle.textContent = state.current.title;
+  revealArtist.textContent = state.current.artist;
+  revealMeta.textContent = state.current.year ? `${state.current.year}` : '';
+
+  // Build scorecard line
+  let line, sub;
+  if (state.isMomMode && isMomFinal) {
+    // Combined Mother's Day scorecard
+    scorecardTitle.textContent = "🌷 Mother's Day Scorecard";
+    let combined = '';
+    for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
+      const k = `${dateStr}::${state.mode}::mom${i}`;
+      const p = played[k];
+      if (!p) { combined += '⬜'; continue; }
+      const hasBonus = p.guesses.includes('bonus');
+      const hasCorrect = p.guesses.includes('correct') || hasBonus;
+      combined += hasBonus ? '⭐' : (hasCorrect ? '🟩' : '🟥');
+    }
+    line = combined;
+    sub = `${m.emoji} ${m.name} · 🌷 Mother's Day · ${shortDate(dateStr)}<br>` +
+          (userName ? `${userName} · ` : '') + `🔥 Streak ${stats.streak} · ⭐ Total ${stats.score} pts`;
+  } else {
+    scorecardTitle.textContent = "Your Scorecard";
+    line = state.guesses.map(emojiFor).join('') + '⬜'.repeat(MAX_GUESSES - state.guesses.length);
+    const momLbl = state.isMomMode ? `🌷 Song ${state.momIndex+1}/${MOM_SONGS_PER_MODE} · ` : '';
+    sub = won
+      ? `${momLbl}${m.emoji} ${m.name} · ${shortDate(dateStr)}<br>` +
+        (userName ? `${userName} · ` : '') + `🔥 Streak ${stats.streak} · ⭐ Total ${stats.score} pts`
+      : `${momLbl}${m.emoji} ${m.name} · ${shortDate(dateStr)}<br>` +
+        (userName ? `${userName} · ` : '') + `Streak reset · ⭐ Total ${stats.score} pts`;
+  }
+  scorecardLine.textContent = line;
+  scorecardMeta.innerHTML = sub;
+
+  // "Next" button label
+  if (state.isMomMode && !isMomFinal) {
+    nextBtn.textContent = `Next 🌷 song →`;
+  } else {
+    nextBtn.textContent = `Back to Modes →`;
+  }
+
+  modalBg.classList.add('show');
+}
+
+shareBtn.addEventListener('click', async () => {
+  const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
+  const m = MODES.find(x => x.id === state.mode);
+  let text;
+  if (state.isMomMode && state.momIndex >= MOM_SONGS_PER_MODE - 1) {
+    // Combined Mother's Day share
+    let combined = '';
+    let wonCount = 0;
+    for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
+      const k = `${dateStr}::${state.mode}::mom${i}`;
+      const p = played[k];
+      if (!p) { combined += '⬜'; continue; }
+      const hasBonus = p.guesses.includes('bonus');
+      const hasCorrect = p.guesses.includes('correct') || hasBonus;
+      if (hasCorrect) wonCount++;
+      combined += hasBonus ? '⭐' : (hasCorrect ? '🟩' : '🟥');
+    }
+    text = `🌷 Heardle: The Gamer's Edition · Mother's Day
+${m.emoji} ${m.name} mode · ${shortDate(dateStr)}
+${combined}
+${wonCount}/${MOM_SONGS_PER_MODE} solved
+${userName ? userName + ' · ' : ''}🔥 Streak: ${stats.streak} · ⭐ Score: ${stats.score}
+Happy Mother's Day to all the moms playing! 🌷`;
+  } else {
+    const line = state.guesses.map(emojiFor).join('') + '⬜'.repeat(MAX_GUESSES - state.guesses.length);
+    const won = state.guesses.includes('correct') || state.guesses.includes('bonus');
+    const momLbl = state.isMomMode ? ` · 🌷 Song ${state.momIndex+1}/${MOM_SONGS_PER_MODE}` : '';
+    text = `🎲 Heardle: The Gamer's Edition
+${m.emoji} ${m.name} mode${momLbl} · ${shortDate(dateStr)}
+${line}
+${won ? `Solved in ${state.guesses.filter(g => g).length} of ${MAX_GUESSES}` : `Stumped today!`}
+${userName ? userName + ' · ' : ''}🔥 Streak: ${stats.streak} · ⭐ Score: ${stats.score}`;
+  }
+  try {
+    if (navigator.share) { await navigator.share({ text }); return; }
+  } catch(e) {}
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast("Copied! Paste it anywhere.");
+  } catch(e) { showToast("Couldn't copy — long-press the scorecard."); }
+});
+
+nextBtn.addEventListener('click', () => {
+  modalBg.classList.remove('show');
+  if (state.isMomMode && state.momIndex < MOM_SONGS_PER_MODE - 1) {
+    // Continue to next Mother's Day song in same mode
+    const nextIdx = state.momIndex + 1;
+    startMode(state.mode, state.isArchive, state.archiveDateStr, nextIdx);
+  } else {
+    showView('picker');
+  }
+});
+
+/* STATS UI / TOAST / VIEWS */
+const streakNum = document.getElementById('streakNum');
+const scoreNum = document.getElementById('scoreNum');
+function updateStatsUI() {
+  streakNum.textContent = stats.streak;
+  scoreNum.textContent = stats.score;
+  const np = document.getElementById('namePill');
+  const nd = document.getElementById('nameDisplay');
+  if (userName) {
+    np.style.display = 'flex';
+    nd.textContent = userName;
+  } else {
+    np.style.display = 'none';
+  }
+}
+const toast = document.getElementById('toast');
+let toastTimer = null;
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+}
+
+const pickerView = document.getElementById('pickerView');
+const gameView = document.getElementById('gameView');
+const archiveView = document.getElementById('archiveView');
+const dateBar = document.getElementById('dateBar');
+const momBanner = document.getElementById('momBanner');
+
+function showView(name) {
+  pickerView.classList.toggle('show', name === 'picker');
+  gameView.classList.toggle('show', name === 'game');
+  archiveView.classList.toggle('show', name === 'archive');
+  if (name === 'game' && state.isArchive) {
+    dateBar.innerHTML = `<span class="archive-tag">📚 Archive</span> · ${prettyDate(state.archiveDateStr)}`;
+  } else {
+    const today = todayStr();
+    dateBar.innerHTML = isMothersDay(today) ? `🌷 ${prettyDate(today)} 🌷` : prettyDate(today);
+  }
+  // Show Mother's Day banner only on May 10 + on picker view
+  momBanner.style.display = (isMothersDay(todayStr()) && name === 'picker') ? 'flex' : 'none';
+  if (name === 'picker') renderPicker();
+}
+
+/* MODE PICKER */
+const modesGrid = document.getElementById('modesGrid');
+function renderPicker() {
+  modesGrid.innerHTML = '';
+  const today = todayStr();
+  const isMom = isMothersDay(today);
+  for (const m of MODES) {
+    const tile = document.createElement('div');
+    tile.className = 'mode-tile';
+    let badge = '', complete = false;
+    if (isMom) {
+      tile.classList.add('mom-active');
+      // Count completed mom songs for this mode
+      let done = 0, anyLost = false;
+      for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
+        const k = `${today}::${m.id}::mom${i}`;
+        if (played[k]) { done++; if (played[k].result === 'lost') anyLost = true; }
+      }
+      if (done >= MOM_SONGS_PER_MODE) {
+        complete = true;
+        tile.classList.add('complete');
+        badge = `<div class="mode-played mom">${done}/${MOM_SONGS_PER_MODE} ✓</div>`;
+      } else {
+        badge = `<div class="mode-played mom">${done}/${MOM_SONGS_PER_MODE}</div>`;
+      }
+      tile.innerHTML = `
+        <div class="mom-tulip">🌷</div>
+        ${badge}
+        <div class="mode-emoji">${m.emoji}</div>
+        <div class="mode-name">${m.name}</div>
+        <div class="mode-desc">${m.desc}</div>
+      `;
+    } else {
+      const key = `${today}::${m.id}`;
+      const p = played[key];
+      if (p) badge = `<div class="mode-played ${p.result === 'won' ? 'done' : ''}">${p.result === 'won' ? '✓ played' : 'try again'}</div>`;
+      tile.innerHTML = `
+        ${badge}
+        <div class="mode-emoji">${m.emoji}</div>
+        <div class="mode-name">${m.name}</div>
+        <div class="mode-desc">${m.desc}</div>
+      `;
+    }
+    tile.addEventListener('click', () => {
+      if (isMom) {
+        // Find next unplayed mom song
+        let nextIdx = 0;
+        for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
+          const k = `${today}::${m.id}::mom${i}`;
+          if (!played[k]) { nextIdx = i; break; }
+          if (i === MOM_SONGS_PER_MODE - 1) nextIdx = -1;
+        }
+        if (nextIdx === -1) {
+          showToast("All 5 done for today! Replay in Archive.");
+          return;
+        }
+        startMode(m.id, false, null, nextIdx);
+      } else {
+        startMode(m.id, false);
+      }
+    });
+    modesGrid.appendChild(tile);
+  }
+  const archive = document.createElement('div');
+  archive.className = 'mode-tile archive-tile';
+  archive.innerHTML = `
+    <div class="mode-emoji">📚</div>
+    <div>
+      <div class="mode-name">Archive</div>
+      <div class="mode-desc">Replay past days · dev tools</div>
+    </div>`;
+  archive.addEventListener('click', () => openArchive());
+  modesGrid.appendChild(archive);
+}
+
+async function startMode(modeId, isArchive, dateStr, momIndex) {
+  const targetDate = isArchive ? dateStr : todayStr();
+  const isMomCtx = isMothersDay(targetDate);
+  state = {
+    mode: modeId,
+    current: null,
+    round: 0,
+    guesses: [],
+    done: false,
+    isArchive: !!isArchive,
+    archiveDateStr: dateStr || null,
+    momIndex: isMomCtx ? (momIndex || 0) : 0,
+    isMomMode: isMomCtx,
+  };
+  buildGrid();
+  updateRoundUI();
+  guessInput.value = "";
+  delete guessInput.dataset.artist;
+  submitBtn.disabled = true;
+  showView('game');
+  roundLabel.textContent = "Loading today's tune…";
+  playBtn.disabled = true;
+  const song = await loadSong(targetDate, modeId, state.momIndex);
+  if (!song) {
+    showToast("Couldn't load a song. Check connection.");
+    showView('picker');
+    return;
+  }
+  state.current = song;
+  audio.src = song.previewUrl;
+  playBtn.disabled = false;
+  updateRoundUI();
+
+  // If this exact slot was already played, replay result modal
+  const key = state.isMomMode
+    ? `${targetDate}::${modeId}::mom${state.momIndex}`
+    : `${targetDate}::${modeId}`;
+  if (played[key] && !isArchive) {
+    state.guesses = played[key].guesses.slice();
+    state.done = true;
+    for (let i = 0; i < state.guesses.length; i++) animateCell(i);
+    setTimeout(() => finalize(played[key].result === 'won', !!played[key].bonus), 300);
+  }
+}
+
+document.getElementById('backBtn').addEventListener('click', () => {
+  stopAudio();
+  showView('picker');
+});
+
+/* ARCHIVE */
+const archiveList = document.getElementById('archiveList');
+document.getElementById('archiveBackBtn').addEventListener('click', () => showView('picker'));
+
+function openArchive() {
+  renderArchiveList();
+  showView('archive');
+}
+function renderArchiveList() {
+  archiveList.innerHTML = '';
+  const today = todayStr();
+  const days = [];
+  const now = new Date();
+  for (let i = 0; i <= 30; i++) {
+    const d = new Date(now); d.setDate(now.getDate() - i);
+    const y = d.getFullYear(), mo = String(d.getMonth()+1).padStart(2,'0'), dd = String(d.getDate()).padStart(2,'0');
+    const ds = `${y}-${mo}-${dd}`;
+    if (ds < LAUNCH_DATE) break;
+    days.push(ds);
+  }
+  for (const ds of days) {
+    const isMom = isMothersDay(ds);
+    for (const m of MODES) {
+      if (isMom) {
+        // 5 rows for Mother's Day, one per song
+        for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
+          const key = `${ds}::${m.id}::mom${i}`;
+          const p = played[key];
+          const row = document.createElement('div');
+          row.className = 'archive-row';
+          let status = '';
+          if (p) status = `<div class="ar-status ${p.result === 'won' ? 'played' : 'lost'}">${p.result === 'won' ? '✓' : '✕'}</div>`;
+          else status = `<div class="ar-status">play</div>`;
+          row.innerHTML = `
+            <div>
+              <div class="ar-date">🌷 ${m.emoji} ${m.name} · Song ${i+1}/${MOM_SONGS_PER_MODE}</div>
+              <div class="ar-mode">${shortDate(ds)} · Mother's Day</div>
+            </div>${status}`;
+          row.addEventListener('click', () => startMode(m.id, true, ds, i));
+          archiveList.appendChild(row);
+        }
+      } else {
+        const key = `${ds}::${m.id}`;
+        const p = played[key];
+        const row = document.createElement('div');
+        row.className = 'archive-row';
+        const isToday = ds === today;
+        let status = '';
+        if (p) status = `<div class="ar-status ${p.result === 'won' ? 'played' : 'lost'}">${p.result === 'won' ? '✓' : '✕'}</div>`;
+        else status = `<div class="ar-status">${isToday ? 'today' : 'play'}</div>`;
+        row.innerHTML = `
+          <div>
+            <div class="ar-date">${m.emoji} ${m.name} · ${shortDate(ds)}</div>
+            <div class="ar-mode">${isToday ? 'Today' : ''}</div>
+          </div>${status}`;
+        row.addEventListener('click', () => startMode(m.id, true, ds));
+        archiveList.appendChild(row);
+      }
+    }
+  }
+}
+
+document.getElementById('devShowAnswer').addEventListener('click', () => {
+  const today = todayStr();
+  let answer;
+  if (isMothersDay(today)) {
+    answer = MODES.map(m => {
+      const songs = [];
+      for (let i = 0; i < MOM_SONGS_PER_MODE; i++) {
+        const s = songForDate(today, m.id, i);
+        songs.push(`  ${i+1}. ${s.t} — ${s.a}`);
+      }
+      return `${m.emoji} ${m.name}:\n${songs.join('\n')}`;
+    }).join('\n\n');
+  } else {
+    answer = MODES.map(m => {
+      const s = songForDate(today, m.id);
+      return `${m.emoji} ${m.name}: ${s.t} — ${s.a}`;
+    }).join('\n');
+  }
+  alert(`Today's answers (${shortDate(today)}):\n\n${answer}\n\n(If a preview is missing, the game uses the next deterministic pick.)`);
+});
+document.getElementById('devResetStats').addEventListener('click', () => {
+  if (!confirm("Reset streak and total score?")) return;
+  stats = { streak: 0, score: 0, played: 0, won: 0 };
+  saveStats(); updateStatsUI(); showToast("Stats reset.");
+});
+document.getElementById('devResetPlayed').addEventListener('click', () => {
+  if (!confirm("Reset played history? You'll be able to replay all days fresh.")) return;
+  played = {}; savePlayed(); renderArchiveList(); renderPicker();
+  showToast("History reset.");
+});
+document.getElementById('devChangeName').addEventListener('click', () => {
+  document.getElementById('nameInput').value = userName || '';
+  document.getElementById('nameModalBg').classList.add('show');
+});
+document.getElementById('devLeaderboard').addEventListener('click', () => openLeaderboard());
+
+/* LEADERBOARD */
+function addLeaderboardEntry(entry) {
+  // Keep best per (name, mode, dateStr) — winner = highest score-snapshot
+  leaderboard.push(entry);
+  // Cap at 100 entries, newest first
+  leaderboard.sort((a,b) => (b.score - a.score) || (b.streak - a.streak));
+  if (leaderboard.length > 100) leaderboard = leaderboard.slice(0, 100);
+  saveLeaderboard();
+}
+function openLeaderboard() {
+  const body = document.getElementById('lbBody');
+  if (!leaderboard.length) {
+    body.innerHTML = `<div style="text-align:center; color:var(--muted); padding:14px; font-size:13px;">No entries yet — play a round to get on the board!</div>`;
+  } else {
+    body.innerHTML = leaderboard.slice(0, 20).map((e, i) => {
+      const m = MODES.find(x => x.id === e.mode);
+      return `<div class="lb-row">
+        <div>
+          <div class="lb-name">${i+1}. ${escapeHtml(e.name)}</div>
+          <div class="lb-meta">${m ? m.emoji + ' ' + m.name : e.mode} · ${shortDate(e.dateStr)}${e.isMom ? ' · 🌷' : ''}</div>
+        </div>
+        <div class="lb-score">⭐ ${e.score} · 🔥 ${e.streak}</div>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('lbModalBg').classList.add('show');
+}
+document.getElementById('lbCloseBtn').addEventListener('click', () => {
+  document.getElementById('lbModalBg').classList.remove('show');
+});
+
+/* NAME PROMPT */
+const nameModalBg = document.getElementById('nameModalBg');
+const nameInput = document.getElementById('nameInput');
+const nameSaveBtn = document.getElementById('nameSaveBtn');
+function ensureName() {
+  if (!userName) {
+    nameInput.value = '';
+    nameModalBg.classList.add('show');
+    setTimeout(() => nameInput.focus(), 200);
+  }
+}
+nameSaveBtn.addEventListener('click', () => {
+  const v = (nameInput.value || '').trim().slice(0, 20);
+  if (!v) { showToast("Enter a first name to continue"); return; }
+  userName = v; saveName(v);
+  nameModalBg.classList.remove('show');
+  updateStatsUI();
+});
+nameInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); nameSaveBtn.click(); }
+});
+
+/* BUG REPORT */
+document.getElementById('bugBtn').addEventListener('click', (e) => {
+  e.preventDefault();
+  const ua = navigator.userAgent || 'unknown';
+  const subj = `Heardle Gamer's Edition — Bug report (${shortDate(todayStr())})`;
+  const body = `Hi Kyra,
+
+I found a bug in Heardle: The Gamer's Edition (${VERSION}).
+
+Date: ${prettyDate(todayStr())}
+Mode: ${state.mode ? MODES.find(m=>m.id===state.mode).name : '(not in a game)'}
+Name: ${userName || '(no name set)'}
+What happened:
+[describe the bug here]
+
+What I expected:
+[what should have happened]
+
+Steps to reproduce:
+1.
+2.
+3.
+
+---
+Device info (auto-filled, please leave):
+${ua}
+URL: ${location.href}
+`;
+  window.location.href = `mailto:kyrahu12@gmail.com?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+});
+
+/* DICE EASTER EGG (open archive after 5 taps) */
+let dieTaps = 0, dieTapTimer = null;
+document.getElementById('dieEmoji').addEventListener('click', () => {
+  dieTaps++;
+  clearTimeout(dieTapTimer);
+  dieTapTimer = setTimeout(() => dieTaps = 0, 1500);
+  if (dieTaps >= 5) { dieTaps = 0; openArchive(); }
+});
+
+/* BOOT */
+updateStatsUI();
+buildGrid();
+updateRoundUI();
+const today = todayStr();
+dateBar.innerHTML = isMothersDay(today) ? `🌷 ${prettyDate(today)} 🌷` : prettyDate(today);
+renderPicker();
+showView('picker');
+ensureName();
+</script>
+</body>
+</html>
