@@ -298,6 +298,12 @@ box-shadow: 0 4px 14px rgba(20,184,166,0.3);
 .btn-back {
 width: 100%; padding: 10px; background: transparent; border: none;
 font-size: 13px; color: var(--muted); cursor: pointer; font-weight: 500;
+#shareBtn,
+#copyBtn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 5;}
 }
 
 .modal-bg {
@@ -585,7 +591,7 @@ Made with love by <a href="https://x.com/kyrawhoo" target="_blank" rel="noopener
 <div class="scorecard-meta" id="scorecardMeta"></div>
 </div>
 <div class="modal-actions">
-<button class="btn btn-skip" id="shareBtn">💬 Message Result</button>
+<button class="btn btn-skip" id="shareBtn">💌 Share Result</button>
 <button class="btn btn-skip" id="copyBtn">📋 Copy Result</button>
 <button class="btn btn-primary" id="nextBtn">Back to Categories →</button>
 </div>
@@ -2278,25 +2284,26 @@ return { canShare, missing };
 }
 
 async function copyTextToClipboard(text) {
-try {
-await navigator.clipboard.writeText(text);
-return true;
-} catch(e) {
-try {
-const ta = document.createElement('textarea');
-ta.value = text;
-ta.setAttribute('readonly', '');
-ta.style.position = 'fixed';
-ta.style.left = '-9999px';
-document.body.appendChild(ta);
-ta.select();
-const ok = document.execCommand('copy');
-document.body.removeChild(ta);
-return ok;
-} catch(err) {
-return false;
-}
-}
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      return true;
+    } catch {
+      return false;
+    } finally {
+      textarea.remove();
+    }
+  }
 }
 
 async function finalize(won, options = {}) {
@@ -2380,30 +2387,52 @@ sub += `<br><strong>Play ${shareState.missing} to unlock sending/copying your fu
 }
 scorecardLine.textContent = line;
 scorecardMeta.innerHTML = sub;
-
 nextBtn.textContent = `Back to Categories →`;
 modalBg.classList.add('show');
 }
-
+  
 shareBtn.addEventListener('click', async () => {
-const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
-const shareState = updateShareButtonsForDate(dateStr);
-if (!shareState.canShare) {
-showToast(`Play ${shareState.missing} before sending your result.`);
-return;
-}
-const text = buildDailyResultText(dateStr);
-try {
-if (navigator.share) { await navigator.share({ text }); return; }
-} catch(e) {
-return;
-}
-try {
-window.location.href = `sms:&body=${encodeURIComponent(text)}`;
-setTimeout(() => showToast("If Messages didn't open, use Copy Result."), 700);
-} catch(e) {
-showToast("Use Copy Result to send it manually.");
-}
+  const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
+  const shareState = updateShareButtonsForDate(dateStr);
+  if (!shareState.canShare) {
+    showToast(`Play ${shareState.missing} before sharing your result.`);
+    return;
+  }
+  const text = buildDailyResultText(dateStr);
+  const shareData = {
+    title: GAME_TITLE,
+    text
+  };
+  // Best option for both iPhone Safari and Android Chrome.
+  if (navigator.share) {
+    try {
+      if (!navigator.canShare || navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        return;
+      }
+    } catch (e) {
+      console.warn("Native share failed or was cancelled:", e);
+      // Important: do not return. Fall through to SMS/copy fallback.
+    }
+  }
+  // SMS fallback. Android and iOS use slightly different body formats.
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  const smsUrl = isAndroid
+    ? `sms:?body=${encodeURIComponent(text)}`
+    : `sms:&body=${encodeURIComponent(text)}`;
+  try {
+    window.location.href = smsUrl;
+    setTimeout(() => {
+      showToast("If Messages did not open, tap Copy Result.");
+    }, 900);
+  } catch (e) {
+    const copied = await copyTextToClipboard(text);
+    showToast(
+      copied
+        ? "Copied! Paste your result into Messages."
+        : "Unable to share automatically. Try Copy Result."
+    );
+  }
 });
 
 copyBtn.addEventListener('click', async () => {
