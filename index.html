@@ -590,7 +590,7 @@
 
 <div class="footer-note">
   <div>🌷 Launched Mother's Day 2026</div>
-  <div>🧰 v1.1.0, last updated 5/10/26 @ 11:04am EDT</div>  <br>
+  <div>🧰 v1.1.1, last updated 5/10/26 @ 3:01pm EDT</div>  <br>
   <div>
     💌 Made with love by 
     <a href="https://x.com/kyrawhoo" target="_blank" rel="noopener noreferrer">
@@ -732,7 +732,7 @@ const POOLS = {
     {t:"Smooth", a:"Santana"},{t:"Maria Maria", a:"Santana"},
     {t:"Livin' La Vida Loca", a:"Ricky Martin"},
     {t:"MMMBop", a:"Hanson"},{t:"Believe", a:"Cher"},{t:"If I Could Turn Back Time", a:"Cher"},
-    {t:"Torn", a:"Natalie Imbruglia"},
+    {t:"Mamma Mia", a:"ABBA"},
     {t:"No Scrubs", a:"TLC"},{t:"Waterfalls", a:"TLC"},
     {t:"Lovefool", a:"The Cardigans"},
     {t:"Tubthumping", a:"Chumbawamba"},{t:"What's Up?", a:"4 Non Blondes"},
@@ -790,7 +790,7 @@ const POOLS = {
     {t:"Disturbia", a:"Rihanna"},{t:"Take a Bow", a:"Rihanna"},
     {t:"Only Girl (In the World)", a:"Rihanna"},{t:"We Found Love", a:"Rihanna"},
     {t:"Diamonds", a:"Rihanna"},{t:"Rude Boy", a:"Rihanna"},{t:"S&M", a:"Rihanna"},
-    {t:"Stay", a:"Rihanna"},{t:"Work", a:"Rihanna"},
+    {t:"Stay", a:"Rihanna"},{t:"Superwoman", a:"Alicia Keys"},
     {t:"Bad Romance", a:"Lady Gaga"},{t:"Poker Face", a:"Lady Gaga"},{t:"Just Dance", a:"Lady Gaga"},
     {t:"Paparazzi", a:"Lady Gaga"},{t:"Born This Way", a:"Lady Gaga"},{t:"Telephone", a:"Lady Gaga"},
     {t:"Edge of Glory", a:"Lady Gaga"},{t:"Applause", a:"Lady Gaga"},{t:"Shallow", a:"Lady Gaga"},
@@ -1295,6 +1295,7 @@ let playing = false;
 let playStart = 0;
 let playMaxMs = REVEAL_TIMES[0] * 1000;
 let progressTimer = null;
+let clipStopTimer = null;
 
 /* STORAGE */
 function loadStats() {
@@ -2026,6 +2027,13 @@ async function ensureSpotifyTrackForCurrentSong(interactive = true) {
 }
 
 async function pauseSpotifyPlayback() {
+  try {
+    if (spotifyPlayer && typeof spotifyPlayer.pause === "function") {
+      await spotifyPlayer.pause();
+      return;
+    }
+  } catch(e) {}
+
   if (!spotifyDeviceId) return;
   try {
     await spotifyApi(`me/player/pause?device_id=${encodeURIComponent(spotifyDeviceId)}`, { method: "PUT" });
@@ -2248,12 +2256,19 @@ async function playClip() {
       }),
     });
 
-    playing = true;
+       playing = true;
     playingSource = "spotify";
     playBtn.disabled = false;
     setIconPause();
 
     playStart = performance.now();
+
+    if (clipStopTimer) clearTimeout(clipStopTimer);
+    clipStopTimer = setTimeout(() => {
+      stopAudio();
+      progressFill.style.width = "100%";
+      curTimeEl.textContent = (playMaxMs / 1000).toFixed(1);
+    }, playMaxMs);
 
     if (progressTimer) cancelAnimationFrame(progressTimer);
     tickProgress();
@@ -2273,6 +2288,11 @@ async function playClip() {
 function stopAudio() {
   try { audio.pause(); } catch(e) {}
 
+  if (clipStopTimer) {
+    clearTimeout(clipStopTimer);
+    clipStopTimer = null;
+  }
+
   if (playingSource === "spotify") pauseSpotifyPlayback();
 
   playing = false;
@@ -2281,7 +2301,10 @@ function stopAudio() {
   playBtn.disabled = false;
   setIconPlay();
 
-  if (progressTimer) cancelAnimationFrame(progressTimer);
+  if (progressTimer) {
+    cancelAnimationFrame(progressTimer);
+    progressTimer = null;
+  }
 }
   
 function tickProgress() {
@@ -2289,12 +2312,9 @@ function tickProgress() {
   const pct = Math.min(100, (elapsed / playMaxMs) * 100);
   progressFill.style.width = pct + "%";
   curTimeEl.textContent = (Math.min(elapsed, playMaxMs) / 1000).toFixed(1);
-  if (elapsed >= playMaxMs) {
-    stopAudio();
-    progressFill.style.width = "100%";
-    curTimeEl.textContent = (playMaxMs / 1000).toFixed(1);
-    return;
-  }
+
+  if (!playing || elapsed >= playMaxMs) return;
+
   progressTimer = requestAnimationFrame(tickProgress);
 }
 audio.addEventListener('ended', () => stopAudio());
@@ -2459,13 +2479,20 @@ function buildDailyShareText(dateStr) {
     const solved = resultWon(result);
     const used = (result.guesses || []).filter(g => g).length;
     const status = solved ? `Solved in ${used} of ${MAX_GUESSES} (+${pointsForResult(result)})` : 'Stumped';
-    return `${mode.emoji} ${mode.name}: ${line} ${status}`;
-  }).join('\n');
+    return `${mode.emoji} ${mode.name}: ${line}
+${status}`;
+  }).join('\n\n');
+
+  const nameLine = userName ? `${userName}\n` : '';
 
   return `🎲 ${GAME_TITLE}
 ${shortDate(dateStr)}
+
 ${rows}
-${userName ? userName + ' · ' : ''}🔥 Streak: ${stats.streak} · ⭐ Lifetime: ${stats.score} pts · Today: ${dailyPoints(dateStr)} pts`;
+
+${nameLine}🔥 Streak: ${stats.streak}
+⭐ Lifetime: ${stats.score} pts
+📅 Today: ${dailyPoints(dateStr)} pts`;
 }
 function smsUrlForText(text) {
   const body = encodeURIComponent(text);
