@@ -584,7 +584,7 @@
 
 <div class="footer-note">
   <div>🌷 Launched Mother's Day 2026</div>
-  <div>🧰 Last Updated 5/10/26 @ 10:49am EDT</div>  <br>
+  <div>🧰 v1.1.0, last updated 5/10/26 @ 11:01am EDT</div>  <br>
   <div>
     💌 Made with love by 
     <a href="https://x.com/kyrawhoo" target="_blank" rel="noopener noreferrer">
@@ -1282,6 +1282,7 @@ let state = {
 };
 let stats = loadStats();
 let played = loadPlayed();
+let streakDays = loadStreakDays();
 let userName = loadName();
 let audio = document.getElementById('audio');
 let playing = false;
@@ -1300,6 +1301,11 @@ function loadPlayed() {
   return {};
 }
 function savePlayed() { try { localStorage.setItem('heardle_v11_played', JSON.stringify(played)); } catch(e) {} }
+function loadStreakDays() {
+  try { const r = localStorage.getItem('heardle_v11_streak_days'); if (r) return JSON.parse(r); } catch(e) {}
+  return {};
+}
+function saveStreakDays() { try { localStorage.setItem('heardle_v11_streak_days', JSON.stringify(streakDays)); } catch(e) {} }
 function loadName() {
   try { return localStorage.getItem('heardle_v11_name') || ''; } catch(e) { return ''; }
 }
@@ -2407,26 +2413,114 @@ function emojiFor(status) {
   return '⬜';
 }
 
+function gameKey(dateStr, modeId) {
+  return `${dateStr}::${modeId}`;
+}
+function resultWon(p) {
+  return !!p && (p.result === 'won' || (p.guesses || []).includes('correct'));
+}
+function pointsForResult(p) {
+  if (!resultWon(p)) return 0;
+  const used = (p.guesses || []).filter(g => g).length;
+  return Math.max(1, MAX_GUESSES - used + 1);
+}
+function resultsForDate(dateStr) {
+  return MODES.map(m => ({ mode: m, result: played[gameKey(dateStr, m.id)] }));
+}
+function unplayedModeForDate(dateStr) {
+  const item = resultsForDate(dateStr).find(x => !x.result);
+  return item ? item.mode : null;
+}
+function allModesPlayed(dateStr) {
+  return resultsForDate(dateStr).every(x => !!x.result);
+}
+function dailyPoints(dateStr) {
+  return resultsForDate(dateStr).reduce((sum, x) => sum + pointsForResult(x.result), 0);
+}
+function resolveDailyStreakIfComplete(dateStr) {
+  if (!allModesPlayed(dateStr) || streakDays[dateStr]) return;
+  const wonBoth = resultsForDate(dateStr).every(x => resultWon(x.result));
+  stats.streak = wonBoth ? stats.streak + 1 : 0;
+  streakDays[dateStr] = wonBoth ? 'won' : 'lost';
+  saveStreakDays();
+}
+function scoreLineForResult(p) {
+  return (p.guesses || []).map(emojiFor).join('') + '⬜'.repeat(MAX_GUESSES - (p.guesses || []).length);
+}
+function buildDailyShareText(dateStr) {
+  const rows = resultsForDate(dateStr).map(({ mode, result }) => {
+    const line = scoreLineForResult(result);
+    const solved = resultWon(result);
+    const used = (result.guesses || []).filter(g => g).length;
+    const status = solved ? `Solved in ${used} of ${MAX_GUESSES} (+${pointsForResult(result)})` : 'Stumped';
+    return `${mode.emoji} ${mode.name}: ${line} ${status}`;
+  }).join('\n');
+
+  return `🎲 ${GAME_TITLE}
+${shortDate(dateStr)}
+${rows}
+${userName ? userName + ' · ' : ''}🔥 Streak: ${stats.streak} · ⭐ Lifetime: ${stats.score} pts · Today: ${dailyPoints(dateStr)} pts`;
+}
+function smsUrlForText(text) {
+  const body = encodeURIComponent(text);
+  const ua = navigator.userAgent || '';
+  const sep = /iPad|iPhone|iPod|Macintosh/i.test(ua) ? '&' : '?';
+  return `sms:${sep}body=${body}`;
+}
+async function shareDailyResult(dateStr) {
+  if (!allModesPlayed(dateStr)) {
+    const nextMode = unplayedModeForDate(dateStr);
+    showToast(nextMode ? `Play ${nextMode.name} before sharing.` : 'Finish both games before sharing.');
+    return;
+  }
+
+  const text = buildDailyShareText(dateStr);
+
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: GAME_TITLE, text });
+      return;
+    }
+  } catch(e) {
+    if (e && e.name === 'AbortError') return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('Copied! Paste it anywhere.');
+    return;
+  } catch(e) {}
+
+  window.location.href = smsUrlForText(text);
+  showToast('Opening Messages…');
+}
+
 async function finalize(won) {
   stopAudio();
   let pts = 0;
   const isToday = !state.isArchive;
+  const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
+  const key = gameKey(dateStr, state.mode);
+  const alreadyRecorded = !!played[key];
+
   if (won) {
     const used = state.guesses.filter(g => g).length;
     pts = (MAX_GUESSES - used + 1);
-    if (isToday) {
-      stats.streak++; stats.score += pts; stats.won++;
-    }
-  } else {
-    if (isToday) stats.streak = 0;
   }
-  if (isToday) { stats.played++; saveStats(); }
-  updateStatsUI();
 
-  const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
-  const key = `${dateStr}::${state.mode}`;
-  played[key] = { result: won ? 'won' : 'lost', guesses: state.guesses.slice() };
+  played[key] = { result: won ? 'won' : 'lost', guesses: state.guesses.slice(), pts };
   savePlayed();
+
+  if (isToday && !alreadyRecorded) {
+    stats.played++;
+    if (won) {
+      stats.score += pts;
+      stats.won++;
+    }
+    resolveDailyStreakIfComplete(dateStr);
+    saveStats();
+  }
+  updateStatsUI();
 
   modalHeadline.classList.remove('win', 'lose');
   const m = MODES.find(x => x.id === state.mode);
@@ -2441,7 +2535,8 @@ async function finalize(won) {
   } else {
     modalHeadline.textContent = 'So close.';
     modalHeadline.classList.add('lose');
-    modalSub.textContent = isToday ? `Streak reset. Try the other category!` : `Archive replay`;
+    const nextMode = isToday ? unplayedModeForDate(dateStr) : null;
+    modalSub.textContent = isToday && nextMode ? `Try ${nextMode.name} next!` : (isToday ? `Today's games are complete.` : `Archive replay`);
   }
   revealArt.src = state.current.art || "";
   revealTitle.textContent = state.current.title;
@@ -2459,36 +2554,33 @@ async function finalize(won) {
     }
   });
 
-  const line = state.guesses.map(emojiFor).join('') + '⬜'.repeat(MAX_GUESSES - state.guesses.length);
-  const sub = won
-    ? `${m.emoji} ${m.name} · ${shortDate(dateStr)}<br>` +
-      (userName ? `${userName} · ` : '') + `🔥 Streak ${stats.streak} · ⭐ Total ${stats.score} pts`
-    : `${m.emoji} ${m.name} · ${shortDate(dateStr)}<br>` +
-      (userName ? `${userName} · ` : '') + `Streak reset · ⭐ Total ${stats.score} pts`;
+  const line = scoreLineForResult(played[key]);
+  const todayPts = isToday ? dailyPoints(dateStr) : pointsForResult(played[key]);
+  const sub = `${m.emoji} ${m.name} · ${shortDate(dateStr)}<br>` +
+    (userName ? `${userName} · ` : '') +
+    (isToday
+      ? `🔥 Streak ${stats.streak} · ⭐ Lifetime ${stats.score} pts · Today ${todayPts} pts`
+      : `${won ? `+${pts} pts` : 'No points'} · Archive replay`);
   scorecardLine.textContent = line;
   scorecardMeta.innerHTML = sub;
 
+  const nextMode = isToday ? unplayedModeForDate(dateStr) : null;
+  shareBtn.textContent = nextMode ? `▶ Play ${nextMode.name}` : `📋 Share Results`;
   nextBtn.textContent = `Back to Categories →`;
   modalBg.classList.add('show');
 }
 
 shareBtn.addEventListener('click', async () => {
   const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
-  const m = MODES.find(x => x.id === state.mode);
-  const line = state.guesses.map(emojiFor).join('') + '⬜'.repeat(MAX_GUESSES - state.guesses.length);
-  const won = state.guesses.includes('correct');
-  const text = `🎲 ${GAME_TITLE}
-${m.emoji} ${m.name} · ${shortDate(dateStr)}
-${line}
-${won ? `Solved in ${state.guesses.filter(g => g).length} of ${MAX_GUESSES}` : `Stumped today!`}
-${userName ? userName + ' · ' : ''}🔥 Streak: ${stats.streak} · ⭐ Score: ${stats.score}`;
-  try {
-    if (navigator.share) { await navigator.share({ text }); return; }
-  } catch(e) {}
-  try {
-    await navigator.clipboard.writeText(text);
-    showToast("Copied! Paste it anywhere.");
-  } catch(e) { showToast("Couldn't copy — long-press the scorecard."); }
+  const nextMode = !state.isArchive ? unplayedModeForDate(dateStr) : null;
+
+  if (nextMode) {
+    modalBg.classList.remove('show');
+    await startMode(nextMode.id, false);
+    return;
+  }
+
+  await shareDailyResult(dateStr);
 });
 
 nextBtn.addEventListener('click', () => {
@@ -2717,7 +2809,8 @@ document.getElementById('devShowAnswer').addEventListener('click', () => {
 document.getElementById('devResetStats').addEventListener('click', () => {
   if (!confirm("Reset streak and total score?")) return;
   stats = { streak: 0, score: 0, played: 0, won: 0 };
-  saveStats(); updateStatsUI(); showToast("Stats reset.");
+  streakDays = {};
+  saveStats(); saveStreakDays(); updateStatsUI(); showToast("Stats reset.");
 });
 document.getElementById('devResetPlayed').addEventListener('click', () => {
   if (!confirm("Reset played history? You'll be able to replay all days fresh.")) return;
