@@ -31,12 +31,14 @@ This was also my first vibe coding project — built with Claude and ChatGPT in 
 
 ## The players
 
-| Name | Category |
+| Name | Relationship |
 |------|----------|
-| 👩🏻 Amy | Mom. This whole thing is for her. |
-| 👨🏻 Jeff | Dad. Supposed to listen to Mom. |
-| 👩🏻 Grace | Family friend. Real estate agent. Pinoy classics enjoyer. |
-| 👨🏻 David | Family friend. Mets fan. LGM 4ever 🧡💙 |
+| 👩🏻 Amy | The Woman Herself! |
+| 👨🏻 Jeff | Mom's Husband |
+| 👩🏻 Grace | Mom's Friend |
+| 👨🏻 David | Mom's Friend |
+| 👩🏻 Carly | Mom's Daughter |
+| 👩🏻 Suk Yi | Mom's Sister |
 
 Each player gets a personalized greeting when they open the game. Just type your first name.
 
