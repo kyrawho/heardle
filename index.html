@@ -1,5 +1,3 @@
-Heardle 1.1.4
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -295,7 +293,7 @@ background: linear-gradient(135deg, var(--teal) 0%, var(--green-2) 100%);
 color: white;
 box-shadow: 0 4px 14px rgba(20,184,166,0.3);
 }
-.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
 .btn-skip { background: white; color: var(--deep); border: 1.5px solid var(--line); }
 .btn-back {
 width: 100%; padding: 10px; background: transparent; border: none;
@@ -538,6 +536,7 @@ The Gamers' Heardle
 <div class="archive-list" id="archiveList"></div>
 <div class="archive-controls">
 <button id="devShowAnswer">👁 Show today's answer</button>
+<button id="devSpotifyDebug">🎧 Spotify debug</button>
 <button id="devResetStats">🗑 Reset stats</button>
 <button id="devResetPlayed">🔄 Reset played history</button>
 <button id="devChangeName">✏️ Change name</button>
@@ -557,11 +556,10 @@ The Gamers' Heardle
 </div>
 
 <div class="footer-note">
-Made with love by Kyra Hu · V2 launching by Christmas 2026 (or sooner)!<br>
+Made with love by Kyra Hu · v1.1.3<br>
 <a href="#" id="bugBtn">🐛 Report a bug</a>
 <span class="footer-dot">&middot;</span>
 <a href="#" id="suggestionBtn">&#128161; Suggestion box</a>
-<div class="footer-version">v1.1.3 · iOS playback fallback added. If you don't see updates, fully close and reopen the page.</div>
 </div>
 
 <!-- RESULT MODAL -->
@@ -587,7 +585,8 @@ Made with love by Kyra Hu · V2 launching by Christmas 2026 (or sooner)!<br>
 <div class="scorecard-meta" id="scorecardMeta"></div>
 </div>
 <div class="modal-actions">
-<button class="btn btn-skip" id="shareBtn">📋 Share Result</button>
+<button class="btn btn-skip" id="shareBtn">💬 Message Result</button>
+<button class="btn btn-skip" id="copyBtn">📋 Copy Result</button>
 <button class="btn btn-primary" id="nextBtn">Back to Categories →</button>
 </div>
 </div>
@@ -1333,6 +1332,8 @@ let spotifyPlayer = null;
 let spotifyDeviceId = "";
 let spotifyPlayerReadyPromise = null;
 let playingSource = null;
+let spotifyElementActivated = false;
+let lastSpotifyPlaybackState = null;
 
 const SPOTIFY_CONFIG = {
 clientId: "e7dfbaf74ee44e5eb3f7ea6716829c9f",
@@ -1369,6 +1370,77 @@ function rememberLoadError(label, e) {
 const msg = `${label}: ${errMsg(e)}`;
 loadErrorTrail.push(msg);
 lastLoadError = loadErrorTrail.slice(-4).join(" | ");
+}
+
+function isIOSLikeSafari() {
+return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+(navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function sleep(ms) {
+return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function activateSpotifyElementFromTap() {
+if (!spotifyPlayer || typeof spotifyPlayer.activateElement !== "function") {
+return false;
+}
+try {
+spotifyPlayer.activateElement();
+spotifyElementActivated = true;
+return true;
+} catch(e) {
+rememberLoadError("spotify activate", e);
+return false;
+}
+}
+
+async function verifySpotifyActuallyPlaying(expectedUri) {
+if (!spotifyPlayer || typeof spotifyPlayer.getCurrentState !== "function") {
+return { ok: false, reason: "No Spotify SDK player available" };
+}
+let lastReason = "No playback state returned";
+for (let i = 0; i < 5; i++) {
+await sleep(i === 0 ? 650 : 300);
+const s = await spotifyPlayer.getCurrentState().catch(e => {
+rememberLoadError("spotify state", e);
+return null;
+});
+lastSpotifyPlaybackState = s;
+if (!s) {
+lastReason = "SDK state is null; playback may not be on this browser device";
+continue;
+}
+const actualUri = s.track_window && s.track_window.current_track && s.track_window.current_track.uri;
+if (s.paused) {
+lastReason = `SDK state is paused on ${actualUri || "unknown track"}`;
+continue;
+}
+if (expectedUri && actualUri && actualUri !== expectedUri) {
+lastReason = `SDK is playing a different track: ${actualUri}`;
+continue;
+}
+return { ok: true, reason: "playing" };
+}
+return { ok: false, reason: lastReason };
+}
+
+function startHeardleProgressTimer() {
+playing = true;
+playingSource = "spotify";
+setIconPause();
+playStart = performance.now();
+if (progressTimer) cancelAnimationFrame(progressTimer);
+tickProgress();
+}
+
+function resetPlayUiAfterSilentFailure(message) {
+playing = false;
+playingSource = null;
+setIconPlay();
+if (progressTimer) cancelAnimationFrame(progressTimer);
+rememberLoadError("spotify silent", new Error(message));
+showToast(message);
 }
 
 async function fetchWithTimeout(url, ms = 9000, options = {}) {
@@ -1751,13 +1823,26 @@ reject(new Error(message));
 });
 spotifyPlayer.addListener('account_error', ({ message }) => reject(new Error(message || 'Spotify Premium required')));
 spotifyPlayer.addListener('playback_error', ({ message }) => rememberLoadError('spotify playback', new Error(message)));
+spotifyPlayer.addListener('player_state_changed', (s) => {
+lastSpotifyPlaybackState = s;
+});
+spotifyPlayer.addListener('autoplay_failed', () => {
+resetPlayUiAfterSilentFailure("iPhone blocked Spotify audio. Tap play again.");
+});
 
 spotifyPlayer.connect().then(ok => {
 if (!ok) reject(new Error('Spotify player did not connect'));
 }).catch(reject);
 });
 
+try {
 return await spotifyPlayerReadyPromise;
+} catch(e) {
+spotifyPlayerReadyPromise = null;
+spotifyPlayer = null;
+spotifyDeviceId = "";
+throw e;
+}
 }
 
 async function ensureSpotifyTrackForCurrentSong(interactive = true) {
@@ -1920,7 +2005,12 @@ function setIconPause() { playIcon.innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h
 playBtn.addEventListener('click', () => {
 if (!state.current) return;
 playBtn.classList.remove('pulse');
-if (playing) stopAudio(); else playClip();
+if (playing) {
+stopAudio();
+return;
+}
+activateSpotifyElementFromTap();
+playClip();
 });
 async function playClip() {
 if (!state.current) return;
@@ -1934,19 +2024,34 @@ const ready = await ensureSpotifyTrackForCurrentSong(true);
 if (!ready) return;
 }
 try {
+const hadPlayerBeforeTap = !!spotifyPlayer;
 const deviceId = await initSpotifyPlayer();
 if (!deviceId) return;
+
+// On first iPhone tap, the Spotify SDK player may not exist yet, so the
+// required audio activation could not run inside the original tap handler.
+if (isIOSLikeSafari() && !hadPlayerBeforeTap && !spotifyElementActivated) {
+showToast("Spotify is ready — tap play once more for sound on iPhone.");
+return;
+}
+
 playMaxMs = REVEAL_TIMES[Math.min(state.round, REVEAL_TIMES.length - 1)] * 1000;
 await spotifyApi(`me/player/play?device_id=${encodeURIComponent(deviceId)}`, {
 method: "PUT",
 body: JSON.stringify({ uris: [state.current.trackUri], position_ms: 0 }),
 });
-playing = true;
-playingSource = "spotify";
-setIconPause();
-playStart = performance.now();
-if (progressTimer) cancelAnimationFrame(progressTimer);
-tickProgress();
+
+const started = await verifySpotifyActuallyPlaying(state.current.trackUri);
+if (!started.ok) {
+resetPlayUiAfterSilentFailure(
+isIOSLikeSafari()
+? "Spotify accepted play, but iPhone kept it silent. Tap play again."
+: `Spotify did not start on this device: ${started.reason}`
+);
+return;
+}
+
+startHeardleProgressTimer();
 } catch(e) {
 rememberLoadError("spotify play", e);
 showToast(/premium/i.test(errMsg(e)) ? "Spotify Premium is required for full-song playback." : "Spotify playback needs another tap or login.");
@@ -2086,6 +2191,7 @@ const funfactText = document.getElementById('funfactText');
 const scorecardLine = document.getElementById('scorecardLine');
 const scorecardMeta = document.getElementById('scorecardMeta');
 const shareBtn = document.getElementById('shareBtn');
+const copyBtn = document.getElementById('copyBtn');
 const nextBtn = document.getElementById('nextBtn');
 
 function emojiFor(status) {
@@ -2095,24 +2201,101 @@ if (status === 'skip') return '🟦';
 return '⬜';
 }
 
-async function finalize(won) {
+function resultLineFromGuesses(guesses) {
+const g = Array.isArray(guesses) ? guesses : [];
+return g.map(emojiFor).join('') + '⬜'.repeat(Math.max(0, MAX_GUESSES - g.length));
+}
+
+function resultKey(dateStr, modeId) {
+return `${dateStr}::${modeId}`;
+}
+
+function playedEntryFor(dateStr, modeId) {
+return played[resultKey(dateStr, modeId)] || null;
+}
+
+function modesMissingForDate(dateStr) {
+return MODES.filter(m => !playedEntryFor(dateStr, m.id));
+}
+
+function bothGamesPlayedForDate(dateStr) {
+return modesMissingForDate(dateStr).length === 0;
+}
+
+function resultSummary(entry) {
+if (!entry) return 'Not played yet';
+const guesses = Array.isArray(entry.guesses) ? entry.guesses : [];
+if (entry.result === 'won') {
+return `Solved in ${guesses.filter(Boolean).length} of ${MAX_GUESSES}`;
+}
+return 'Stumped';
+}
+
+function buildDailyResultText(dateStr) {
+const lines = [`🎲 ${GAME_TITLE}`, shortDate(dateStr), ''];
+for (const m of MODES) {
+const entry = playedEntryFor(dateStr, m.id);
+lines.push(`${m.emoji} ${m.name}`);
+lines.push(entry ? resultLineFromGuesses(entry.guesses) : '⬜'.repeat(MAX_GUESSES));
+lines.push(resultSummary(entry));
+lines.push('');
+}
+lines.push(`${userName ? userName + ' · ' : ''}🔥 Streak: ${stats.streak} · ⭐ Score: ${stats.score}`);
+return lines.join('\n').trim();
+}
+
+function updateShareButtonsForDate(dateStr) {
+const canShare = bothGamesPlayedForDate(dateStr);
+const missing = modesMissingForDate(dateStr).map(m => `${m.emoji} ${m.name}`).join(' and ');
+shareBtn.disabled = !canShare;
+copyBtn.disabled = !canShare;
+shareBtn.title = canShare ? 'Send both Heardle results' : `Play ${missing} to unlock sending`;
+copyBtn.title = canShare ? 'Copy both Heardle results' : `Play ${missing} to unlock copying`;
+return { canShare, missing };
+}
+
+async function copyTextToClipboard(text) {
+try {
+await navigator.clipboard.writeText(text);
+return true;
+} catch(e) {
+try {
+const ta = document.createElement('textarea');
+ta.value = text;
+ta.setAttribute('readonly', '');
+ta.style.position = 'fixed';
+ta.style.left = '-9999px';
+document.body.appendChild(ta);
+ta.select();
+const ok = document.execCommand('copy');
+document.body.removeChild(ta);
+return ok;
+} catch(err) {
+return false;
+}
+}
+}
+
+async function finalize(won, options = {}) {
 stopAudio();
 let pts = 0;
 const isToday = !state.isArchive;
+const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
+const key = resultKey(dateStr, state.mode);
+const alreadyRecorded = !!played[key] && isToday;
+const shouldRecordStats = isToday && options.recordStats !== false && !alreadyRecorded;
 if (won) {
 const used = state.guesses.filter(g => g).length;
 pts = (MAX_GUESSES - used + 1);
-if (isToday) {
+if (shouldRecordStats) {
 stats.streak++; stats.score += pts; stats.won++;
 }
 } else {
-if (isToday) stats.streak = 0;
+if (shouldRecordStats) stats.streak = 0;
 }
-if (isToday) { stats.played++; saveStats(); }
+if (shouldRecordStats) { stats.played++; saveStats(); }
 updateStatsUI();
 
-const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
-const key = `${dateStr}::${state.mode}`;
 played[key] = { result: won ? 'won' : 'lost', guesses: state.guesses.slice() };
 savePlayed();
 
@@ -2147,12 +2330,16 @@ funfactEl.style.display = 'none';
 }
 });
 
-const line = state.guesses.map(emojiFor).join('') + '⬜'.repeat(MAX_GUESSES - state.guesses.length);
-const sub = won
+const line = resultLineFromGuesses(state.guesses);
+let sub = won
 ? `${m.emoji} ${m.name} · ${shortDate(dateStr)}<br>` +
 (userName ? `${userName} · ` : '') + `🔥 Streak ${stats.streak} · ⭐ Total ${stats.score} pts`
 : `${m.emoji} ${m.name} · ${shortDate(dateStr)}<br>` +
 (userName ? `${userName} · ` : '') + `Streak reset · ⭐ Total ${stats.score} pts`;
+const shareState = updateShareButtonsForDate(dateStr);
+if (!shareState.canShare) {
+sub += `<br><strong>Play ${shareState.missing} to unlock sending/copying your full result.</strong>`;
+}
 scorecardLine.textContent = line;
 scorecardMeta.innerHTML = sub;
 
@@ -2162,21 +2349,34 @@ modalBg.classList.add('show');
 
 shareBtn.addEventListener('click', async () => {
 const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
-const m = MODES.find(x => x.id === state.mode);
-const line = state.guesses.map(emojiFor).join('') + '⬜'.repeat(MAX_GUESSES - state.guesses.length);
-const won = state.guesses.includes('correct');
-const text = `🎲 ${GAME_TITLE}
-${m.emoji} ${m.name} · ${shortDate(dateStr)}
-${line}
-${won ? `Solved in ${state.guesses.filter(g => g).length} of ${MAX_GUESSES}` : `Stumped today!`}
-${userName ? userName + ' · ' : ''}🔥 Streak: ${stats.streak} · ⭐ Score: ${stats.score}`;
+const shareState = updateShareButtonsForDate(dateStr);
+if (!shareState.canShare) {
+showToast(`Play ${shareState.missing} before sending your result.`);
+return;
+}
+const text = buildDailyResultText(dateStr);
 try {
 if (navigator.share) { await navigator.share({ text }); return; }
-} catch(e) {}
+} catch(e) {
+return;
+}
 try {
-await navigator.clipboard.writeText(text);
-showToast("Copied! Paste it anywhere.");
-} catch(e) { showToast("Couldn't copy — long-press the scorecard."); }
+window.location.href = `sms:&body=${encodeURIComponent(text)}`;
+setTimeout(() => showToast("If Messages didn't open, use Copy Result."), 700);
+} catch(e) {
+showToast("Use Copy Result to send it manually.");
+}
+});
+
+copyBtn.addEventListener('click', async () => {
+const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
+const shareState = updateShareButtonsForDate(dateStr);
+if (!shareState.canShare) {
+showToast(`Play ${shareState.missing} before copying your result.`);
+return;
+}
+const ok = await copyTextToClipboard(buildDailyResultText(dateStr));
+showToast(ok ? "Copied! Paste it anywhere." : "Couldn't copy — long-press the scorecard.");
 });
 
 nextBtn.addEventListener('click', () => {
@@ -2270,7 +2470,7 @@ for (const m of MODES) {
 const tile = document.createElement('div');
 tile.className = 'mode-tile';
 let badge = '';
-const key = `${today}::${m.id}`;
+const key = resultKey(today, m.id);
 const p = played[key];
 if (p) {
 badge = `<div class="mode-played ${p.result === 'won' ? 'done' : ''}">${p.result === 'won' ? '✓ played' : 'try again'}</div>`;
@@ -2325,12 +2525,12 @@ state.current = song;
 playBtn.disabled = false;
 updateRoundUI();
 
-const key = `${targetDate}::${modeId}`;
+const key = resultKey(targetDate, modeId);
 if (played[key] && !isArchive) {
 state.guesses = played[key].guesses.slice();
 state.done = true;
 for (let i = 0; i < state.guesses.length; i++) animateCell(i);
-setTimeout(() => finalize(played[key].result === 'won'), 300);
+setTimeout(() => finalize(played[key].result === 'won', { recordStats: false }), 300);
 }
 }
 
@@ -2361,7 +2561,7 @@ days.push(ds);
 }
 for (const ds of days) {
 for (const m of MODES) {
-const key = `${ds}::${m.id}`;
+const key = resultKey(ds, m.id);
 const p = played[key];
 const row = document.createElement('div');
 row.className = 'archive-row';
@@ -2401,6 +2601,31 @@ showToast("History reset.");
 document.getElementById('devChangeName').addEventListener('click', () => {
 document.getElementById('nameInput').value = userName || '';
 document.getElementById('nameModalBg').classList.add('show');
+});
+
+document.getElementById('devSpotifyDebug').addEventListener('click', async () => {
+let sdkState = null;
+let webState = null;
+if (spotifyPlayer && spotifyPlayer.getCurrentState) {
+sdkState = await spotifyPlayer.getCurrentState().catch(e => ({ error: errMsg(e) }));
+}
+webState = await spotifyApi('me/player').catch(e => ({ error: errMsg(e) }));
+const sdkTrack = sdkState && sdkState.track_window && sdkState.track_window.current_track;
+alert([
+`URL: ${location.href}`,
+`iOS-like: ${isIOSLikeSafari()}`,
+`Secure context: ${window.isSecureContext}`,
+`crypto.subtle: ${!!(window.crypto && crypto.subtle)}`,
+`SDK device id: ${spotifyDeviceId || '(none)'}`,
+`Activated: ${spotifyElementActivated}`,
+`SDK state exists: ${!!sdkState && !sdkState.error}`,
+`SDK paused: ${sdkState && typeof sdkState.paused !== 'undefined' ? sdkState.paused : '(unknown)'}`,
+`SDK track: ${sdkTrack ? sdkTrack.name + ' / ' + sdkTrack.uri : '(none)'}`,
+`Web API device: ${webState && webState.device ? webState.device.name + ' / ' + webState.device.type : '(none)'}`,
+`Web API is_playing: ${webState && typeof webState.is_playing !== 'undefined' ? webState.is_playing : '(unknown)'}`,
+`Last error: ${lastLoadError || '(none)'}`,
+`User agent: ${navigator.userAgent}`
+].join('\n'));
 });
 
 /* NAME PROMPT */
@@ -2464,6 +2689,7 @@ Steps to reproduce:
 Device info (auto-filled, please leave):
 ${ua}
 URL: ${location.href}
+Spotify debug: ${lastLoadError || '(no Spotify error captured)'}
 `;
 window.location.href = `mailto:kyrahu12@gmail.com?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
 });
@@ -2536,3 +2762,8 @@ boot();
 </script>
 </body>
 </html>
+
+
+
+
+
