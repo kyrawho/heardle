@@ -299,6 +299,7 @@ box-shadow: 0 4px 14px rgba(20,184,166,0.3);
 width: 100%; padding: 10px; background: transparent; border: none;
 font-size: 13px; color: var(--muted); cursor: pointer; font-weight: 500;
 }
+
 #shareBtn,
 #copyBtn {
   touch-action: manipulation;
@@ -475,12 +476,12 @@ max-width: 540px; line-height: 1.6;
 
 <div class="topbar">
 <div class="logo">
-<span class="die" id="dieEmoji">🎲</span>
+<span class="die" id="dieEmoji"></span>
 The Gamers' Heardle
 </div>
 <div class="stats">
-<div class="pill" id="streakPill">🔥 <span class="num" id="streakNum">0</span></div>
-<div class="pill" id="scorePill">⭐ <span class="num" id="scoreNum">0</span></div>
+<div class="pill" id="streakPill"> <span class="num" id="streakNum">0</span></div>
+<div class="pill" id="scorePill"> <span class="num" id="scoreNum">0</span></div>
 </div>
 </div>
 
@@ -504,7 +505,7 @@ The Gamers' Heardle
 
 <!-- GAME -->
 <div class="card view" id="gameView">
-<button class="btn-back" id="backBtn">← back to categories</button>
+<button class="btn-back" id="backBtn"> back to categories</button>
 <div class="grid" id="grid"></div>
 <div class="progress-wrap">
 <div class="progress-track">
@@ -521,39 +522,39 @@ The Gamers' Heardle
 <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
 </button>
 <div class="play-info">
-<div class="lbl"><span id="modeBadge"></span> · Round <span id="roundNum">1</span> of 6</div>
+<div class="lbl"><span id="modeBadge"></span> � Round <span id="roundNum">1</span> of 6</div>
 <div class="val" id="roundLabel">Tap to play 1 second</div>
 </div>
 </div>
 <div class="input-wrap">
-<input class="guess-input" id="guessInput" type="text" placeholder="Type a song title…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+<input class="guess-input" id="guessInput" type="text" placeholder="Type a song title&" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
 <div class="suggestions" id="suggestions"></div>
 </div>
 <div class="actions">
-<button class="btn btn-skip" id="skipBtn">🤔 Not sure</button>
+<button class="btn btn-skip" id="skipBtn"> Not sure</button>
 <button class="btn btn-primary" id="submitBtn" disabled>Submit Guess</button>
 </div>
 </div>
 
 <!-- ARCHIVE -->
 <div class="card view" id="archiveView">
-<button class="btn-back" id="archiveBackBtn">← back to categories</button>
-<div class="picker-title" style="font-size:18px;">📚 Archive</div>
+<button class="btn-back" id="archiveBackBtn"> back to categories</button>
+<div class="picker-title" style="font-size:18px;"> Archive</div>
 <div class="picker-sub">Replay past days. The date and category are shown before play.</div>
 <div class="archive-list" id="archiveList"></div>
 <div class="archive-controls">
-<button id="devShowAnswer">👁 Show today's answer</button>
-<button id="devSpotifyDebug">🎧 Spotify debug</button>
-<button id="devResetStats">🗑 Reset stats</button>
-<button id="devResetPlayed">🔄 Reset played history</button>
-<button id="devChangeName">✏️ Change name</button>
+<button id="devShowAnswer"> Show today's answer</button>
+<button id="devSpotifyDebug"> Spotify debug</button>
+<button id="devResetStats"> Reset stats</button>
+<button id="devResetPlayed"> Reset played history</button>
+<button id="devChangeName"> Change name</button>
 </div>
 </div>
 
 <!-- NAME PROMPT -->
 <div class="modal-bg" id="nameModalBg">
 <div class="modal">
-<div class="modal-headline">👋 What's your name?</div>
+<div class="modal-headline"> What's your name?</div>
 <div class="modal-sub">First name only. We'll use it to greet you and track your stats.</div>
 <div class="name-prompt">
 <input id="nameInput" type="text" placeholder="e.g., Amy" maxlength="20" autocapitalize="words" />
@@ -563,8 +564,8 @@ The Gamers' Heardle
 </div>
 
 <div class="footer-note">
-Made with love by <a href="https://x.com/kyrawhoo" target="_blank" rel="noopener noreferrer">@kyrawho</a> · v1.0 · Launched Mother's Day 2026<br>
-<a href="#" id="bugBtn">🐛 Report a bug</a>
+Made with love by <a href="https://x.com/kyrawhoo" target="_blank" rel="noopener noreferrer">@kyrawho</a> � v1.0 � Launched Mother's Day 2026<br>
+<a href="#" id="bugBtn"> Report a bug</a>
 <span class="footer-dot">&middot;</span>
 <a href="#" id="suggestionBtn">&#128161; Suggestion box</a>
 </div>
@@ -583,7 +584,7 @@ Made with love by <a href="https://x.com/kyrawhoo" target="_blank" rel="noopener
 </div>
 </div>
 <div class="funfact" id="funfact" style="display:none;">
-<span class="icon">💡</span>
+<span class="icon"></span>
 <div id="funfactText"></div>
 </div>
 <div class="scorecard-title">Your Scorecard</div>
@@ -592,9 +593,9 @@ Made with love by <a href="https://x.com/kyrawhoo" target="_blank" rel="noopener
 <div class="scorecard-meta" id="scorecardMeta"></div>
 </div>
 <div class="modal-actions">
-<button class="btn btn-skip" id="shareBtn">💌 Share Result</button>
-<button class="btn btn-skip" id="copyBtn">📋 Copy Result</button>
-<button class="btn btn-primary" id="nextBtn">Back to Categories →</button>
+<button class="btn btn-skip" id="shareBtn"> Share Result</button>
+<button class="btn btn-skip" id="copyBtn"> Copy Result</button>
+<button class="btn btn-primary" id="nextBtn">Back to Categories </button>
 </div>
 </div>
 </div>
@@ -604,7 +605,7 @@ Made with love by <a href="https://x.com/kyrawhoo" target="_blank" rel="noopener
 
 <script>
 /* ================================================================
-SONG POOLS — organized by era for v1.1
+SONG POOLS  organized by era for v1.1
 80s90s = 1980-1999, 2000s = 2000-present
 Pulled and combined from v1.0 pools, deduped.
 ================================================================ */
@@ -720,8 +721,8 @@ const POOLS = {
 {t:"Don't Let Go (Love)", a:"En Vogue"},
 {t:"Killing Me Softly", a:"Fugees"},{t:"Ready or Not", a:"Fugees"},
 {t:"Doo Wop (That Thing)", a:"Lauryn Hill"},
-{t:"Black Velvet", a:"Alannah Myles"},{t:"Nothing Compares 2 U", a:"Sinéad O'Connor"},
-{t:"Mambo No. 5", a:"Lou Bega"},{t:"Macarena", a:"Los del Río"},{t:"Barbie Girl", a:"Aqua"},
+{t:"Black Velvet", a:"Alannah Myles"},{t:"Nothing Compares 2 U", a:"Sin�ad O'Connor"},
+{t:"Mambo No. 5", a:"Lou Bega"},{t:"Macarena", a:"Los del R�o"},{t:"Barbie Girl", a:"Aqua"},
 {t:"Heaven Is a Place on Earth", a:"Belinda Carlisle"},
 {t:"Manic Monday", a:"The Bangles"},{t:"Walk Like an Egyptian", a:"The Bangles"},
 {t:"Eternal Flame", a:"The Bangles"},
@@ -747,9 +748,9 @@ const POOLS = {
 {t:"Toxic", a:"Britney Spears"},{t:"Oops!... I Did It Again", a:"Britney Spears"},
 {t:"I'm a Slave 4 U", a:"Britney Spears"},{t:"Gimme More", a:"Britney Spears"},
 {t:"Womanizer", a:"Britney Spears"},{t:"Stronger", a:"Britney Spears"},
-{t:"Crazy in Love", a:"Beyoncé"},{t:"Single Ladies (Put a Ring on It)", a:"Beyoncé"},
-{t:"Halo", a:"Beyoncé"},{t:"Irreplaceable", a:"Beyoncé"},{t:"Drunk in Love", a:"Beyoncé"},
-{t:"Formation", a:"Beyoncé"},{t:"Run the World (Girls)", a:"Beyoncé"},{t:"Love On Top", a:"Beyoncé"},
+{t:"Crazy in Love", a:"Beyonc�"},{t:"Single Ladies (Put a Ring on It)", a:"Beyonc�"},
+{t:"Halo", a:"Beyonc�"},{t:"Irreplaceable", a:"Beyonc�"},{t:"Drunk in Love", a:"Beyonc�"},
+{t:"Formation", a:"Beyonc�"},{t:"Run the World (Girls)", a:"Beyonc�"},{t:"Love On Top", a:"Beyonc�"},
 {t:"Hollaback Girl", a:"Gwen Stefani"},{t:"Cool", a:"Gwen Stefani"},
 {t:"Hey Ya!", a:"OutKast"},{t:"Ms. Jackson", a:"OutKast"},
 {t:"Since U Been Gone", a:"Kelly Clarkson"},{t:"Stronger (What Doesn't Kill You)", a:"Kelly Clarkson"},
@@ -866,7 +867,7 @@ const POOLS = {
 {t:"Calm Down", a:"Rema"},{t:"I'm Good (Blue)", a:"David Guetta"},
 {t:"Greedy", a:"Tate McRae"},
 {t:"Paint The Town Red", a:"Doja Cat"},{t:"Say So", a:"Doja Cat"},{t:"Woman", a:"Doja Cat"},
-{t:"Texas Hold 'Em", a:"Beyoncé"},
+{t:"Texas Hold 'Em", a:"Beyonc�"},
 {t:"Murder On The Dancefloor", a:"Sophie Ellis-Bextor"},
 {t:"Crazy", a:"Gnarls Barkley"},{t:"Empire State of Mind", a:"Jay-Z"},
 {t:"Gold Digger", a:"Kanye West"},{t:"Stronger", a:"Kanye West"},{t:"Heartless", a:"Kanye West"},
@@ -914,7 +915,7 @@ POOLS["80s90s"] = dedupPool(POOLS["80s90s"]);
 POOLS["2000s"] = dedupPool(POOLS["2000s"]);
 
 /* ================================================================
-FILLER POOL — large list of song titles for autocomplete only.
+FILLER POOL  large list of song titles for autocomplete only.
 Never picked as the answer. Mixed eras and genres so the
 dropdown doesn't spoil future answers.
 ================================================================ */
@@ -1083,13 +1084,13 @@ const FILLER_POOL = [
 {t:"Summer", a:"Calvin Harris"},{t:"How Deep Is Your Love", a:"Calvin Harris"},
 {t:"Outside", a:"Calvin Harris"},{t:"My Way", a:"Calvin Harris"},
 {t:"Lean On", a:"Major Lazer"},{t:"Cold Water", a:"Major Lazer"},
-{t:"Where Are Ü Now", a:"Skrillex"},{t:"Bangarang", a:"Skrillex"},
+{t:"Where Are � Now", a:"Skrillex"},{t:"Bangarang", a:"Skrillex"},
 {t:"Animals", a:"Martin Garrix"},{t:"Forever", a:"Martin Garrix"},
 {t:"Tsunami", a:"DVBBS"},
 {t:"Hold On, We're Going Home", a:"Drake"},
 {t:"Stay With Me", a:"Sam Smith"},{t:"I'm Not the Only One", a:"Sam Smith"},
 {t:"Dancing With a Stranger", a:"Sam Smith"},
-{t:"Beggin'", a:"Måneskin"},{t:"I Wanna Be Your Slave", a:"Måneskin"},
+{t:"Beggin'", a:"M�neskin"},{t:"I Wanna Be Your Slave", a:"M�neskin"},
 {t:"Save Your Tears", a:"The Weeknd"},{t:"In Your Eyes", a:"The Weeknd"},
 {t:"Earned It", a:"The Weeknd"},{t:"I Feel It Coming", a:"The Weeknd"},
 {t:"Out of Time", a:"The Weeknd"},{t:"Sacrifice", a:"The Weeknd"},
@@ -1205,13 +1206,13 @@ const FILLER_POOL = [
 ];
 
 const MODES = [
-{ id: "80s90s", name: "80s & 90s", emoji: "📼", desc: "1980 through 1999" },
-{ id: "2000s", name: "2000s+", emoji: "🎧", desc: "2000 to today" },
+{ id: "80s90s", name: "80s & 90s", emoji: "", desc: "1980 through 1999" },
+{ id: "2000s", name: "2000s+", emoji: "", desc: "2000 to today" },
 ];
 
 const REVEAL_TIMES = [1, 2, 4, 7, 11, 16];
 const MAX_GUESSES = 6;
-const DIE_FACES = ["⚀","⚁","⚂","⚃","⚄","⚅"];
+const DIE_FACES = ["","","","","",""];
 const LAUNCH_DATE = "2026-05-09";
 const VERSION = "v1.1.3";
 const GAME_TITLE = "The Gamers' Heardle";
@@ -1229,23 +1230,23 @@ const MEMOJIS = {
 
 // User profiles for personalized greetings
 const USER_PROFILES = {
-"amy": { avatar: "👩🏻", greet: "Hi Mom!", sub: "Love you and hope you have a great day 💙" },
-"jeff": { avatar: "👨🏻", greet: "Hi Dad!", sub: "Love you, and listen to Mom today, ok? 😄" },
-"grace": { avatar: "👩🏻", greet: "Hi Grace!", sub: "Hope you sell a listing today! 🏡" },
-"david": { avatar: "👨🏻", greet: "LGM 4ever! 🧡💙", sub: "Let's go Mets!" },
-"suk yi":{ avatar: "💛", greet: "Hi favorite aunt!", sub: "💛💙💜" },
-"sukyi": { avatar: "💛", greet: "Hi favorite aunt!", sub: "💛💙💜" },
-"carly": { avatar: "💜", greet: "Hey sis!", sub: "Welcome to the vibe code Olympics lol 💜💜" },
-"candace": { avatar: "🦦", greet: "Hi baby <3", sub: "Love you more, forever :)" },
-"kyra": { avatar: "🚡", greet: "Hi Kyra!", sub: "You did it! First vibe coded project live!" },
-"jake": { avatar: "😛", greet: "Hi Jake!", sub: "Hey swaglord. Hope you have a semicharmed day :)" },
-"meghna": { avatar: "🦈", greet: "Hi Meghna!", sub: "Give Blåhaj a hug for me today :)" },
-"cassie": { avatar: "🤸‍♀️", greet: "Hi Cassie!", sub: "Hey diva! Hope you get a wedding on Tomodachi Life today :)" },
-"ishaani": { avatar: "🏄‍♂️", greet: "Hi Ishaani!", sub: "Hey swaglord #1. Couldn't decide between 🏄‍♂️ and 🧌 but 🏄‍♂️ is so iconic. Love u <3" },
-"doreen": { avatar: "💩", greet: "Hi Doreen!", sub: "Hi Doorbell. ✂️✂️✂️✂️✂️✂️✂️✂️✂️✂️" },
-"stacey": { avatar: "⭐", greet: "Hi Stacey!", sub: "Hi Stacey Star! This and the AI newsletters...I am an AI monster lol..." },
-"isabel": { avatar: "💚", greet: "Hi Isabel!", sub: "Heyyyy Buttercup or Blossom...love you queen" },
-"cece": { avatar: "💜", greet: "Hi Cece!", sub: "My one less lonely girl...." },
+"amy": { avatar: "", greet: "Hi Mom!", sub: "Love you and hope you have a great day " },
+"jeff": { avatar: "", greet: "Hi Dad!", sub: "Love you, and listen to Mom today, ok? " },
+"grace": { avatar: "", greet: "Hi Grace!", sub: "Hope you sell a listing today! " },
+"david": { avatar: "", greet: "LGM 4ever! ", sub: "Let's go Mets!" },
+"suk yi":{ avatar: "", greet: "Hi favorite aunt!", sub: "" },
+"sukyi": { avatar: "", greet: "Hi favorite aunt!", sub: "" },
+"carly": { avatar: "", greet: "Hey sis!", sub: "Welcome to the vibe code Olympics lol " },
+"candace": { avatar: "", greet: "Hi baby <3", sub: "Love you more, forever :)" },
+"kyra": { avatar: "", greet: "Hi Kyra!", sub: "You did it! First vibe coded project live!" },
+"jake": { avatar: "", greet: "Hi Jake!", sub: "Hey swaglord. Hope you have a semicharmed day :)" },
+"meghna": { avatar: "", greet: "Hi Meghna!", sub: "Give Bl�haj a hug for me today :)" },
+"cassie": { avatar: "", greet: "Hi Cassie!", sub: "Hey diva! Hope you get a wedding on Tomodachi Life today :)" },
+"ishaani": { avatar: "", greet: "Hi Ishaani!", sub: "Hey swaglord #1. Couldn't decide between  and  but  is so iconic. Love u <3" },
+"doreen": { avatar: "", greet: "Hi Doreen!", sub: "Hi Doorbell. " },
+"stacey": { avatar: "", greet: "Hi Stacey!", sub: "Hi Stacey Star! This and the AI newsletters...I am an AI monster lol..." },
+"isabel": { avatar: "", greet: "Hi Isabel!", sub: "Heyyyy Buttercup or Blossom...love you queen" },
+"cece": { avatar: "", greet: "Hi Cece!", sub: "My one less lonely girl...." },
 };
 
 let state = {
@@ -1889,7 +1890,7 @@ try {
 await spotifyApi(`me/player/pause?device_id=${encodeURIComponent(spotifyDeviceId)}`, { method: "PUT" });
 } catch(e) {}
 }
-/* FUN FACT — Wikipedia-based, with graceful fallback */
+/* FUN FACT  Wikipedia-based, with graceful fallback */
 async function fetchFunFact(title, artist) {
 // Try song page first
 const candidates = [
@@ -1953,7 +1954,7 @@ const tol = Math.max(1, Math.floor(t.length / 8));
 return dist <= tol;
 }
 
-/* AUTOCOMPLETE — pulls from current mode pool + filler pool */
+/* AUTOCOMPLETE  pulls from current mode pool + filler pool */
 const guessInput = document.getElementById('guessInput');
 const suggestions = document.getElementById('suggestions');
 const submitBtn = document.getElementById('submitBtn');
@@ -2017,7 +2018,7 @@ guessInput.addEventListener('keydown', (e) => {
 if (e.key === 'Enter' && !submitBtn.disabled) { e.preventDefault(); submitGuess(); }
 });
 
-/* PLAYBACK — start at beginning (currentTime = 0) */
+/* PLAYBACK  start at beginning (currentTime = 0) */
 const playBtn = document.getElementById('playBtn');
 const playIcon = document.getElementById('playIcon');
 const progressFill = document.getElementById('progressFill');
@@ -2054,7 +2055,7 @@ if (!deviceId) return;
 // On first iPhone tap, the Spotify SDK player may not exist yet, so the
 // required audio activation could not run inside the original tap handler.
 if (isIOSLikeSafari() && !hadPlayerBeforeTap && !spotifyElementActivated) {
-showToast("Spotify is ready — tap play once more for sound on iPhone.");
+showToast("Spotify is ready  tap play once more for sound on iPhone.");
 return;
 }
 
@@ -2145,7 +2146,7 @@ roundLabel.textContent = spotifyClientConfigured()
 ? "Tap play to connect Spotify and start at 0:00"
 : "Spotify setup needed before playback";
 } else {
-roundLabel.textContent = state.round === 0 ? `Tap ▶ to play ${sec} second from 0:00` : `Listening for ${sec} second${sec === 1 ? '' : 's'}`;
+roundLabel.textContent = state.round === 0 ? `Tap  to play ${sec} second from 0:00` : `Listening for ${sec} second${sec === 1 ? '' : 's'}`;
 }
 maxTimeEl.textContent = `/ ${sec.toFixed(1)}s`;
 progressFill.style.width = "0%";
@@ -2187,8 +2188,8 @@ const c = document.getElementById('cell-' + idx);
 if (!c) return;
 c.classList.add('flip');
 const status = state.guesses[idx];
-if (status === 'correct') { c.classList.add('correct'); c.textContent = '✓'; }
-else if (status === 'wrong') { c.classList.add('wrong'); c.textContent = '✕'; }
+if (status === 'correct') { c.classList.add('correct'); c.textContent = ''; }
+else if (status === 'wrong') { c.classList.add('wrong'); c.textContent = ''; }
 else if (status === 'skip') { c.classList.add('skip'); c.textContent = '?'; }
 c.classList.remove('active');
 setTimeout(() => c.classList.remove('flip'), 500);
@@ -2218,15 +2219,15 @@ const copyBtn = document.getElementById('copyBtn');
 const nextBtn = document.getElementById('nextBtn');
 
 function emojiFor(status) {
-if (status === 'correct') return '🟩';
-if (status === 'wrong') return '🟥';
-if (status === 'skip') return '🟦';
-return '⬜';
+if (status === 'correct') return '';
+if (status === 'wrong') return '';
+if (status === 'skip') return '';
+return '';
 }
 
 function resultLineFromGuesses(guesses) {
 const g = Array.isArray(guesses) ? guesses : [];
-return g.map(emojiFor).join('') + '⬜'.repeat(Math.max(0, MAX_GUESSES - g.length));
+return g.map(emojiFor).join('') + ''.repeat(Math.max(0, MAX_GUESSES - g.length));
 }
 
 function resultKey(dateStr, modeId) {
@@ -2262,49 +2263,56 @@ return 'Stumped';
 }
 
 function buildDailyResultText(dateStr) {
-const lines = [`🎲 ${GAME_TITLE}`, shortDate(dateStr), ''];
-for (const m of MODES) {
+const lines = [`${GAME_TITLE}`, shortDate(dateStr), ''];
+const playedModes = MODES.filter(m => playedEntryFor(dateStr, m.id));
+const modesToShare = playedModes.length ? playedModes : MODES;
+
+for (const m of modesToShare) {
 const entry = playedEntryFor(dateStr, m.id);
 lines.push(`${m.emoji} ${m.name}`);
-lines.push(entry ? resultLineFromGuesses(entry.guesses) : '⬜'.repeat(MAX_GUESSES));
+lines.push(entry ? resultLineFromGuesses(entry.guesses) : ''.repeat(MAX_GUESSES));
 lines.push(resultSummary(entry));
 lines.push('');
 }
-lines.push(`${userName ? userName + ' · ' : ''}🔥 Streak: ${stats.streak} · ⭐ Score: ${stats.score}`);
+
+lines.push(`${userName ? userName + ' · ' : ''}Streak: ${stats.streak} · Score: ${stats.score}`);
 return lines.join('\n').trim();
 }
 
 function updateShareButtonsForDate(dateStr) {
-const canShare = bothGamesPlayedForDate(dateStr);
-const missing = modesMissingForDate(dateStr).map(m => `${m.emoji} ${m.name}`).join(' and ');
-shareBtn.disabled = !canShare;
-copyBtn.disabled = !canShare;
-shareBtn.title = canShare ? 'Send both Heardle results' : `Play ${missing} to unlock sending`;
-copyBtn.title = canShare ? 'Copy both Heardle results' : `Play ${missing} to unlock copying`;
-return { canShare, missing };
+const currentModePlayed = state.mode
+? !!playedEntryFor(dateStr, state.mode)
+: wonAnyGameForDate(dateStr);
+
+shareBtn.disabled = !currentModePlayed;
+copyBtn.disabled = !currentModePlayed;
+shareBtn.title = currentModePlayed ? 'Share your result' : 'Finish this round to share';
+copyBtn.title = currentModePlayed ? 'Copy your result' : 'Finish this round to copy';
+
+return { canShare: currentModePlayed, missing: '' };
 }
 
 async function copyTextToClipboard(text) {
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.style.position = "fixed";
-    textarea.style.opacity = "0";
-    document.body.appendChild(textarea);
-    textarea.focus();
-    textarea.select();
-    try {
-      document.execCommand("copy");
-      return true;
-    } catch {
-      return false;
-    } finally {
-      textarea.remove();
-    }
-  }
+ try {
+ await navigator.clipboard.writeText(text);
+ return true;
+ } catch {
+ const textarea = document.createElement("textarea");
+ textarea.value = text;
+ textarea.style.position = "fixed";
+ textarea.style.opacity = "0";
+ document.body.appendChild(textarea);
+ textarea.focus();
+ textarea.select();
+ try {
+ document.execCommand("copy");
+ return true;
+ } catch {
+ return false;
+ } finally {
+ textarea.remove();
+ }
+ }
 }
 
 async function finalize(won, options = {}) {
@@ -2348,12 +2356,12 @@ modalHeadline.classList.remove('win', 'lose');
 const m = MODES.find(x => x.id === state.mode);
 
 if (won) {
-modalHeadline.textContent = 'Got it! 🎉';
+modalHeadline.textContent = 'Got it! ';
 modalHeadline.classList.add('win');
 const used = state.guesses.filter(g => g).length;
 modalSub.textContent = isToday
-? `Found in ${used} guess${used === 1 ? '' : 'es'} · +${pts} points`
-: `Archive replay · ${used} guess${used === 1 ? '' : 'es'}`;
+? `Found in ${used} guess${used === 1 ? '' : 'es'} � +${pts} points`
+: `Archive replay � ${used} guess${used === 1 ? '' : 'es'}`;
 } else {
 modalHeadline.textContent = 'So close.';
 modalHeadline.classList.add('lose');
@@ -2378,69 +2386,69 @@ funfactEl.style.display = 'none';
 });
 
 const line = resultLineFromGuesses(state.guesses);
-const streakText = lostAllGamesForDate(dateStr) ? `Streak reset` : `🔥 Streak ${stats.streak}`;
+const streakText = lostAllGamesForDate(dateStr) ? `Streak reset` : ` Streak ${stats.streak}`;
 
-let sub = `${m.emoji} ${m.name} · ${shortDate(dateStr)}<br>` +
-(userName ? `${userName} · ` : '') + `${streakText} · ⭐ Total ${stats.score} pts`;
+let sub = `${m.emoji} ${m.name} � ${shortDate(dateStr)}<br>` +
+(userName ? `${userName} � ` : '') + `${streakText} �  Total ${stats.score} pts`;
 const shareState = updateShareButtonsForDate(dateStr);
 if (!shareState.canShare) {
-sub += `<br><strong>Play ${shareState.missing} to unlock sending/copying your full result.</strong>`;
+sub += `<br><strong>Finish this round to unlock sending/copying.</strong>`;
 }
 scorecardLine.textContent = line;
 scorecardMeta.innerHTML = sub;
-nextBtn.textContent = `Back to Categories →`;
+nextBtn.textContent = `Back to Categories `;
 modalBg.classList.add('show');
 }
-  
+ 
 shareBtn.addEventListener('click', async () => {
-  const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
-  const shareState = updateShareButtonsForDate(dateStr);
-  if (!shareState.canShare) {
-    showToast(`Play ${shareState.missing} before sharing your result.`);
-    return;
-  }
-  const text = buildDailyResultText(dateStr);
-  const shareData = {
-    title: GAME_TITLE,
-    text
-  };
-  // Best option for both iPhone Safari and Android Chrome.
-  if (navigator.share) {
-    try {
-      if (!navigator.canShare || navigator.canShare(shareData)) {
-        await navigator.share(shareData);
-        return;
-      }
-    } catch (e) {
-      console.warn("Native share failed or was cancelled:", e);
-      // Important: do not return. Fall through to SMS/copy fallback.
-    }
-  }
-  // SMS fallback. Android and iOS use slightly different body formats.
-  const isAndroid = /Android/i.test(navigator.userAgent);
-  const smsUrl = isAndroid
-    ? `sms:?body=${encodeURIComponent(text)}`
-    : `sms:&body=${encodeURIComponent(text)}`;
-  try {
-    window.location.href = smsUrl;
-    setTimeout(() => {
-      showToast("If Messages did not open, tap Copy Result.");
-    }, 900);
-  } catch (e) {
-    const copied = await copyTextToClipboard(text);
-    showToast(
-      copied
-        ? "Copied! Paste your result into Messages."
-        : "Unable to share automatically. Try Copy Result."
-    );
-  }
+ const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
+ const shareState = updateShareButtonsForDate(dateStr);
+ if (!shareState.canShare) {
+ showToast('Finish this round before sharing your result.');
+ return;
+ }
+ const text = buildDailyResultText(dateStr);
+ const shareData = {
+ title: GAME_TITLE,
+ text
+ };
+ // Best option for both iPhone Safari and Android Chrome.
+ if (navigator.share) {
+ try {
+ if (!navigator.canShare || navigator.canShare(shareData)) {
+ await navigator.share(shareData);
+ return;
+ }
+ } catch (e) {
+ console.warn("Native share failed or was cancelled:", e);
+ // Important: do not return. Fall through to SMS/copy fallback.
+ }
+ }
+ // SMS fallback. Android and iOS use slightly different body formats.
+ const isAndroid = /Android/i.test(navigator.userAgent);
+ const smsUrl = isAndroid
+ ? `sms:?body=${encodeURIComponent(text)}`
+ : `sms:&body=${encodeURIComponent(text)}`;
+ try {
+ window.location.href = smsUrl;
+ setTimeout(() => {
+ showToast("If Messages did not open, tap Copy Result.");
+ }, 900);
+ } catch (e) {
+ const copied = await copyTextToClipboard(text);
+ showToast(
+ copied
+ ? "Copied! Paste your result into Messages."
+ : "Unable to share automatically. Try Copy Result."
+ );
+ }
 });
 
 copyBtn.addEventListener('click', async () => {
 const dateStr = state.isArchive ? state.archiveDateStr : todayStr();
 const shareState = updateShareButtonsForDate(dateStr);
 if (!shareState.canShare) {
-showToast(`Play ${shareState.missing} before copying your result.`);
+showToast('Finish this round before copying your result.');
 return;
 }
 const ok = await copyTextToClipboard(buildDailyResultText(dateStr));
@@ -2460,7 +2468,7 @@ return USER_PROFILES[key] || null;
 }
 function avatarFor(name) {
 const p = profileFor(name);
-return p ? p.avatar : '👋';
+return p ? p.avatar : '';
 }
 function renderHelloBanner() {
 const banner = document.getElementById('helloBanner');
@@ -2476,7 +2484,7 @@ avatar.innerHTML = `<img src="${MEMOJIS[key]}" alt="${escapeHtml(userName)}" />`
 } else if (p) {
 avatar.textContent = p.avatar;
 } else {
-avatar.textContent = '👋';
+avatar.textContent = '';
 }
 if (p) {
 greet.textContent = p.greet;
@@ -2515,7 +2523,7 @@ pickerView.classList.toggle('show', name === 'picker');
 gameView.classList.toggle('show', name === 'game');
 archiveView.classList.toggle('show', name === 'archive');
 if (name === 'game' && state.isArchive) {
-dateBar.innerHTML = `<span class="archive-tag">📚 Archive</span> · ${prettyDate(state.archiveDateStr)}`;
+dateBar.innerHTML = `<span class="archive-tag"> Archive</span> � ${prettyDate(state.archiveDateStr)}`;
 } else {
 dateBar.innerHTML = prettyDate(todayStr());
 }
@@ -2541,7 +2549,7 @@ let badge = '';
 const key = resultKey(today, m.id);
 const p = played[key];
 if (p) {
-badge = `<div class="mode-played ${p.result === 'won' ? 'done' : ''}">${p.result === 'won' ? '✓ played' : 'try again'}</div>`;
+badge = `<div class="mode-played ${p.result === 'won' ? 'done' : ''}">${p.result === 'won' ? ' played' : 'try again'}</div>`;
 if (p.result === 'won') tile.classList.add('complete');
 }
 tile.innerHTML = `
@@ -2556,10 +2564,10 @@ modesGrid.appendChild(tile);
 const archive = document.createElement('div');
 archive.className = 'mode-tile archive-tile';
 archive.innerHTML = `
-<div class="mode-emoji">📚</div>
+<div class="mode-emoji"></div>
 <div>
 <div class="mode-name">Archive</div>
-<div class="mode-desc">Replay past days · dev tools</div>
+<div class="mode-desc">Replay past days � dev tools</div>
 </div>`;
 archive.addEventListener('click', () => openArchive());
 modesGrid.appendChild(archive);
@@ -2581,7 +2589,7 @@ updateRoundUI();
 guessInput.value = "";
 submitBtn.disabled = true;
 showView('game');
-roundLabel.textContent = "Loading today's tune…";
+roundLabel.textContent = "Loading today's tune&";
 playBtn.disabled = true;
 const song = await loadSong(targetDate, modeId);
 if (!song) {
@@ -2635,11 +2643,11 @@ const row = document.createElement('div');
 row.className = 'archive-row';
 const isToday = ds === today;
 let status = '';
-if (p) status = `<div class="ar-status ${p.result === 'won' ? 'played' : 'lost'}">${p.result === 'won' ? '✓' : '✕'}</div>`;
+if (p) status = `<div class="ar-status ${p.result === 'won' ? 'played' : 'lost'}">${p.result === 'won' ? '' : ''}</div>`;
 else status = `<div class="ar-status">${isToday ? 'today' : 'play'}</div>`;
 row.innerHTML = `
 <div>
-<div class="ar-date">${m.emoji} ${m.name} · ${shortDate(ds)}</div>
+<div class="ar-date">${m.emoji} ${m.name} � ${shortDate(ds)}</div>
 <div class="ar-mode">${isToday ? 'Today' : ''}</div>
 </div>${status}`;
 row.addEventListener('click', () => startMode(m.id, true, ds));
@@ -2652,7 +2660,7 @@ document.getElementById('devShowAnswer').addEventListener('click', () => {
 const today = todayStr();
 const answer = MODES.map(m => {
 const s = songForDate(today, m.id);
-return `${m.emoji} ${m.name}: ${s.t} — ${s.a}`;
+return `${m.emoji} ${m.name}: ${s.t}  ${s.a}`;
 }).join('\n');
 alert(`Today's answers (${shortDate(today)}):\n\n${answer}\n\n(If Spotify cannot find the selected track, the game uses the next deterministic pick.)`);
 });
@@ -2734,7 +2742,7 @@ showToast('Logged out. Enter another name to switch profiles.');
 document.getElementById('bugBtn').addEventListener('click', (e) => {
 e.preventDefault();
 const ua = navigator.userAgent || 'unknown';
-const subj = `The Gamers' Heardle — Bug report (${shortDate(todayStr())})`;
+const subj = `The Gamers' Heardle  Bug report (${shortDate(todayStr())})`;
 const body = `Hi Kyra,
 
 I found a bug in The Gamers' Heardle (${VERSION}).
@@ -2830,8 +2838,3 @@ boot();
 </script>
 </body>
 </html>
-
-
-
-
-
