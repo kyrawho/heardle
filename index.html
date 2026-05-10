@@ -1972,10 +1972,19 @@ const curTimeEl = document.getElementById('curTime');
 const maxTimeEl = document.getElementById('maxTime');
 function setIconPlay() { playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
 function setIconPause() { playIcon.innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'; }
+
+function activateSpotifyElementForIOS() {
+  if (spotifyPlayer && typeof spotifyPlayer.activateElement === "function") {
+    spotifyPlayer.activateElement();
+  }
+}
   
 playBtn.addEventListener('click', async () => {
   if (!state.current) return;
   playBtn.classList.remove('pulse');
+
+  // iOS/iPadOS Safari requires Spotify activation inside the user tap.
+  activateSpotifyElementForIOS();
 
   if (playing) {
     stopAudio();
