@@ -1,3 +1,5 @@
+<!-- Last updated: Sun May 10, 9:57 AM -->
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -1741,12 +1743,22 @@ async function initSpotifyPlayer() {
   if (spotifyDeviceId && spotifyPlayer) return spotifyDeviceId;
   if (spotifyPlayerReadyPromise) return await spotifyPlayerReadyPromise;
 
-  spotifyPlayerReadyPromise = new Promise((resolve, reject) => {
-    spotifyPlayer = new Spotify.Player({
-      name: SPOTIFY_CONFIG.playerName,
-      getOAuthToken: async cb => cb(await getSpotifyAccessToken(false)),
-      volume: 0.9,
-    });
+ spotifyPlayerReadyPromise = new Promise(async (resolve, reject) => {
+  spotifyPlayer = new Spotify.Player({
+    name: SPOTIFY_CONFIG.playerName,
+    getOAuthToken: async cb => cb(await getSpotifyAccessToken(false)),
+    volume: 0.9,
+  });
+
+  // REQUIRED FOR IOS SAFARI
+  try {
+    if (typeof spotifyPlayer.activateElement === "function") {
+      await spotifyPlayer.activateElement();
+      console.log("[Spotify] activateElement success");
+    }
+  } catch (e) {
+    console.error("[Spotify] activateElement failed", e);
+  }
 
     spotifyPlayer.addListener('ready', ({ device_id }) => {
       spotifyDeviceId = device_id;
@@ -1928,11 +1940,32 @@ const curTimeEl = document.getElementById('curTime');
 const maxTimeEl = document.getElementById('maxTime');
 function setIconPlay() { playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
 function setIconPause() { playIcon.innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'; }
-playBtn.addEventListener('click', () => {
+  
+playBtn.addEventListener('click', async () => {
   if (!state.current) return;
   playBtn.classList.remove('pulse');
-  if (playing) stopAudio(); else playClip();
+
+  if (playing) {
+    stopAudio();
+    return;
+  }
+
+  // iOS Safari requires this BEFORE playback transfer
+  try {
+    if (
+      spotifyPlayer &&
+      typeof spotifyPlayer.activateElement === "function"
+    ) {
+      await spotifyPlayer.activateElement();
+      console.log("[Spotify] activateElement success");
+    }
+  } catch (e) {
+    console.error("[Spotify] activateElement failed", e);
+  }
+
+  playClip();
 });
+  
 async function playClip() {
   if (!state.current) return;
   if (!state.current.trackUri) {
