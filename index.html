@@ -501,7 +501,7 @@
   </div>
   <div class="stats">
     <div class="pill" id="streakPill">🔥 <span class="num" id="streakNum">0</span></div>
-    <div class="pill" id="scorePill">⭐ <span class="num" id="scoreNum">0</span></div>
+    <div class="pill" id="scorePill">📊 <span class="num" id="scoreNum">0</span></div>
   </div>
 </div>
 
@@ -584,7 +584,7 @@
 
 <div class="footer-note">
   <div>🌷 Launched Mother's Day 2026</div>
-  <div>🧰 Last Updated 5/10/26 @ 10:35am EDT</div>  <br>
+  <div>🧰 Last Updated 5/10/26 @ 10:49am EDT</div>  <br>
   <div>
     💌 Made with love by 
     <a href="https://x.com/kyrawhoo" target="_blank" rel="noopener noreferrer">
@@ -1378,6 +1378,7 @@ let spotifyDeviceId = "";
 let spotifyPlayerReadyPromise = null;
 let playingSource = null;
 let spotifyPrimedForIOS = false;
+let spotifyWarmupPromise = null;
 
 const SPOTIFY_CONFIG = {
   clientId: "e7dfbaf74ee44e5eb3f7ea6716829c9f",
@@ -1768,53 +1769,235 @@ function loadSpotifySdk() {
   return window.__heardleSpotifySdkPromise;
 }
 
-async function initSpotifyPlayer() {
-  const token = await getSpotifyAccessToken(true);
+async function initSpotifyPlayer(options = {}) {
+  const shouldPromptLogin = options.promptLogin !== false;
+
+  const token = await getSpotifyAccessToken(shouldPromptLogin);
   if (!token) return "";
+
   await loadSpotifySdk();
+
   if (spotifyDeviceId && spotifyPlayer) return spotifyDeviceId;
   if (spotifyPlayerReadyPromise) return await spotifyPlayerReadyPromise;
 
- spotifyPlayerReadyPromise = new Promise(async (resolve, reject) => {
-  spotifyPlayer = new Spotify.Player({
-    name: SPOTIFY_CONFIG.playerName,
-    getOAuthToken: async cb => cb(await getSpotifyAccessToken(false)),
-    volume: 0.9,
-  });
-
-  // REQUIRED FOR IOS SAFARI
-  try {
-    if (typeof spotifyPlayer.activateElement === "function") {
-      await spotifyPlayer.activateElement();
-      console.log("[Spotify] activateElement success");
-    }
-  } catch (e) {
-    console.error("[Spotify] activateElement failed", e);
-  }
+  spotifyPlayerReadyPromise = new Promise((resolve, reject) => {
+    spotifyPlayer = new Spotify.Player({
+      name: SPOTIFY_CONFIG.playerName,
+      getOAuthToken: async cb => cb(await getSpotifyAccessToken(false)),
+      volume: 0.9,
+    });
 
     spotifyPlayer.addListener('ready', ({ device_id }) => {
       spotifyDeviceId = device_id;
+      console.log("[Spotify] ready", device_id);
       resolve(device_id);
     });
+
     spotifyPlayer.addListener('not_ready', ({ device_id }) => {
+      console.warn("[Spotify] not_ready", device_id);
       if (spotifyDeviceId === device_id) spotifyDeviceId = "";
     });
-    spotifyPlayer.addListener('initialization_error', ({ message }) => reject(new Error(message)));
+
+    spotifyPlayer.addListener('initialization_error', ({ message }) => {
+      spotifyPlayerReadyPromise = null;
+      reject(new Error(message));
+    });
+
     spotifyPlayer.addListener('authentication_error', ({ message }) => {
+      spotifyPlayerReadyPromise = null;
       clearSpotifyToken();
       reject(new Error(message));
     });
-    spotifyPlayer.addListener('account_error', ({ message }) => reject(new Error(message || 'Spotify Premium required')));
-    spotifyPlayer.addListener('playback_error', ({ message }) => rememberLoadError('spotify playback', new Error(message)));
+
+    spotifyPlayer.addListener('account_error', ({ message }) => {
+      spotifyPlayerReadyPromise = null;
+      reject(new Error(message));
+    });
+
+    spotifyPlayer.addListener('playback_error', ({ message }) => {
+      console.error("[Spotify playback_error]", message);
+      showToast("Spotify playback error. Try again.");
+    });
 
     spotifyPlayer.connect().then(ok => {
-      if (!ok) reject(new Error('Spotify player did not connect'));
-    }).catch(reject);
+      if (!ok) {
+        spotifyPlayerReadyPromise = null;
+        reject(new Error("Spotify player failed to connect"));
+      }
+    });
   });
 
   return await spotifyPlayerReadyPromise;
 }
 
+function isIOSSafariLike() {
+  const ua = navigator.userAgent || "";
+  const platform = navigator.platform || "";
+
+  const isIOS =
+    /iPad|iPhone|iPod/.test(ua) ||
+    (platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  const isSafari =
+    /Safari/i.test(ua) &&
+    !/CriOS|FxiOS|EdgiOS|OPiOS|Chrome|Android/i.test(ua);
+
+  return isIOS && isSafari;
+}
+
+async function activateSpotifyFromUserGesture() {
+  if (!spotifyPlayer || typeof spotifyPlayer.activateElement !== "function") {
+    return false;
+  }
+
+  try {
+    await spotifyPlayer.activateElement();
+    spotifyPrimedForIOS = true;
+    console.log("[Spotify] iOS element activated from user gesture");
+    return true;
+  } catch (e) {
+    spotifyPrimedForIOS = false;
+    console.error("[Spotify] iOS activateElement failed", e);
+    return false;
+  }
+}
+
+function warmSpotifyPlayerBeforePlay() {
+  if (spotifyWarmupPromise) return spotifyWarmupPromise;
+
+  spotifyWarmupPromise = (async () => {
+    try {
+      const token = await getSpotifyAccessToken(false);
+      if (!token) return "";
+
+      const deviceId = await initSpotifyPlayer({ promptLogin: false });
+      return deviceId || "";
+    } catch (e) {
+      rememberLoadError("spotify warmup", e);
+      spotifyWarmupPromise = null;
+      return "";
+    }
+  })();
+
+  return spotifyWarmupPromise;
+}
+  
+async function initSpotifyPlayer(options = {}) {
+  const shouldPromptLogin = options.promptLogin !== false;
+
+  const token = await getSpotifyAccessToken(shouldPromptLogin);
+  if (!token) return "";
+
+  await loadSpotifySdk();
+
+  if (spotifyDeviceId && spotifyPlayer) return spotifyDeviceId;
+  if (spotifyPlayerReadyPromise) return await spotifyPlayerReadyPromise;
+
+  spotifyPlayerReadyPromise = new Promise((resolve, reject) => {
+    spotifyPlayer = new Spotify.Player({
+      name: SPOTIFY_CONFIG.playerName,
+      getOAuthToken: async cb => cb(await getSpotifyAccessToken(false)),
+      volume: 0.9,
+    });
+
+    spotifyPlayer.addListener('ready', ({ device_id }) => {
+      spotifyDeviceId = device_id;
+      console.log("[Spotify] ready", device_id);
+      resolve(device_id);
+    });
+
+    spotifyPlayer.addListener('not_ready', ({ device_id }) => {
+      console.warn("[Spotify] not_ready", device_id);
+      if (spotifyDeviceId === device_id) spotifyDeviceId = "";
+    });
+
+    spotifyPlayer.addListener('initialization_error', ({ message }) => {
+      spotifyPlayerReadyPromise = null;
+      reject(new Error(message));
+    });
+
+    spotifyPlayer.addListener('authentication_error', ({ message }) => {
+      spotifyPlayerReadyPromise = null;
+      clearSpotifyToken();
+      reject(new Error(message));
+    });
+
+    spotifyPlayer.addListener('account_error', ({ message }) => {
+      spotifyPlayerReadyPromise = null;
+      reject(new Error(message));
+    });
+
+    spotifyPlayer.addListener('playback_error', ({ message }) => {
+      console.error("[Spotify playback_error]", message);
+      showToast("Spotify playback error. Try again.");
+    });
+
+    spotifyPlayer.connect().then(ok => {
+      if (!ok) {
+        spotifyPlayerReadyPromise = null;
+        reject(new Error("Spotify player failed to connect"));
+      }
+    });
+  });
+
+  return await spotifyPlayerReadyPromise;
+}
+
+/* 👇 PUT STEP 3 HERE */
+
+function isIOSSafariLike() {
+  const ua = navigator.userAgent || "";
+  const platform = navigator.platform || "";
+
+  const isIOS =
+    /iPad|iPhone|iPod/.test(ua) ||
+    (platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  const isSafari =
+    /Safari/i.test(ua) &&
+    !/CriOS|FxiOS|EdgiOS|OPiOS|Chrome|Android/i.test(ua);
+
+  return isIOS && isSafari;
+}
+
+async function activateSpotifyFromUserGesture() {
+  if (!spotifyPlayer || typeof spotifyPlayer.activateElement !== "function") {
+    return false;
+  }
+
+  try {
+    await spotifyPlayer.activateElement();
+    spotifyPrimedForIOS = true;
+    console.log("[Spotify] iOS element activated from user gesture");
+    return true;
+  } catch (e) {
+    spotifyPrimedForIOS = false;
+    console.error("[Spotify] iOS activateElement failed", e);
+    return false;
+  }
+}
+
+function warmSpotifyPlayerBeforePlay() {
+  if (spotifyWarmupPromise) return spotifyWarmupPromise;
+
+  spotifyWarmupPromise = (async () => {
+    try {
+      const token = await getSpotifyAccessToken(false);
+      if (!token) return "";
+
+      const deviceId = await initSpotifyPlayer({ promptLogin: false });
+      return deviceId || "";
+    } catch (e) {
+      rememberLoadError("spotify warmup", e);
+      spotifyWarmupPromise = null;
+      return "";
+    }
+  })();
+
+  return spotifyWarmupPromise;
+}
+
+  
 async function ensureSpotifyTrackForCurrentSong(interactive = true) {
   if (!state.current) return false;
   if (state.current.trackUri) return true;
@@ -1981,70 +2164,114 @@ function activateSpotifyElementForIOS() {
   
 playBtn.addEventListener('click', async () => {
   if (!state.current) return;
-  playBtn.classList.remove('pulse');
 
-  // iOS/iPadOS Safari requires Spotify activation inside the user tap.
-  activateSpotifyElementForIOS();
+  playBtn.classList.remove('pulse');
 
   if (playing) {
     stopAudio();
     return;
   }
 
-  // iOS Safari requires this BEFORE playback transfer
-  try {
-    if (
-      spotifyPlayer &&
-      typeof spotifyPlayer.activateElement === "function"
-    ) {
-      await spotifyPlayer.activateElement();
-      console.log("[Spotify] activateElement success");
-    }
-  } catch (e) {
-    console.error("[Spotify] activateElement failed", e);
-  }
+  playBtn.disabled = true;
 
-  playClip();
+  try {
+    if (isIOSSafariLike()) {
+      if (!spotifyPlayer || !spotifyDeviceId) {
+        showToast("Spotify is still preparing. Tap play again.");
+        await warmSpotifyPlayerBeforePlay();
+        return;
+      }
+
+      const activated = await activateSpotifyFromUserGesture();
+
+      if (!activated) {
+        showToast("iOS blocked Spotify audio. Tap play again.");
+        return;
+      }
+    }
+
+    await playClip();
+  } finally {
+    if (!playing && !state.done) playBtn.disabled = false;
+  }
 });
   
 async function playClip() {
   if (!state.current) return;
+
   if (!state.current.trackUri) {
     if (!spotifyClientConfigured()) {
       showToast("Add your Spotify Client ID before full-song playback is available.");
       return;
     }
+
     showToast("Connecting Spotify...");
     const ready = await ensureSpotifyTrackForCurrentSong(true);
     if (!ready) return;
   }
+
   try {
-    const deviceId = await initSpotifyPlayer();
-    if (!deviceId) return;
+    const deviceId = spotifyDeviceId || await initSpotifyPlayer();
+
+    if (!deviceId) {
+      showToast("Spotify player is not ready yet. Tap play again.");
+      return;
+    }
+
     playMaxMs = REVEAL_TIMES[Math.min(state.round, REVEAL_TIMES.length - 1)] * 1000;
+
+    await spotifyApi("me/player", {
+      method: "PUT",
+      body: JSON.stringify({
+        device_ids: [deviceId],
+        play: false
+      }),
+    });
+
     await spotifyApi(`me/player/play?device_id=${encodeURIComponent(deviceId)}`, {
       method: "PUT",
-      body: JSON.stringify({ uris: [state.current.trackUri], position_ms: 0 }),
+      body: JSON.stringify({
+        uris: [state.current.trackUri],
+        position_ms: 0
+      }),
     });
+
     playing = true;
     playingSource = "spotify";
+    playBtn.disabled = false;
     setIconPause();
+
     playStart = performance.now();
+
     if (progressTimer) cancelAnimationFrame(progressTimer);
     tickProgress();
   } catch(e) {
     rememberLoadError("spotify play", e);
-    showToast(/premium/i.test(errMsg(e)) ? "Spotify Premium is required for full-song playback." : "Spotify playback needs another tap or login.");
+
+    showToast(
+      /premium/i.test(errMsg(e))
+        ? "Spotify Premium is required for full-song playback."
+        : "Spotify playback needs another tap or login."
+    );
+
+    playBtn.disabled = false;
   }
 }
+  
 function stopAudio() {
   try { audio.pause(); } catch(e) {}
+
   if (playingSource === "spotify") pauseSpotifyPlayback();
+
   playing = false;
   playingSource = null;
+
+  playBtn.disabled = false;
   setIconPlay();
+
   if (progressTimer) cancelAnimationFrame(progressTimer);
 }
+  
 function tickProgress() {
   const elapsed = performance.now() - playStart;
   const pct = Math.min(100, (elapsed / playMaxMs) * 100);
@@ -2384,6 +2611,7 @@ function renderPicker() {
 
 async function startMode(modeId, isArchive, dateStr) {
   const targetDate = isArchive ? dateStr : todayStr();
+
   state = {
     mode: modeId,
     current: null,
@@ -2393,24 +2621,37 @@ async function startMode(modeId, isArchive, dateStr) {
     isArchive: !!isArchive,
     archiveDateStr: dateStr || null,
   };
+
   buildGrid();
   updateRoundUI();
   guessInput.value = "";
   submitBtn.disabled = true;
   showView('game');
+
   roundLabel.textContent = "Loading today's tune…";
   playBtn.disabled = true;
+
   const song = await loadSong(targetDate, modeId);
+
   if (!song) {
     showToast("Couldn't load Spotify track. " + (lastLoadError ? "Reason: " + lastLoadError : "Check connection."));
     showView('picker');
     return;
   }
+
   state.current = song;
+  updateRoundUI();
+
+  if (state.current.trackUri) {
+    roundLabel.textContent = "Preparing Spotify player…";
+    await warmSpotifyPlayerBeforePlay();
+  }
+
   playBtn.disabled = false;
   updateRoundUI();
 
   const key = `${targetDate}::${modeId}`;
+
   if (played[key] && !isArchive) {
     state.guesses = played[key].guesses.slice();
     state.done = true;
@@ -2418,7 +2659,7 @@ async function startMode(modeId, isArchive, dateStr) {
     setTimeout(() => finalize(played[key].result === 'won'), 300);
   }
 }
-
+  
 document.getElementById('backBtn').addEventListener('click', () => {
   stopAudio();
   showView('picker');
