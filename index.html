@@ -2002,20 +2002,33 @@ suggestions.innerHTML = list.map(s =>
 suggestions.classList.add('show');
 }
 guessInput.addEventListener('input', (e) => {
-submitBtn.disabled = !e.target.value.trim() || state.done;
-renderSuggestions(e.target.value);
+  const hasText = !!e.target.value.trim();
+  submitBtn.disabled = !hasText || state.done;
+  renderSuggestions(e.target.value);
 });
-guessInput.addEventListener('focus', () => { if (guessInput.value) renderSuggestions(guessInput.value); });
-guessInput.addEventListener('blur', () => setTimeout(() => suggestions.classList.remove('show'), 150));
+
+guessInput.addEventListener('focus', () => {
+  if (guessInput.value) renderSuggestions(guessInput.value);
+});
+
+guessInput.addEventListener('blur', () => {
+  setTimeout(() => suggestions.classList.remove('show'), 150);
+});
+
 suggestions.addEventListener('mousedown', (e) => {
-const item = e.target.closest('.suggestion');
-if (!item) return;
-guessInput.value = item.dataset.title;
-submitBtn.disabled = state.done;
-suggestions.classList.remove('show');
+  const item = e.target.closest('.suggestion');
+  if (!item) return;
+
+  guessInput.value = item.dataset.title;
+  submitBtn.disabled = state.done;
+  suggestions.classList.remove('show');
 });
+
 guessInput.addEventListener('keydown', (e) => {
-if (e.key === 'Enter' && !submitBtn.disabled) { e.preventDefault(); submitGuess(); }
+  if (e.key === 'Enter' && !submitBtn.disabled) {
+    e.preventDefault();
+    submitGuess();
+  }
 });
 
 /* PLAYBACK  start at beginning (currentTime = 0) */
